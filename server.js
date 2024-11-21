@@ -1,9 +1,11 @@
 const express = require('express');
 const app = express();
-const port = 3000;
-
-
+const PORT = 3000;
 const mongoose = require('mongoose');
+
+
+app.use(express.static('public_html'));
+
 const URL = "mongodb://127.0.0.1/new_db";
 
 const PlayerSchema = new mongoose.Schema({
@@ -12,19 +14,18 @@ const PlayerSchema = new mongoose.Schema({
 
 const Player = mongoose.model("Player", PlayerSchema);
 
-let new_player = new Player({
-    acct_nane: "Baller"
-});
-await new_player.save();
+mongoose.connect(URL)
+    .then(() => console.log("Connected to MongoDB"))
+    .catch((err) => console.log(err));
 
-async function main(){
-    await mongoose.connect(URL);
-}
-
-app.get('/', (req,res) => {
-    res.send('Placeholder')
+app.use('/new_player/:acct_name', async (req, res) => {
+    const { acct_name } = req.params;
+    const new_player = new Player({acct_name: acct_name});
+    await new_player.save();
+    res.send(`User: ${acct_name} has been added to the database`);
 });
 
-app.listen(port, () => {
+
+app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
 });
