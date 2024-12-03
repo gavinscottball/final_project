@@ -1,0 +1,164 @@
+body {
+    font-family: Arial, sans-serif;
+    padding: 0;
+    overflow: hidden;
+    height: 100vh;
+    background-color: #000000;
+    position: relative;
+}
+
+.background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('imgs/back1.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: blur(10px);
+    z-index: -1;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.container {
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    width: 80%;
+    height: 80%;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.login-form {
+    width: 350px;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    align-items: center;
+    align-self: center;
+}
+
+.create-account-form {
+    min-width: 50vw;
+    min-height: 68vh;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    align-items: center;
+    text-align: center;
+    align-self: center;
+}
+
+form label {
+    text-align: center;
+    display: block;
+}
+
+form input,
+form textarea {
+    margin-bottom: 10px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.9);
+}
+
+button {
+    padding: 10px 15px;
+    margin: 10px 0;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.popup-overlay {
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 0;
+    margin: 0;
+}
+
+.popup-overlay.hidden {
+    display: none;
+}
+
+.form-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.form-group label {
+    min-width: 150px;
+    margin-right: 10px;
+    text-align: left;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    flex: 1;
+}
+
+.button-container {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.create-btn,
+.close-btn {
+    flex: 1;
+    padding: 15px;
+    font-size: 16px;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.create-btn {
+    background-color: #007bff;
+}
+
+.create-btn:hover {
+    background-color: #0056b3;
+}
+
+.close-btn {
+    background-color: #6c757d;
+}
+
+.close-btn:hover {
+    background-color: #5a6268;
+}

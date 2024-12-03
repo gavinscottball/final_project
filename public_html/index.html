@@ -1,21 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-	<meta charset="UTF-8">
-	<title>Login Page</title>
-	<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login and Create Account</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-    <h1>This is a login page</h1>
-	<label for="username">Username</label>
-	<input type="text" name="username" id="username">
-	<label for="password">Password</label>
-	<input type="text" name="password" id="password">
-	<button id="loginButton">Login</button>
-	<button id="createButton">Create Account</button>
-	<a href="/create.html">Create Account</a>
+    <div class="background"></div>
+    <div class="container">
+        <div class="login-form">
+            <h1>Login</h1>
+            <form>
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+                <button type="button" id="loginButton">Log In</button>
+                <button type="button" id="createButton">Create Account</button>
+            </form>
+            <div id="output"></div>
+        </div>
+        <div class="popup-overlay hidden" id="popupOverlay">
+            <div class="create-account-form">
+                <h1>Create an Account</h1>
+                <form id="createAccountForm">
+					<div class="form-group">
+						<label for="newUsername">Username:</label>
+						<input type="text" id="newUsername" name="new-username">
+					</div>
+					<div class="form-group">
+						<label for="email">Email:</label>
+						<input type="email" id="email" name="email">
+					</div>
+					<div class="form-group">
+						<label for="realName">Real Name:</label>
+						<input type="text" id="realName" name="real-name">
+					</div>
+					<div class="form-group">
+						<label for="profilePicture">Upload Profile Picture:</label>
+						<input type="file" id="profilePicture" name="profile-picture" accept="image/*">
+					</div>
+					<div class="form-group">
+						<label for="profileBio">Profile Bio:</label>
+						<textarea id="profileBio" name="profile-bio" rows="4"></textarea>
+					</div>
+					<div class="form-group">
+						<label for="newPassword">Password:</label>
+						<input type="password" id="newPassword" name="new-password">
+					</div>
+					<div class="form-group">
+						<label for="confirmPassword">Confirm Password:</label>
+						<input type="password" id="confirmPassword" name="confirm-password">
+					</div>
+					<div class="button-container">
+						<button type="submit" class="create-btn">Create Account</button>
+						<button type="button" id="closeButton" class="close-btn">Back</button>
+					</div>
+				</form>
+            </div>
+        </div>
+    </div>
+    <script src="client.js"></script>
 </body>
-
 </html>
