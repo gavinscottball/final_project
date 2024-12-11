@@ -17,3 +17,7 @@ ssh root@128.199.15.8
 LIVE VERIFICATION:
 sudo netstat -tuln | grep 3000
 curl http://127.0.0.1:3000/
+
+
+PULL AND REBOOT:
+git pull && sleep 2 && pm2 restart all && sleep 2 && sudo netstat -tuln | grep 3000
