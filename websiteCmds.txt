@@ -3,18 +3,17 @@ USER: root
 PASS: russW1re
 
 
-
+MISC LINUX CMDS:
 sudo systemctl restart mongod
-
-
 scp -r ./ root@128.199.15.8:/var/www/
-
-
 cat /etc/lsb-release
 
 
+SSH LOGINS:
 sudo ssh -o StrictHostKeyChecking=no root@128.199.15.8
 ssh root@128.199.15.8
 
 
+LIVE VERIFICATION:
 sudo netstat -tuln | grep 3000
+curl http://127.0.0.1:3000/
