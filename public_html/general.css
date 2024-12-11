@@ -1,0 +1,72 @@
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+}
+
+.header-title {
+    text-align: left;
+}
+
+.header-account {
+    text-align: right;
+}
+
+
+
+.welcome-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: white;
+    /* Optional: Set a background color to ensure it's distinct */
+    z-index: 10;
+    /* Keep it above other elements */
+    border-bottom: 1px solid #ccc;
+    /* Optional: Add a border for visual separation */
+}
+
+
+.welcome-content {
+    display: block;
+    flex-direction: column;
+    /* Stack elements vertically */
+    justify-content: center;
+    /* Center elements vertically */
+    align-items: center;
+    /* Center elements horizontally */
+    text-align: center;
+    /* Center-align the text inside elements */
+    /* Add padding for spacing */
+    min-height: 100vh;
+
+    padding: 20px;
+    /* Ensure the content takes the full viewport height */
+}
+
+.welcome-title {
+    font-size: 2rem;
+    /* Adjust the title font size */
+    margin: 10px 0;
+    /* Add spacing around the title */
+}
+
+.welcome-description {
+    font-size: 1rem;
+    margin: 20px auto; /* Center horizontally and vertically */
+    max-width: 85%; /* Keep the width limited for readability */
+    text-align: center; /* Ensure the text inside is centered */
+    display: block; /* Ensure it's treated as a block element */
+}
+
+.welcome-screenshot {
+    max-width: 95%;
+    /* Prevent the image from overflowing */
+    height: auto;
+    /* Maintain image aspect ratio */
+    max-height: 500px;
+    margin: 20px 0;
+    /* Add spacing around the image */
+}
