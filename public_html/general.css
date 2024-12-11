@@ -21,42 +21,31 @@
     left: 0;
     width: 100%;
     background-color: white;
-    /* Optional: Set a background color to ensure it's distinct */
     z-index: 10;
-    /* Keep it above other elements */
     border-bottom: 1px solid #ccc;
-    /* Optional: Add a border for visual separation */
 }
 
 
 .welcome-content {
+    margin-top: 75px;
     display: block;
     flex-direction: column;
-    /* Stack elements vertically */
     justify-content: center;
-    /* Center elements vertically */
     align-items: center;
-    /* Center elements horizontally */
     text-align: center;
-    /* Center-align the text inside elements */
-    /* Add padding for spacing */
     min-height: 100vh;
-
     padding: 20px;
-    /* Ensure the content takes the full viewport height */
 }
 
 .welcome-title {
     font-size: 2rem;
-    /* Adjust the title font size */
     margin: 10px 0;
-    /* Add spacing around the title */
 }
 
 .welcome-description {
     font-size: 1rem;
-    margin: 20px auto; /* Center horizontally and vertically */
-    max-width: 85%; /* Keep the width limited for readability */
+    margin: 20px auto;
+    max-width: 85%;
     text-align: center; /* Ensure the text inside is centered */
     display: block; /* Ensure it's treated as a block element */
 }
