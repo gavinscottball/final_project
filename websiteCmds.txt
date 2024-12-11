@@ -1,0 +1,20 @@
+IP: 128.199.15.8
+USER: root
+PASS: russW1re
+
+
+
+sudo systemctl restart mongod
+
+
+scp -r ./ root@128.199.15.8:/var/www/
+
+
+cat /etc/lsb-release
+
+
+sudo ssh -o StrictHostKeyChecking=no root@128.199.15.8
+ssh root@128.199.15.8
+
+
+sudo netstat -tuln | grep 3000
