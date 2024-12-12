@@ -1,24 +1,41 @@
+// Canvas setup
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-// Prevent spacebar from scrolling the page
-canvas.addEventListener('keydown', function(e) {
-    if(e.code === 'Space') {
-        e.preventDefault();
-    }
-});
+// Images
+const backgroundImg = new Image();
+backgroundImg.src = './imgs/env0.png';
+const spriteImg = new Image();
+spriteImg.src = './imgs/sprite1.png';
 
-// Focus canvas on click to ensure it captures keyboard events
-canvas.addEventListener('click', function() {
-    canvas.focus();
-});
+// Constants
+const groundLevel = 350;
 
 // Game state
-const gameState = {
-    scrollSpeed: 3,
-    backgroundX: 0,
-    player: {
-        x: 100,
+const gameState = createGameState();
+
+// Initialize game
+function createGameState() {
+    return {
+        scrollSpeed: 4,
+        backgroundX: 0,
+        player: createPlayer(),
+        normalGravity: 1,
+        reducedGravity: 0.3,
+        currentGravity: 0.7,
+        jumpForce: -10,
+        maxFloatTime: 200,
+        obstacles: [],
+        obstacleTimer: 0,
+        obstacleInterval: 120,
+        gameRunning: true
+    };
+}
+
+// Create player
+function createPlayer() {
+    return {
+        x: 300,
         y: 300,
         width: 50,
         height: 50,
@@ -26,32 +43,30 @@ const gameState = {
         isJumping: false,
         jumpStartTime: null,
         isHoldingJump: false
-    },
-    normalGravity: 1,
-    reducedGravity: 0.3,
-    currentGravity: 0.7,
-    jumpForce: -10,
-    maxFloatTime: 200,
-    obstacles: [],          
-    obstacleTimer: 0,       
-    obstacleInterval: 120,  // Initial interval
-    gameRunning: true
-};
+    };
+}
 
-// Jump handler - keydown
+// Event listeners
+function setupEventListeners() {
+    canvas.addEventListener('keydown', handleJumpStart);
+    canvas.addEventListener('keyup', handleJumpEnd);
+    canvas.addEventListener('keydown', preventSpacebarScroll);
+    canvas.addEventListener('keydown', handleRightArrowPress); // Add listener for the right arrow key
+    canvas.addEventListener('keyup', handleRightArrowRelease); // Stop acceleration on release
+    canvas.addEventListener('click', () => canvas.focus());
+}
+
 function handleJumpStart(e) {
+    if (e.code === 'Space' && !gameState.player.isJumping) {
+        gameState.player.velocityY = gameState.jumpForce;
+        gameState.player.isJumping = true;
+        gameState.player.jumpStartTime = Date.now();
+    }
     if (e.code === 'Space') {
-        if (!gameState.player.isJumping) {
-            // Initial jump
-            gameState.player.velocityY = gameState.jumpForce;
-            gameState.player.isJumping = true;
-            gameState.player.jumpStartTime = Date.now();
-        }
         gameState.player.isHoldingJump = true;
     }
 }
 
-// Jump handler - keyup
 function handleJumpEnd(e) {
     if (e.code === 'Space') {
         gameState.player.isHoldingJump = false;
@@ -59,133 +74,130 @@ function handleJumpEnd(e) {
     }
 }
 
-canvas.addEventListener('keydown', handleJumpStart);
-canvas.addEventListener('keyup', handleJumpEnd);
-
-const groundLevel = 350; // Adjust as needed
-
-function getRandomInterval(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+function preventSpacebarScroll(e) {
+    if (e.code === 'Space') {
+        e.preventDefault();
+    }
 }
 
-// Function to generate a new obstacle (wall or spike)
+// Generate obstacles
 function generateObstacle() {
-    const startX = canvas.width + 40; 
-    const obstacleChoice = Math.random();
-    
-    if (obstacleChoice < 0.5) {
-        // Generate a wall
-        const obstacleWidth = 40;
-        const obstacleHeight = 100;
-        const y = groundLevel - obstacleHeight;
-        gameState.obstacles.push({
-            type: 'wall',
-            x: startX,
-            y: y,
-            width: obstacleWidth,
-            height: obstacleHeight
-        });
-    } else {
-        // Generate spike(s)
-        // Spikes are smaller and rest on the ground
-        // Decide if 1 or 2 spikes
-        const spikeCount = Math.random() < 0.5 ? 1 : 2;
-        const spikeWidth = 20;  // width of each spike
-        const spikeHeight = 30; // height of each spike
-        // Spikes sit on the ground
-        const y = groundLevel - spikeHeight; 
+    const startX = canvas.width + 40;
+    const isWall = Math.random() < 0.5;
 
-        // If two spikes, spawn them next to each other
-        for (let i = 0; i < spikeCount; i++) {
-            gameState.obstacles.push({
-                type: 'spike',
-                x: startX + i * (spikeWidth + 5),
-                y: y,
-                width: spikeWidth,
-                height: spikeHeight
-            });
-        }
+    if (isWall) {
+        createWall(startX);
+    } else {
+        createSpikes(startX);
     }
 
-    // After spawning an obstacle, set a new random interval for the next obstacle
-    // For example, between 90 and 150 frames
     gameState.obstacleInterval = getRandomInterval(90, 150);
 }
 
-// Check and resolve collisions between the player and obstacles
-function resolveCollisions() {
-    const p = gameState.player;
+function createWall(startX) {
+    const obstacleWidth = 40;
+    const obstacleHeight = 100;
+    const y = groundLevel - obstacleHeight;
 
-    for (let i = 0; i < gameState.obstacles.length; i++) {
-        const o = gameState.obstacles[i];
+    gameState.obstacles.push({
+        type: 'wall',
+        x: startX,
+        y: y,
+        width: obstacleWidth,
+        height: obstacleHeight
+    });
+}
 
-        // AABB collision check
-        const overlapX = (p.x < o.x + o.width) && (p.x + p.width > o.x);
-        const overlapY = (p.y < o.y + o.height) && (p.y + p.height > o.y);
+function createSpikes(startX) {
+    const spikeCount = Math.random() < 0.5 ? 1 : 2;
+    const spikeWidth = 20;
+    const spikeHeight = 30;
+    const y = groundLevel - spikeHeight;
 
-        if (overlapX && overlapY) {
-            // Determine how much overlap on each axis
-            const overlapAmountX = Math.min(p.x + p.width - o.x, o.x + o.width - p.x);
-            const overlapAmountY = Math.min(p.y + p.height - o.y, o.y + o.height - p.y);
-
-            if (o.type === 'wall') {
-                // Walls stop or support the player
-                if (overlapAmountY < overlapAmountX) {
-                    // Resolve vertical collision
-                    if (p.velocityY > 0 && p.y < o.y) {
-                        // Place player on top of the wall
-                        p.y = o.y - p.height;
-                        p.velocityY = 0;
-                        p.isJumping = false;
-                        p.isHoldingJump = false;
-                        gameState.currentGravity = gameState.normalGravity;
-                    } else if (p.y > o.y) {
-                        // Player is underneath wall (uncommon scenario)
-                        p.y = o.y + o.height;
-                    }
-                } else {
-                    // Resolve horizontal collision
-                    if (p.x < o.x) {
-                        p.x = o.x - p.width;
-                    } else {
-                        p.x = o.x + o.width;
-                    }
-                }
-            } else if (o.type === 'spike') {
-                // Spikes do not kill immediately as per your requirement,
-                // but they do act as obstacles. We'll treat them like walls here.
-                // If needed, you can add different behavior for spikes.
-                if (overlapAmountY < overlapAmountX) {
-                    // Vertical collision
-                    if (p.velocityY > 0 && p.y < o.y) {
-                        p.y = o.y - p.height;
-                        p.velocityY = 0;
-                        p.isJumping = false;
-                        p.isHoldingJump = false;
-                        gameState.currentGravity = gameState.normalGravity;
-                    } else if (p.y > o.y) {
-                        p.y = o.y + o.height;
-                    }
-                } else {
-                    // Horizontal collision
-                    if (p.x < o.x) {
-                        p.x = o.x - p.width;
-                    } else {
-                        p.x = o.x + o.width;
-                    }
-                }
-            }
-
-            // After resolving collision, check if player is off-screen
-            if (p.x < 0) {
-                // Player got pushed off screen - game over
-                gameOver();
-                return;
-            }
-        }
+    for (let i = 0; i < spikeCount; i++) {
+        gameState.obstacles.push({
+            type: 'spike',
+            x: startX + i * (spikeWidth + 5),
+            y: y,
+            width: spikeWidth,
+            height: spikeHeight
+        });
     }
 }
 
+// Collision detection and resolution
+function resolveCollisions() {
+    const player = gameState.player;
+
+    gameState.obstacles.forEach(obstacle => {
+        if (isColliding(player, obstacle)) {
+            handleCollision(player, obstacle);
+        }
+    });
+}
+
+function isColliding(player, obstacle) {
+    return (
+        player.x < obstacle.x + obstacle.width &&
+        player.x + player.width > obstacle.x &&
+        player.y < obstacle.y + obstacle.height &&
+        player.y + player.height > obstacle.y
+    );
+}
+
+function handleCollision(player, obstacle) {
+    const overlapX = Math.min(
+        player.x + player.width - obstacle.x,
+        obstacle.x + obstacle.width - player.x
+    );
+    const overlapY = Math.min(
+        player.y + player.height - obstacle.y,
+        obstacle.y + obstacle.height - player.y
+    );
+
+    if (obstacle.type === 'spike') {
+        // End the game immediately if the player hits spikes
+        gameOver();
+        return;
+    }
+
+    if (overlapX < overlapY) {
+        // Horizontal collision (player hits the side of the wall)
+        if (player.x + player.width / 2 < obstacle.x + obstacle.width / 2) {
+            // Player hits the left side of the wall
+            player.x = obstacle.x - player.width; // Position the player to the left of the wall
+        } else {
+            // Player hits the right side of the wall
+            player.x = obstacle.x + obstacle.width; // Position the player to the right of the wall
+        }
+
+        // Allow upward movement to escape the wall
+        if (player.velocityY < 0) {
+            return; // Let the player move up if jumping
+        }
+
+        player.velocityY = 0; // Reset vertical velocity
+    } else {
+        // Vertical collision (player hits the top or bottom of the wall)
+        if (player.y + player.height / 2 < obstacle.y + obstacle.height / 2) {
+            // Player lands on top of the wall
+            player.y = obstacle.y - player.height; // Position the player on top of the wall
+            player.velocityY = 0;
+            player.isJumping = false; // Allow the player to jump again
+        } else {
+            // Player hits the bottom of the wall (unlikely in this game)
+            player.y = obstacle.y + obstacle.height;
+            player.velocityY = 0;
+        }
+    }
+
+    // End game if the player is pushed off the left edge
+    if (player.x <= 0) {
+        gameOver();
+    }
+}
+
+// Game over
 function gameOver() {
     gameState.gameRunning = false;
     ctx.fillStyle = 'black';
@@ -193,27 +205,55 @@ function gameOver() {
     ctx.fillText('Game Over', canvas.width / 2 - 100, canvas.height / 2);
 }
 
-// Game loop
-function gameLoop() {
-    if (!gameState.gameRunning) return;
+// Update functions
+function updatePlayer() {
+    const player = gameState.player;
 
-    // Clear canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    player.velocityY += gameState.currentGravity;
+    player.y += player.velocityY;
 
-    // Handle floating mechanic
-    if (gameState.player.isJumping && gameState.player.isHoldingJump) {
-        const holdTime = Date.now() - gameState.player.jumpStartTime;
-        if (holdTime <= gameState.maxFloatTime) {
-            gameState.currentGravity = gameState.reducedGravity;
-        } else {
-            gameState.currentGravity = gameState.normalGravity;
-        }
+    if (player.y > 300) {
+        player.y = 300;
+        player.velocityY = 0;
+        player.isJumping = false;
     }
 
-    // Update background position
+    if (player.isJumping && player.isHoldingJump) {
+        const holdTime = Date.now() - player.jumpStartTime;
+        gameState.currentGravity =
+            holdTime <= gameState.maxFloatTime
+                ? gameState.reducedGravity
+                : gameState.normalGravity;
+    }
+
+    // Handle acceleration to the right
+    if (player.isAcceleratingRight) {
+        const maxRightPosition = 300; // Player's starting X position
+        player.x = Math.min(player.x + 5, maxRightPosition);
+    }
+}
+
+function updateObstacles() {
+    gameState.obstacles.forEach(obstacle => {
+        obstacle.x -= gameState.scrollSpeed;
+    });
+
+    gameState.obstacles = gameState.obstacles.filter(
+        obstacle => obstacle.x + obstacle.width > 0
+    );
+
+    gameState.obstacleTimer++;
+
+    if (gameState.obstacleTimer >= gameState.obstacleInterval) {
+        generateObstacle();
+        gameState.obstacleTimer = 0;
+    }
+}
+
+// Render functions
+function drawBackground() {
     gameState.backgroundX -= gameState.scrollSpeed;
 
-    // Draw background with proper looping
     ctx.drawImage(
         backgroundImg,
         gameState.backgroundX,
@@ -221,7 +261,6 @@ function gameLoop() {
         backgroundImg.width,
         canvas.height
     );
-
     ctx.drawImage(
         backgroundImg,
         gameState.backgroundX + backgroundImg.width,
@@ -230,85 +269,137 @@ function gameLoop() {
         canvas.height
     );
 
-    // Reset background position
     if (gameState.backgroundX <= -backgroundImg.width) {
         gameState.backgroundX = 0;
     }
-
-    // Update player position with current gravity
-    gameState.player.velocityY += gameState.currentGravity;
-    gameState.player.y += gameState.player.velocityY;
-
-    // Ground collision (treating the ground as y=300)
-    if (gameState.player.y > 300) {
-        gameState.player.y = 300;
-        gameState.player.velocityY = 0;
-        gameState.player.isJumping = false;
-        gameState.currentGravity = gameState.normalGravity;
-        gameState.player.jumpStartTime = null;
-    }
-
-    // Handle obstacle generation
-    gameState.obstacleTimer++;
-    if (gameState.obstacleTimer >= gameState.obstacleInterval) {
-        generateObstacle();
-        gameState.obstacleTimer = 0;
-    }
-
-    // Move obstacles
-    for (let i = 0; i < gameState.obstacles.length; i++) {
-        const o = gameState.obstacles[i];
-        o.x -= gameState.scrollSpeed;
-    }
-
-    // Remove obstacles that have gone off-screen
-    gameState.obstacles = gameState.obstacles.filter(o => o.x + o.width > 0);
-
-    // Resolve collisions with obstacles
-    resolveCollisions();
-
-    // Draw player
-    ctx.drawImage(
-        spriteImg,
-        gameState.player.x,
-        gameState.player.y,
-        gameState.player.width,
-        gameState.player.height
-    );
-
-    // Draw obstacles
-    for (let i = 0; i < gameState.obstacles.length; i++) {
-        const o = gameState.obstacles[i];
-
-        if (o.type === 'wall') {
-            ctx.fillStyle = 'gray';
-            ctx.fillRect(o.x, o.y, o.width, o.height);
-        } else if (o.type === 'spike') {
-            ctx.fillStyle = 'red';
-            // Draw a triangle or a series of triangles for a spike
-            ctx.beginPath();
-            ctx.moveTo(o.x, o.y + o.height);
-            ctx.lineTo(o.x + o.width / 2, o.y);
-            ctx.lineTo(o.x + o.width, o.y + o.height);
-            ctx.closePath();
-            ctx.fill();
-        }
-    }
-
-    // Continue game loop
-    requestAnimationFrame(gameLoop);
 }
 
-// Load images
-const backgroundImg = new Image();
-backgroundImg.src = './imgs/env0.png';
-const spriteImg = new Image();
-spriteImg.src = './imgs/sprite1.png';
+function drawPlayer() {
+    const player = gameState.player;
 
-// Start game when images are loaded
+    ctx.drawImage(
+        spriteImg,
+        player.x,
+        player.y,
+        player.width,
+        player.height
+    );
+}
+
+function drawObstacles() {
+    gameState.obstacles.forEach(obstacle => {
+        ctx.fillStyle = obstacle.type === 'wall' ? 'gray' : 'red';
+
+        if (obstacle.type === 'spike') {
+            ctx.beginPath();
+            ctx.moveTo(obstacle.x, obstacle.y + obstacle.height);
+            ctx.lineTo(obstacle.x + obstacle.width / 2, obstacle.y);
+            ctx.lineTo(obstacle.x + obstacle.width, obstacle.y + obstacle.height);
+            ctx.closePath();
+            ctx.fill();
+        } else {
+            ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+        }
+    });
+}
+
+
+
+// Utility functions
+function getRandomInterval(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+document.getElementById('restartButton').addEventListener('click', () => {
+    resetGame();
+});
+
+
+function handleRightArrowPress(e) {
+    if (e.code === 'ArrowRight') {
+        gameState.player.isAcceleratingRight = true;
+    }
+}
+
+function handleRightArrowRelease(e) {
+    if (e.code === 'ArrowRight') {
+        gameState.player.isAcceleratingRight = false;
+    }
+}
+
+
+let animationFrameId;
+let isPaused = false;
+
+function pauseGame() {
+    isPaused = true;
+    if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+    }
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = 'white';
+    ctx.font = '48px sans-serif';
+    ctx.fillText('Paused', canvas.width / 2 - 80, canvas.height / 2);
+}
+
+function resumeGame() {
+    if (isPaused) {
+        isPaused = false;
+        gameLoop(); // Restart the game loop
+    }
+}
+
+// Event listener for Tab key to toggle pause/resume
+window.addEventListener('keydown', (e) => {
+    if (e.code === 'Escape') {
+        e.preventDefault(); // Prevent default tab behavior
+        if (isPaused) {
+            resumeGame();
+        } else {
+            pauseGame();
+        }
+    }
+});
+
+// Update the game loop to account for pause
+function gameLoop() {
+    if (!gameState.gameRunning || isPaused) return;
+
+    // Store the animation frame ID to allow cancellation
+    animationFrameId = requestAnimationFrame(gameLoop);
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    drawBackground();
+    updatePlayer();
+    updateObstacles();
+    resolveCollisions();
+    drawPlayer();
+    drawObstacles();
+}
+
+function resetGame() {
+    // Reset game state
+    Object.assign(gameState, createGameState());
+
+    // Cancel any ongoing animation frames to prevent overlapping game loops
+    if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+    }
+
+    // Refocus the game canvas
+    canvas.focus();
+
+    // Start the game loop
+    gameLoop();
+}
+
+// Initialization
 Promise.all([
-    new Promise(resolve => backgroundImg.onload = resolve),
-    new Promise(resolve => spriteImg.onload = resolve)
+    new Promise(resolve => (backgroundImg.onload = resolve)),
+    new Promise(resolve => (spriteImg.onload = resolve))
 ]).then(() => {
+    setupEventListeners();
     gameLoop();
 });

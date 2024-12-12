@@ -254,3 +254,19 @@ canvas {
 canvas:focus {
     outline: none;
 }
+
+#restartButton {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#restartButton:hover {
+    background-color: #0056b3;
+}
