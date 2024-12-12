@@ -66,29 +66,69 @@ function handleLogin() {
 function handleCreateAccount(event) {
     event.preventDefault();
     const formData = new FormData(event.target);
-    const data = Object.fromEntries(formData);
 
     fetch('/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            username: data['new-username'],
-            password: data['new-password']
+            username: formData.get('new-username'),
+            password: formData.get('new-password')
+        })
+    })
+    .then(response => {
+        if (response.ok) {
+            // If the response is successful, proceed with processing
+            return response.json().then(data => {
+                console.log('Account created');
+
+                // Call saveDetails after confirming account registration
+                saveDetails(
+                    formData.get('new-username'),
+                    formData.get('email'),
+                    formData.get('real-name'),
+                    null, // Replace with the actual picture logic
+                    formData.get('profile-bio')
+                );
+
+                alert(data.message || 'Account creation successful!');
+                const popupOverlay = document.getElementById("popupOverlay");
+                const loginForm = document.querySelector(".login-form");
+                popupOverlay.classList.add("hidden");
+                loginForm.classList.remove("hidden");
+            });
+        } else {
+            // Handle non-200 responses (e.g., 400 errors)
+            return response.json().then(data => {
+                throw new Error(data.message || 'Error creating account');
+            });
+        }
+    })
+    .catch(err => {
+        console.error('Account creation error:', err);
+        alert(err.message || 'Error creating account, please try again.');
+    });
+}
+
+
+function saveDetails(username, email, name, picture, bio) {
+    fetch('/update-profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            username: username,
+            email: email || '',
+            name: name || '',
+            picture: picture || null, // Use null if no picture
+            bio: bio || ''
         })
     })
     .then(response => response.json())
     .then(data => {
-        alert(data.message || 'Account creation successful!');
-        const popupOverlay = document.getElementById("popupOverlay");
-        const loginForm = document.querySelector(".login-form");
-        popupOverlay.classList.add("hidden");
-        loginForm.classList.remove("hidden");
+        console.log('Account details saved:', data);
     })
-    .catch(err => {
-        console.error('Account creation error:', err);
-        alert('Error creating account, please try again.');
-    });
+    .catch(err => console.error('Error saving account details:', err));
 }
+
 
 function login(username, password) {
     fetch('/login', {

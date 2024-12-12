@@ -13,7 +13,7 @@
     <div class="header">
         <div class="header-content">
             <h2 class="header-title">Shape Run</h2>
-            <h2 class="header-account" id="username"><a href="profile.html">USERNAME</a></h2> 
+            <h2 class="header-account" id="username"><a id="loggedUser" href="profile.html">USERNAME</a></h2> 
         </div>
         <nav class="header-nav">
             <ul>
@@ -28,6 +28,15 @@
     <div class="content">
         <h1 class="title">Tee hee</h1>
     </div>
-    
+
+    <div class="profile-container">
+        <img id="profilePicture" src="" alt="Profile Picture" width="150" height="150">
+        <h2 id="usernameDisplay">USERNAME</h2>
+        <p><strong>Email:</strong> <span id="emailDisplay">N/A</span></p>
+        <p><strong>Real Name:</strong> <span id="realNameDisplay">N/A</span></p>
+        <p><strong>Bio:</strong> <span id="bioDisplay">N/A</span></p>
+    </div>
+
+    <script src="profile.js"></script>
 </body>
 </html>
