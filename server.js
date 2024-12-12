@@ -30,11 +30,11 @@ const URL = "mongodb://127.0.0.1/new_db";
 const PlayerSchema = new mongoose.Schema({
     acct_name: { type: String, required: true, unique: true },
     acct_password: { type: String, required: true },
-    email: { type: String, default: "" }, // Default to an empty string
-    real_name: { type: String, default: "" }, // Default to an empty string
-    bio: { type: String, default: "" }, // Default to an empty string
-    profile_picture: { type: String, default: "" }, // Default to an empty string
-    stats: { type: Object, default: {} }
+    email: { type: String, default: "" },
+    real_name: { type: String, default: "" },
+    bio: { type: String, default: "" },
+    profile_picture: { type: String, default: "" },
+    stats: { type: [{ score: Number, time: Number }], default: [] } // Define as an array of objects
 });
 
 const Player = mongoose.model("Player", PlayerSchema);
@@ -112,6 +112,7 @@ app.post('/login', async (req, res) => {
                 bio: player.bio || "",
                 profilePicture: player.profile_picture || "",
             };
+            req.session.username = player.acct_name;
             return res.status(200).json({ message: 'Login successful' });
         } else {
             return res.status(401).json({ message: 'Invalid password' });
@@ -166,6 +167,32 @@ app.post('/get-profile', isLoggedIn, async (req, res) => {
     }
 });
 
+
+app.post('/update-stats', isLoggedIn, async (req, res) => {
+    const { score, time } = req.body;
+    const username = req.session.username;
+
+    try {
+        const player = await findPlayer(username); // Add 'await' here
+        if (!player) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        if (!Array.isArray(player.stats)) {
+            player.stats = []; // Ensure stats is initialized as an array
+        }
+
+        player.stats.push({ score, time });
+        await player.save(); // Save updated player document to the database
+        console.log(`${username} saved their stats, scored ${score} points in ${time} seconds`);
+        res.status(200).json({ message: 'Stats saved successfully' });
+    } catch (err) {
+        console.error('Error saving stats:', err);
+        res.status(500).json({ message: 'Error saving stats' });
+    }
+});
+
+
 // Update profile route
 app.post('/update-profile', isLoggedIn, async (req, res) => {
     const { email, name, picture, bio } = req.body;
@@ -208,6 +235,7 @@ app.get('/session', (req, res) => {
         res.status(401).json({ message: 'Unauthorized' }); // Send 401 if no session
     }
 });
+// Delete later
 app.get('/session', (req, res) => {
     if (req.session && req.session.username) {
         res.json({ loggedIn: true, username: req.session.username });
