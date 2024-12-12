@@ -28,7 +28,11 @@ function createGameState() {
         obstacles: [],
         obstacleTimer: 0,
         obstacleInterval: 120,
-        gameRunning: true
+        gameRunning: true,
+        startTime: null,
+        elapsedTime: 0,
+        pauseStart: null,
+        totalPauseTime: null
     };
 }
 
@@ -203,6 +207,7 @@ function gameOver() {
     ctx.fillStyle = 'black';
     ctx.font = '48px sans-serif';
     ctx.fillText('Game Over', canvas.width / 2 - 100, canvas.height / 2);
+    console.log(`Player survived for ${gameState.elapsedTime/1000} seconds`);
 }
 
 // Update functions
@@ -333,6 +338,9 @@ let isPaused = false;
 
 function pauseGame() {
     isPaused = true;
+
+    gameState.pauseStart = Date.now(); // Get the time the user paused
+
     if (animationFrameId) {
         cancelAnimationFrame(animationFrameId);
     }
@@ -346,6 +354,9 @@ function pauseGame() {
 function resumeGame() {
     if (isPaused) {
         isPaused = false;
+        const pausedDuration = Date.now() - gameState.pauseStart;
+        gameState.totalPauseTime += pausedDuration;
+        gameState.pauseStart = null; 
         gameLoop(); // Restart the game loop
     }
 }
@@ -366,6 +377,9 @@ window.addEventListener('keydown', (e) => {
 function gameLoop() {
     if (!gameState.gameRunning || isPaused) return;
 
+    // Calculate elapsed time
+    getTime();
+
     // Store the animation frame ID to allow cancellation
     animationFrameId = requestAnimationFrame(gameLoop);
 
@@ -380,19 +394,27 @@ function gameLoop() {
 }
 
 function resetGame() {
-    // Reset game state
+    // Reset all game state
     Object.assign(gameState, createGameState());
 
-    // Cancel any ongoing animation frames to prevent overlapping game loops
+    // Set the start time to now
+    gameState.startTime = Date.now();
+    gameState.totalPauseTime = 0;
+    gameState.elapsedTime = 0;
+
+    // Cancel any ongoing animation frames
     if (animationFrameId) {
         cancelAnimationFrame(animationFrameId);
     }
 
-    // Refocus the game canvas
+    // Focus the canvas and restart the game loop
     canvas.focus();
-
-    // Start the game loop
     gameLoop();
+}
+
+function getTime() {
+    const now = Date.now();
+    gameState.elapsedTime = now - gameState.startTime - gameState.totalPauseTime;
 }
 
 // Initialization
@@ -401,5 +423,8 @@ Promise.all([
     new Promise(resolve => (spriteImg.onload = resolve))
 ]).then(() => {
     setupEventListeners();
+    gameState.startTime = Date.now();
+    gameState.totalPauseTime = 0;
+    gameState.pauseStart = null;
     gameLoop();
 });
