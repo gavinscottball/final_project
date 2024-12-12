@@ -37,6 +37,9 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("sortNewestBtn").addEventListener("click", () => sortComments("newest"));
 });
 
+
+// javascript for comments
+
 // Fetch comments from the server
 function fetchComments() {
     fetch('/getComments', { credentials: 'include' })
@@ -137,3 +140,77 @@ function sortComments(sortBy) {
         .then(comments => renderComments(comments))
         .catch(err => console.error("Error sorting comments:", err));
 }
+
+
+// Javascript for leaderboard
+
+document.addEventListener("DOMContentLoaded", () => {
+    initializeLeaderboard();
+    populatePhonyLeaderboard();
+});
+
+// Initialize leaderboard with default empty rows
+function initializeLeaderboard() {
+    const leaderboardTableBody = document.querySelector("#leaderboardTable tbody");
+    leaderboardTableBody.innerHTML = ""; // Clear all rows
+}
+
+// Add a new entry to the leaderboard
+function addLeaderboardEntry(player, score) {
+    const leaderboardTableBody = document.querySelector("#leaderboardTable tbody");
+
+    // Add the new entry to a temporary array
+    const players = Array.from(leaderboardTableBody.children).map(row => {
+        const cells = row.children;
+        return { name: cells[1].textContent, score: parseInt(cells[2].textContent, 10) };
+    });
+
+    // Add the new player
+    players.push({ name: player, score });
+
+    // Sort players by score (descending order)
+    players.sort((a, b) => b.score - a.score);
+
+    // Clear the table and rebuild it
+    leaderboardTableBody.innerHTML = "";
+    players.forEach((player, index) => {
+        const newRow = document.createElement("tr");
+
+        const positionCell = document.createElement("td");
+        positionCell.textContent = index + 1; // Rank based on sorted order
+
+        const playerCell = document.createElement("td");
+        playerCell.textContent = player.name;
+
+        const scoreCell = document.createElement("td");
+        scoreCell.textContent = player.score;
+
+        newRow.appendChild(positionCell);
+        newRow.appendChild(playerCell);
+        newRow.appendChild(scoreCell);
+
+        leaderboardTableBody.appendChild(newRow);
+    });
+}
+
+
+// leaderboard testing, DELETE LATER:
+//########################################READ THIS########################################
+// This is how you can add the score and the player name to the leaderboard. It automatically sorts and ranks and sizes
+// them so we just need the score from the database
+function populatePhonyLeaderboard() {
+    const players = [
+        { name: "Herobrine", score: 420 },
+        { name: "Joey", score: -473 },
+        { name: "'Hawk' Tua Selusi", score: 690 },
+        { name: "Mater", score: 9001 },
+        { name: "Phony5", score: 90 },
+        { name: "Phony6", score: 300 },
+        { name: "Phony7", score: 240 },
+        { name: "Phony8", score: 110 }
+    ];
+
+    players.forEach(player => addLeaderboardEntry(player.name, player.score));
+}
+
+
