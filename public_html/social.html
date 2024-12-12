@@ -2,9 +2,53 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Social | Shape Run</title>
+    <title>Leaderboards | Shape Run</title>
+    <link rel="stylesheet" href="general.css">
 </head>
 <body>
+
+    <div class="header">
+        <div class="header-content">
+            <h2 class="header-title">Shape Run</h2>
+            <h2 class="header-account" id="username"><a href="this_will_lead_to_user_profile_when_database_is_ready">USERNAME</a></h2> 
+        </div>
+        <nav class="header-nav">
+            <ul>
+                <li><a href="about.html" id="aboutNav">About</a></li>
+                <li><a href="game.html" id="gameNav">Game</a></li>
+                <li><a href="social.html" id="socialNav">Leaderboard</a></li>
+                <li><a href="help.html" id="helpNav">Help</a></li>
+            </ul>
+        </nav>
+    </div>
     
+    <div class="content">
+        <div class="social-container">
+            <!-- Left: Leaderboard -->
+            <div class="leaderboard-area">
+                <h1 class="section-title">Leaderboard</h1>
+                <p>Content for the leaderboard goes here...</p>
+            </div>
+
+            <!-- Right: Comments/Social Area -->
+            <div class="social-area">
+                <h1 class="section-title">Social/Comments</h1>
+                <div class="container">
+                    <div class="comment-form">
+                        <input type="text" id="commentInput" placeholder="Write a comment..." />
+                        <button id="addCommentBtn">Add Comment</button>
+                    </div>
+                    <div class="sort-controls">
+                        <button id="sortLikesBtn">Sort by Likes</button>
+                        <button id="sortNewestBtn">Sort by Newest</button>
+                    </div>
+                    <ul id="commentList" class="comment-list"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Link the JavaScript file -->
+    <script src="client.js"></script>
 </body>
 </html>

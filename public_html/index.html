@@ -2,7 +2,16 @@
 
 NOTE: This is what I am thinking to be the splash page when entering our IP. clicking login will take you
 to the log in page which will then bring you to the game and the rest of the site it is currently
-"linked" but i am unsure if this is what we need to be doing or not-->
+"linked" but i am unsure if this is what we need to be doing or not
+
+I think all you need to do here is just link the login button since 
+I already handled it being the splash screen
+
+In the other HTML files I have a nav bar that links to all the pages with <a> links
+I dont know if we will need to change that or not. In client I found a way to make sure 
+that the DOM doesnt interact with the wrong things.
+
+-->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -19,11 +28,11 @@ to the log in page which will then bring you to the game and the rest of the sit
             <h2 class="header-account"><a href="login.html">Login or Create Account</a></h2> <!--This is where the link is currentty-->
         </div>
     </div>
-    
-    <div class="welcome-content">
-        <img src="./imgs/place.png" alt="Screenshot of Shape Run" class="welcome-screenshot">
-        <h1 class="welcome-title">Shape Run, a rivetingly precise game about shapes...</h1>
-        <p class="welcome-description">PLACEHOLDER - Our overall goal for this project is to create an interactive website for users that are interested in
+
+    <div class="content">
+        <img src="./imgs/art1.png" alt="Screenshot of Shape Run" class="large-screenshot">
+        <h1 class="title">Shape Run, a rivetingly precise game about shapes...</h1>
+        <p class="description">PLACEHOLDER - Our overall goal for this project is to create an interactive website for users that are interested in
                 video games and competing against other players. The vision for the website is to feel like a mix
                 of old-school video game forums (think of speedrun.com) and web browser gaming sites (think
                 of coolmathgames.com) but for the game we will be designing for our website. We plan to have
