@@ -1,10 +1,9 @@
-/** client.js - Handles user sessions, account management, and comments functionality */
+/** client.js - Handles user sessions, account management functionality */
 
 // Runs on page load
 document.addEventListener("DOMContentLoaded", () => {
     checkSession(); // Verify user session and update UI
     initAccountHandlers(); // Initialize login, registration, and logout functionality
-    initCommentSection(); // Initialize comment handling for pages with comment sections
 });
 
 // Function to check user session
@@ -205,73 +204,3 @@ function login(username, password) {
         });
 }
 
-/** Comment Section Functions */
-function initCommentSection() {
-    const commentInput = document.getElementById("commentInput");
-    const addCommentBtn = document.getElementById("addCommentBtn");
-    const sortLikesBtn = document.getElementById("sortLikesBtn");
-    const sortNewestBtn = document.getElementById("sortNewestBtn");
-    const commentList = document.getElementById("commentList");
-
-    let comments = [];
-
-    if (addCommentBtn) {
-        addCommentBtn.addEventListener("click", () => addComment(commentInput, comments, commentList));
-    }
-
-    if (sortLikesBtn) {
-        sortLikesBtn.addEventListener("click", () => sortComments(comments, "likes", commentList));
-    }
-
-    if (sortNewestBtn) {
-        sortNewestBtn.addEventListener("click", () => sortComments(comments, "newest", commentList));
-    }
-}
-
-function addComment(inputElement, comments, commentList) {
-    const text = inputElement.value.trim();
-    if (!text) return;
-
-    comments.push({ text, likes: 0, timestamp: Date.now() });
-    inputElement.value = "";
-    renderComments(comments, commentList);
-}
-
-function sortComments(comments, type, commentList) {
-    if (type === "likes") {
-        comments.sort((a, b) => b.likes - a.likes);
-    } else if (type === "newest") {
-        comments.sort((a, b) => b.timestamp - a.timestamp);
-    }
-    renderComments(comments, commentList);
-}
-
-function renderComments(comments, commentList) {
-    if (!commentList) return;
-
-    commentList.innerHTML = "";
-    comments.forEach((comment, index) => {
-        const commentEl = document.createElement("li");
-        commentEl.className = "comment";
-
-        const contentEl = document.createElement("p");
-        contentEl.textContent = comment.text;
-
-        const actionsEl = document.createElement("div");
-        actionsEl.className = "comment-actions";
-
-        const likeBtn = document.createElement("button");
-        likeBtn.className = "like-button";
-        likeBtn.textContent = `Like (${comment.likes})`;
-        likeBtn.addEventListener("click", () => {
-            comments[index].likes++;
-            renderComments(comments, commentList);
-        });
-
-        actionsEl.appendChild(likeBtn);
-        commentEl.appendChild(contentEl);
-        commentEl.appendChild(actionsEl);
-
-        commentList.appendChild(commentEl);
-    });
-}

@@ -30,10 +30,10 @@ const URL = "mongodb://127.0.0.1/new_db";
 const PlayerSchema = new mongoose.Schema({
     acct_name: { type: String, required: true, unique: true },
     acct_password: { type: String, required: true },
-    email: { type: String, default: null },
-    real_name: { type: String, default: null },
-    bio: { type: String, default: null },
-    profile_picture: { type: String, default: null },
+    email: { type: String, default: "" }, // Default to an empty string
+    real_name: { type: String, default: "" }, // Default to an empty string
+    bio: { type: String, default: "" }, // Default to an empty string
+    profile_picture: { type: String, default: "" }, // Default to an empty string
     stats: { type: Object, default: {} }
 });
 
@@ -107,10 +107,10 @@ app.post('/login', async (req, res) => {
             // Store user data in the session
             req.session.user = {
                 username: player.acct_name,
-                email: player.email,
-                realName: player.real_name,
-                bio: player.bio,
-                profilePicture: player.profile_picture,
+                realName: player.real_name || "Anonymous",
+                email: player.email || "",
+                bio: player.bio || "",
+                profilePicture: player.profile_picture || "",
             };
             return res.status(200).json({ message: 'Login successful' });
         } else {
@@ -208,6 +208,94 @@ app.get('/session', (req, res) => {
         res.status(401).json({ message: 'Unauthorized' }); // Send 401 if no session
     }
 });
+app.get('/session', (req, res) => {
+    if (req.session && req.session.username) {
+        res.json({ loggedIn: true, username: req.session.username });
+    } else {
+        res.status(401).json({ loggedIn: false });
+    }
+});
+
+app.get('/getUsername', (req, res) => {
+    if (req.session && req.session.username) {
+        res.json({ username: req.session.username });
+    } else {
+        res.status(401).json({ error: 'User not logged in' });
+    }
+});
+
+const comments = []; // In-memory comments array for simplicity
+let commentId = 1;
+
+// Post a new comment
+app.post('/postComment', (req, res) => {
+    console.log("Session object on /postComment:", req.session);
+
+    if (req.session && req.session.user && req.session.user.username) {
+        const username = req.session.user.username;
+        const realName = req.session.user.realName || "Anonymous"; // Ensure this is now a string
+        const text = req.body.comment;
+
+        if (text) {
+            const newComment = { 
+                id: commentId++, 
+                username, 
+                realName, 
+                text, 
+                likes: 0, 
+                likedBy: [], 
+                timestamp: Date.now() 
+            };
+            comments.push(newComment);
+
+            return res.json({ success: true, comment: newComment });
+        } else {
+            return res.status(400).json({ error: 'Comment text is required' });
+        }
+    } else {
+        return res.status(401).json({ error: 'User not logged in' });
+    }
+});
+
+// Like a comment
+app.post('/likeComment/:id', (req, res) => {
+    if (!req.session || !req.session.user || !req.session.user.username) {
+        return res.status(401).json({ error: 'User not logged in' });
+    }
+
+    const username = req.session.user.username; // Get the logged-in user's username
+    const comment = comments.find(c => c.id === parseInt(req.params.id));
+
+    if (comment) {
+        if (comment.likedBy && comment.likedBy.includes(username)) {
+            return res.status(400).json({ error: 'You have already liked this comment' });
+        }
+
+        // Add the user to the likedBy array
+        comment.likedBy = comment.likedBy || [];
+        comment.likedBy.push(username);
+        comment.likes++;
+
+        return res.json({ success: true, likes: comment.likes });
+    } else {
+        return res.status(404).json({ error: 'Comment not found' });
+    }
+});
+
+// Get all comments
+app.get('/getComments', (req, res) => {
+    const sort = req.query.sort;
+    let sortedComments = [...comments];
+
+    if (sort === 'likes') {
+        sortedComments.sort((a, b) => b.likes - a.likes);
+    } else if (sort === 'newest') {
+        sortedComments.sort((a, b) => b.timestamp - a.timestamp);
+    }
+
+    res.json(sortedComments);
+});
+
 
 // ======================== Server Startup ========================
 app.listen(PORT, () => {
