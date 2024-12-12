@@ -250,7 +250,7 @@ canvas {
     margin: 20px auto;
     display: block;
 }
-/* Prevent text selection when clicking on canvas */
+
 canvas:focus {
     outline: none;
 }
@@ -269,4 +269,32 @@ canvas:focus {
 
 #restartButton:hover {
     background-color: #0056b3;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+#logoutButton {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #FF4500;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#logoutButton:hover {
+    background-color: #CC3700;
 }

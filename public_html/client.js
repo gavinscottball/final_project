@@ -44,20 +44,29 @@ document.addEventListener('DOMContentLoaded', checkSession);
 // Call checkSession when the page loads
 document.addEventListener('DOMContentLoaded', checkSession);
 
-function logout() {
+function logoutUser() {
+    // Send a POST request to the server to log out the user
     fetch('/logout', {
         method: 'POST',
-        credentials: 'include', // Send session cookies
+        credentials: 'include', // Include session cookies
+        headers: {
+            'Content-Type': 'application/json',
+        },
     })
-        .then((response) => {
+        .then(response => {
             if (response.ok) {
-                window.location.href = '/login.html'; // Redirect after logout
+                // Clear session data (if any stored on the client-side)
+                localStorage.removeItem('userToken');
+                sessionStorage.removeItem('loggedInUser');
+                
+                // Redirect the user to the login or welcome page
+                window.location.href = 'index.html'; // Update this path as needed
             } else {
-                alert('Error logging out. Please try again.');
+                console.error('Failed to log out');
             }
         })
-        .catch((error) => {
-            console.error('Logout error:', error);
+        .catch(error => {
+            console.error('Error during logout:', error);
         });
 }
 

@@ -102,3 +102,8 @@ function updateProfile(data) {
             alert(err.message || 'Unable to update profile. Please try again.');
         });
 }
+
+document.getElementById('logoutButton').addEventListener('click', () => {
+    // Call the logout function from client.js
+    logoutUser();
+});
