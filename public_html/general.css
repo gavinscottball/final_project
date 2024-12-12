@@ -237,3 +237,14 @@ html {
 #addCommentBtn:hover, #sortLikesBtn:hover, #sortNewestBtn:hover {
     background-color: #e0e0e0;
 }
+
+/* GAME PAGE EXCLUSIVE STYLING */
+canvas {
+    border: 2px solid black;
+    margin: 20px auto;
+    display: block;
+}
+/* Prevent text selection when clicking on canvas */
+canvas:focus {
+    outline: none;
+}

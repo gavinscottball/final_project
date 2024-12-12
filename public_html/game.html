@@ -9,11 +9,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
 </head>
 <body>
-
     <div class="header">
         <div class="header-content">
             <h2 class="header-title">Shape Run</h2>
-            <h2 class="header-account" id="username"><a href="this_will_lead_to_user_profile_when_database_is_ready">USERNAME</a></h2> 
+            <h2 class="header-account" id="username"><a href="this_will_lead_to_user_profile_when_database_is_ready">USERNAME</a></h2>
         </div>
         <nav class="header-nav">
             <ul>
@@ -24,17 +23,11 @@
             </ul>
         </nav>
     </div>
-    
     <div class="content">
         <h1 class="title">Play Shape Run</h1>
-        
-        <!--Game Window Here-->
-        <img src="./imgs/place.png" alt="" class="large-screenshot">
-
-        <p>Styles and other elements on the whiteboard can go down here so there is plenty of play area</p>
-
-
+        <canvas id="gameCanvas" width="800" height="400" tabindex="1"></canvas>
     </div>
-    
+
+    <script src="game.js"></script>
 </body>
 </html>
