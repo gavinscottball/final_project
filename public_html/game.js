@@ -437,6 +437,7 @@ function speedUp(){
 }
 
 
+// will be changed to send the score to server, to be added to the database
 function getScore(){
     console.log(`${gameState.score.toFixed(2)} points`);
 }
