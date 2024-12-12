@@ -211,7 +211,7 @@ function gameOver() {
     ctx.font = '48px sans-serif';
     ctx.fillText('Game Over', canvas.width / 2 - 100, canvas.height / 2);
     console.log(`Player survived for ${gameState.elapsedTime/1000} seconds`);
-    getScore();
+    saveScore();
 }
 
 // Update functions
@@ -437,11 +437,27 @@ function speedUp(){
 }
 
 
-// will be changed to send the score to server, to be added to the database
-function getScore(){
-    console.log(`${gameState.score.toFixed(2)} points`);
+function saveScore() {
+    fetch('/update-stats', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include', // Include cookies with the request
+        body: JSON.stringify({
+            score: gameState.score,
+            time: gameState.elapsedTime/1000
+        })
+    })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then((data) => {
+            console.log('Stats saved:', data);
+        })
+        .catch((err) => console.error('Error saving stats:', err));
 }
-
 
 // Initialization
 Promise.all([
