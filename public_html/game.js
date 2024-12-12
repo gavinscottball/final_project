@@ -32,7 +32,10 @@ function createGameState() {
         startTime: null,
         elapsedTime: 0,
         pauseStart: null,
-        totalPauseTime: null
+        totalPauseTime: null,
+        lastSpeedUp: 0,
+        multiplier: 1,
+        score: 0.
     };
 }
 
@@ -208,6 +211,7 @@ function gameOver() {
     ctx.font = '48px sans-serif';
     ctx.fillText('Game Over', canvas.width / 2 - 100, canvas.height / 2);
     console.log(`Player survived for ${gameState.elapsedTime/1000} seconds`);
+    getScore();
 }
 
 // Update functions
@@ -412,10 +416,31 @@ function resetGame() {
     gameLoop();
 }
 
+
 function getTime() {
     const now = Date.now();
     gameState.elapsedTime = now - gameState.startTime - gameState.totalPauseTime;
+    gameState.score += 10 * gameState.multiplier;
+
+    // If elapsed time has passed another 5000ms interval since the last speed-up
+    if (gameState.elapsedTime - gameState.lastSpeedUp >= 4950) {
+        speedUp();
+        gameState.lastSpeedUp = gameState.elapsedTime; // Update the last speed-up time
+    }
 }
+
+function speedUp(){
+    gameState.scrollSpeed *= 1.05;
+    gameState.multiplier *= 1.05;
+    console.log(`Speed up to ${gameState.scrollSpeed.toFixed(2)}, multiplier is ${gameState.multiplier.toFixed(2)}`)
+    getScore();
+}
+
+
+function getScore(){
+    console.log(`${gameState.score.toFixed(2)} points`);
+}
+
 
 // Initialization
 Promise.all([
@@ -426,5 +451,7 @@ Promise.all([
     gameState.startTime = Date.now();
     gameState.totalPauseTime = 0;
     gameState.pauseStart = null;
+    gameState.lastSpeedUp = 0;
+    gameState.score = 0;
     gameLoop();
 });
