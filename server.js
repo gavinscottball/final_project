@@ -1,22 +1,22 @@
 const express = require('express');
 const session = require('express-session');
 const app = express();
-const path = require('path')
+const path = require('path');
 const PORT = 3000;
 const mongoose = require('mongoose');
 const crypto = require('crypto');
-
-
 // ======================== Static Setup ========================
-app.use(express.json())
+app.use(express.json());
 app.use(express.static('public_html'));
 app.use(session({
-    secret: 'd9fbc9729a1ebd6c57a3a99157bc830ace827bd7e274ec2f4f432bc6fd123b6d',
+    secret: 'd9fbc9729a1ebd6c57a3a99157bc830ace827bd7e274ec2f4f432bc6fd123b6', 
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false}
-}))
-
+    cookie: {
+        secure: false, // Set to true if using HTTPS
+        httpOnly: true, // Prevent JavaScript access to cookies
+    }
+}));
 
 // ======================== Password Constants ========================
 const SALT_LENGTH = 16;
@@ -24,61 +24,54 @@ const HASH_LENGTH = 64;
 const ITERATIONS = 100000;
 const DIGEST = 'sha256';
 
-
-// ======================== Database ========================
-// url for database
+// ======================== Database Setup ========================
 const URL = "mongodb://127.0.0.1/new_db";
 
-// create the new player schema
 const PlayerSchema = new mongoose.Schema({
     acct_name: { type: String, required: true, unique: true },
     acct_password: { type: String, required: true },
     email: { type: String, default: null },
     real_name: { type: String, default: null },
     bio: { type: String, default: null },
-    profile_picture: { type: String, default: null }, // Consistent with `/update-profile`
+    profile_picture: { type: String, default: null },
     stats: { type: Object, default: {} }
 });
 
-
 const Player = mongoose.model("Player", PlayerSchema);
 
-// connect the database
 mongoose.connect(URL)
     .then(() => console.log("Connected to MongoDB"))
     .catch((err) => console.log(err));
 
-
-// ======================== Utility ========================
-// add a new player to the database
+// ======================== Utility Functions ========================
+// Add a new player to the database
 async function addPlayer(user, password) {
-    const new_player = new Player({ acct_name: user, acct_password: password });
-    await new_player.save();
+    const newPlayer = new Player({ acct_name: user, acct_password: password });
+    await newPlayer.save();
 }
 
-// used to search the database for a player's account details
+// Find a player's account details in the database
 async function findPlayer(username) {
     try {
         const player = await Player.findOne({ acct_name: username });
         return player;
     } catch (err) {
-        console.error('Error: User not found in database: ', err)
+        console.error('Error: User not found in database: ', err);
         throw err;
     }
 }
 
-// hashes a user's password with a salt
-// uses pbkdf2 to help orevent brute force attacks
+// Hash a user's password with a salt
 function hash(password, salt) {
     return new Promise((resolve, reject) => {
         crypto.pbkdf2(password, salt, ITERATIONS, HASH_LENGTH, DIGEST, (err, derivedKey) => {
             if (err) reject(err);
             else resolve(derivedKey.toString('hex'));
-        })
-    })
+        });
+    });
 }
 
-
+// Middleware to check if user is logged in
 function isLoggedIn(req, res, next) {
     if (req.session.username) {
         next();
@@ -87,8 +80,8 @@ function isLoggedIn(req, res, next) {
     }
 }
 
-// ======================== API Handling ========================
-// used for logging in an existing user
+// ======================== API Routes ========================
+// Login route
 app.post('/login', async (req, res) => {
     const { username, password } = req.body;
 
@@ -97,42 +90,48 @@ app.post('/login', async (req, res) => {
     }
 
     try {
-        const player = await findPlayer(username);
+        // Fetch the user from the database
+        const player = await Player.findOne({ acct_name: username });
         if (!player) {
             return res.status(404).json({ message: 'User not found' });
         }
 
+        // Extract salt and stored hash from the database
         const [salt, storedHash] = player.acct_password.split(':');
+        
+        // Hash the incoming password using the same salt
         const hashedPassword = await hash(password, salt);
 
+        // Compare the computed hash with the stored hash
         if (hashedPassword === storedHash) {
-            // Save the username to the session
-            req.session.username = username;
-
-            res.status(200).json({ message: 'Login successful' });
+            // Store user data in the session
+            req.session.user = {
+                username: player.acct_name,
+                email: player.email,
+                realName: player.real_name,
+                bio: player.bio,
+                profilePicture: player.profile_picture,
+            };
+            return res.status(200).json({ message: 'Login successful' });
         } else {
-            res.status(401).json({ message: 'Invalid password' });
+            return res.status(401).json({ message: 'Invalid password' });
         }
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Error logging in, try again' });
+        console.error('Error during login:', err);
+        res.status(500).json({ message: 'Internal server error' });
     }
 });
 
-// used for registering a new user
-// will call the hashing function to hash the user's password
-// NOTE: password is currently not being stored anywhere
+// Registration route
 app.post('/register', async (req, res) => {
     const { username, password } = req.body;
 
     if (!username || !password) {
-        console.log(`Missing username or password`)
         return res.status(400).json({ message: 'Username and password are required' });
     }
 
     const existingPlayer = await findPlayer(username);
     if (existingPlayer) {
-        console.log(`${username} already exists`)
         return res.status(400).json({ message: 'Username already exists' });
     }
 
@@ -140,17 +139,12 @@ app.post('/register', async (req, res) => {
     const hashedPassword = await hash(password, salt);
 
     await addPlayer(username, `${salt}:${hashedPassword}`);
-    console.log(`${username} registered successfully`)
     res.status(200).json({ message: 'User registered successfully' });
 });
 
-
+// Get profile data (protected route)
 app.post('/get-profile', isLoggedIn, async (req, res) => {
     const username = req.session.username;
-
-    if (!username) {
-        return res.status(401).json({ message: 'Unauthorized: No active session' });
-    }
 
     try {
         const player = await Player.findOne({ acct_name: username });
@@ -172,9 +166,10 @@ app.post('/get-profile', isLoggedIn, async (req, res) => {
     }
 });
 
-
-app.post('/update-profile', async (req, res) => {
-    const { username, email, name, picture, bio } = req.body;
+// Update profile route
+app.post('/update-profile', isLoggedIn, async (req, res) => {
+    const { email, name, picture, bio } = req.body;
+    const username = req.session.username;
 
     try {
         const player = await Player.findOne({ acct_name: username });
@@ -182,37 +177,39 @@ app.post('/update-profile', async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        // Update the user's profile fields
         player.email = email;
-        player.real_name = name; // Fixed typo
-        player.profile_picture = picture; // Ensure schema uses this field name
+        player.real_name = name;
+        player.profile_picture = picture;
         player.bio = bio;
 
-        // Save changes to the database
         await player.save();
-
-        console.log(`User ${username} updated`);
-        return res.status(200).json({ message: 'User profile updated' });
+        res.status(200).json({ message: 'Profile updated successfully' });
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Error updating profile' });
     }
 });
 
-
+// Logout route
 app.post('/logout', (req, res) => {
     req.session.destroy(err => {
         if (err) {
             return res.status(500).json({ message: 'Error logging out' });
         }
-        res.clearCookie('connect.sid'); // Clear session cookie
+        res.clearCookie('connect.sid');
         res.status(200).json({ message: 'Logged out successfully' });
     });
 });
 
+app.get('/session', (req, res) => {
+    if (req.session && req.session.user) {
+        res.status(200).json(req.session.user); // Send user data
+    } else {
+        res.status(401).json({ message: 'Unauthorized' }); // Send 401 if no session
+    }
+});
 
 // ======================== Server Startup ========================
-// run the server
 app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
 });

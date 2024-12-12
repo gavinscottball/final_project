@@ -1,11 +1,65 @@
-/**  once the database is set up then we can finish this and the social page so that we can associate users with comments and scores
-You may need to move some of the elements outside of fucntions so move whatever you need to and I can make it look nice later
-*/
+/** client.js - Handles user sessions, account management, and comments functionality */
+
+// Runs on page load
 document.addEventListener("DOMContentLoaded", () => {
-    // Initialize all event listeners and functionality
-    initAccountHandlers();
-    initCommentSection();
+    checkSession(); // Verify user session and update UI
+    initAccountHandlers(); // Initialize login, registration, and logout functionality
+    initCommentSection(); // Initialize comment handling for pages with comment sections
 });
+
+// Function to check user session
+function checkSession() {
+    fetch('/session', {
+        method: 'GET',
+        credentials: 'include', // Ensure cookies are sent
+    })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error('User is not logged in');
+            }
+            return response.json();
+        })
+        .then((user) => {
+            // Update loggedUser element in the header
+            const loggedUserElement = document.getElementById('loggedUser');
+            if (loggedUserElement) {
+                loggedUserElement.textContent = user.username;
+                loggedUserElement.href = '/profile.html';
+            }
+
+            // Broadcast user data to other scripts
+            document.dispatchEvent(new CustomEvent('userLoggedIn', { detail: user }));
+        })
+        .catch(() => {
+            // Redirect to login page if not logged in
+            if (window.location.pathname !== '/login.html') {
+                window.location.href = '/login.html';
+            }
+        });
+}
+
+// Check session on DOMContentLoaded
+document.addEventListener('DOMContentLoaded', checkSession);
+
+// Call checkSession when the page loads
+document.addEventListener('DOMContentLoaded', checkSession);
+
+function logout() {
+    fetch('/logout', {
+        method: 'POST',
+        credentials: 'include', // Send session cookies
+    })
+        .then((response) => {
+            if (response.ok) {
+                window.location.href = '/login.html'; // Redirect after logout
+            } else {
+                alert('Error logging out. Please try again.');
+            }
+        })
+        .catch((error) => {
+            console.error('Logout error:', error);
+        });
+}
 
 /** Account Handling Functions */
 function initAccountHandlers() {
@@ -16,12 +70,6 @@ function initAccountHandlers() {
     const loginForm = document.querySelector(".login-form");
     const createAccountForm = document.getElementById("createAccountForm");
 
-    /**
-     * Basically reads as "if a login button exists"
-     * 
-     * makes sure that this can only run if there is a login button on the page
-     * allows you to work with multiple pages in the same js file
-     */
     if (loginButton) {
         loginButton.addEventListener("click", handleLogin);
     }
@@ -43,9 +91,13 @@ function initAccountHandlers() {
     if (createAccountForm) {
         createAccountForm.addEventListener("submit", handleCreateAccount);
     }
+
+    const logoutButton = document.getElementById("logoutButton");
+    if (logoutButton) {
+        logoutButton.addEventListener("click", logout);
+    }
 }
 
-// all the user login input is here
 function handleLogin() {
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
@@ -56,13 +108,8 @@ function handleLogin() {
     } else {
         output.textContent = "Please enter both username and password.";
     }
-
-    console.log("Login Attempt:");
-    console.log("Username:", username);
-    console.log("Password:", password);
 }
 
-// all the user input in account creation is here
 function handleCreateAccount(event) {
     event.preventDefault();
     const formData = new FormData(event.target);
@@ -75,40 +122,35 @@ function handleCreateAccount(event) {
             password: formData.get('new-password')
         })
     })
-    .then(response => {
-        if (response.ok) {
-            // If the response is successful, proceed with processing
-            return response.json().then(data => {
-                console.log('Account created');
+        .then((response) => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                return response.json().then((data) => {
+                    throw new Error(data.message || 'Error creating account');
+                });
+            }
+        })
+        .then((data) => {
+            alert(data.message || 'Account creation successful!');
+            saveDetails(
+                formData.get('new-username'),
+                formData.get('email'),
+                formData.get('real-name'),
+                null, // Handle profile picture logic here
+                formData.get('profile-bio')
+            );
 
-                // Call saveDetails after confirming account registration
-                saveDetails(
-                    formData.get('new-username'),
-                    formData.get('email'),
-                    formData.get('real-name'),
-                    null, // Replace with the actual picture logic
-                    formData.get('profile-bio')
-                );
-
-                alert(data.message || 'Account creation successful!');
-                const popupOverlay = document.getElementById("popupOverlay");
-                const loginForm = document.querySelector(".login-form");
-                popupOverlay.classList.add("hidden");
-                loginForm.classList.remove("hidden");
-            });
-        } else {
-            // Handle non-200 responses (e.g., 400 errors)
-            return response.json().then(data => {
-                throw new Error(data.message || 'Error creating account');
-            });
-        }
-    })
-    .catch(err => {
-        console.error('Account creation error:', err);
-        alert(err.message || 'Error creating account, please try again.');
-    });
+            const popupOverlay = document.getElementById("popupOverlay");
+            const loginForm = document.querySelector(".login-form");
+            popupOverlay.classList.add("hidden");
+            loginForm.classList.remove("hidden");
+        })
+        .catch((err) => {
+            console.error('Account creation error:', err);
+            alert(err.message || 'Error creating account, please try again.');
+        });
 }
-
 
 function saveDetails(username, email, name, picture, bio) {
     fetch('/update-profile', {
@@ -118,17 +160,16 @@ function saveDetails(username, email, name, picture, bio) {
             username: username,
             email: email || '',
             name: name || '',
-            picture: picture || null, // Use null if no picture
+            picture: picture || null, // Use null if no picture provided
             bio: bio || ''
         })
     })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Account details saved:', data);
-    })
-    .catch(err => console.error('Error saving account details:', err));
+        .then((response) => response.json())
+        .then((data) => {
+            console.log('Account details saved:', data);
+        })
+        .catch((err) => console.error('Error saving account details:', err));
 }
-
 
 function login(username, password) {
     fetch('/login', {
@@ -136,39 +177,26 @@ function login(username, password) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
     })
-    .then((response) => {
-        // Parse the response as JSON
-        return response.json().then((data) => ({ data, response }));
-    })
-    .then(({ data, response }) => {
-        const output = document.getElementById("output");
-        if (response.ok) {
-            output.textContent = data.message;
-            // Redirect to game.html
-            window.location.href = '/game.html';
-        } else {
-            output.textContent = data.message || 'Login failed';
-        }
-    })
-    .catch((err) => {
-        console.error('Login error:', err);
-        const output = document.getElementById("output");
-        output.textContent = 'Error logging in, please try again.';
-    });
+        .then((response) => {
+            return response.json().then((data) => ({ data, response }));
+        })
+        .then(({ data, response }) => {
+            const output = document.getElementById("output");
+            if (response.ok) {
+                output.textContent = data.message;
+                window.location.href = '/game.html'; // Redirect to a logged-in page
+            } else {
+                output.textContent = data.message || 'Login failed';
+            }
+        })
+        .catch((err) => {
+            console.error('Login error:', err);
+            const output = document.getElementById("output");
+            output.textContent = 'Error logging in, please try again.';
+        });
 }
 
-
-
-
-
-
-
-
-
-
-/** Comment Section Functions - Will need to store comments into the database and associate with user accounts
- * we should come back to this tomorrow when users and the database is together
- */
+/** Comment Section Functions */
 function initCommentSection() {
     const commentInput = document.getElementById("commentInput");
     const addCommentBtn = document.getElementById("addCommentBtn");
@@ -176,16 +204,7 @@ function initCommentSection() {
     const sortNewestBtn = document.getElementById("sortNewestBtn");
     const commentList = document.getElementById("commentList");
 
-
     let comments = [];
-    /** this should have all the comments in it arranged as an array similar to this
-    {
-        "text": "hello world",
-        "likes": 0,
-        "timestamp": 1733962874535
-    }
-    */
-    
 
     if (addCommentBtn) {
         addCommentBtn.addEventListener("click", () => addComment(commentInput, comments, commentList));
@@ -205,10 +224,6 @@ function addComment(inputElement, comments, commentList) {
     if (!text) return;
 
     comments.push({ text, likes: 0, timestamp: Date.now() });
-
-    // DELETE THIS LATER: Check the log when adding a comment to see comments
-    console.log(comments)
-    
     inputElement.value = "";
     renderComments(comments, commentList);
 }

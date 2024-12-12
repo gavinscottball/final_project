@@ -4,6 +4,7 @@ PASS: russW1re
 
 
 MISC LINUX CMDS:
+sudo systemctl status mongod
 sudo systemctl restart mongod
 scp -r ./ root@128.199.15.8:/var/www/
 cat /etc/lsb-release
