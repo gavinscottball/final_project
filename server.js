@@ -24,8 +24,12 @@ const URL = "mongodb://127.0.0.1/new_db";
 
 // create the new player schema
 const PlayerSchema = new mongoose.Schema({
-    acct_name: String,
-    acct_password: String
+    acct_name: { type: String, required: true, unique: true },
+    acct_password: { type: String, required: true },
+    email: { type: String, default: null },
+    real_name: { type: String, default: null },
+    bio: { type: String, default: null },
+    stats: { type: Object, default: {} } // Example: stats can store scores, levels, etc.
 });
 
 const Player = mongoose.model("Player", PlayerSchema);
@@ -72,25 +76,29 @@ app.post('/login', async (req, res) => {
 
     // make sure the user input both credentials
     if (!username || !password) {
+        console.log('Missing username or password')
         return res.status(400).json({ message: 'Username and password are required' })
     }
     try {
         // query the database for the player with that username
         const player = await (findPlayer(username));
-        if (!user) {
+        if (!player) {
+            console.log(`User: ${username} not found`)
             return res.status(404).json({ message: 'User not found' });
         }
         // split the stored salt and hash up
-        const [salt, storedHash] = user.acct_password.split(':');
+        const [salt, storedHash] = player.acct_password.split(':');
         // hash the input password with the known salt
         const hashedPassword = await hash(password, salt);
 
         // if the password given hashes to what is in the database, log them in
         if (hashedPassword == storedHash) {
+            console.log('Good credentials')
             res.status(200).json({ message: 'Login successful' })
         }
         // otherwise the password is bad
         else {
+            console.log('Bad password')
             res.status(401).json({ message: 'Password invalid' });
         }
     } catch (err) {
@@ -106,22 +114,22 @@ app.post('/register', async (req, res) => {
     const { username, password } = req.body;
 
     if (!username || !password) {
+        console.log(`Missing username or password`)
         return res.status(400).json({ message: 'Username and password are required' });
     }
-    // make a salt unique to the password
-    const salt = crypto.randomBytes(SALT_LENGTH).toString('hex');
-    try {
-        // hash the password
-        const hashedPassword = await hash(password, salt);
-        console.log("Password hashed for user " + username);
-        // create a new player with the username and salt and hash joined
-        await addPlayer(username, `${salt}:${hashedPassword}`);
-        res.status(200).json({ message: 'User ' + username + ' has been registered' });
-    } catch (err) {
-        // throw an error if the user could not be registered, likely due to the account existing already
-        console.error(err);
-        res.status(500).json({ message: 'Error registering user' });
+
+    const existingPlayer = await findPlayer(username);
+    if (existingPlayer) {
+        console.log(`${username} already exists`)
+        return res.status(400).json({ message: 'Username already exists' });
     }
+
+    const salt = crypto.randomBytes(SALT_LENGTH).toString('hex');
+    const hashedPassword = await hash(password, salt);
+
+    await addPlayer(username, `${salt}:${hashedPassword}`);
+    console.log(`${username} registered successfully`)
+    res.status(200).json({ message: 'User registered successfully' });
 });
 
 

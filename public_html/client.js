@@ -62,46 +62,59 @@ function handleLogin() {
     console.log("Password:", password);
 }
 
-// all the user inpuit in account creation is here
+// all the user input in account creation is here
 function handleCreateAccount(event) {
     event.preventDefault();
-    const createAccountForm = event.target;
-    const formData = new FormData(createAccountForm);
-    const username = formData.get("new-username");
-    const email = formData.get("email");
-    const realName = formData.get("real-name");
-    const profilePicture = formData.get("profile-picture");
-    const profileBio = formData.get("profile-bio");
-    const password = formData.get("new-password");
-    const confirmPassword = formData.get("confirm-password");
+    const formData = new FormData(event.target);
+    const data = Object.fromEntries(formData);
 
-    console.log("Create Account Form:");
-    console.log("Username:", username);
-    console.log("Email:", email);
-    console.log("Real Name:", realName);
-    console.log("Profile Bio:", profileBio);
-    console.log("Password:", password);
-    console.log("Confirm Password:", confirmPassword);
-    console.log(
-        "Picture Uploaded:",
-        profilePicture && profilePicture.name ? profilePicture.name : "No File Uploaded"
-    );
+    fetch('/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            username: data['new-username'],
+            password: data['new-password']
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message || 'Account creation successful!');
+        const popupOverlay = document.getElementById("popupOverlay");
+        const loginForm = document.querySelector(".login-form");
+        popupOverlay.classList.add("hidden");
+        loginForm.classList.remove("hidden");
+    })
+    .catch(err => {
+        console.error('Account creation error:', err);
+        alert('Error creating account, please try again.');
+    });
 }
 
 function login(username, password) {
-    const xhr = new XMLHttpRequest();
-    xhr.open("GET", `/login/${encodeURIComponent(username)}/${encodeURIComponent(password)}`, true);
-    xhr.onreadystatechange = () => {
-        if (xhr.readyState === 4) {
-            const output = document.getElementById("output");
-            if (xhr.status === 200) {
-                output.textContent = xhr.responseText;
-            } else {
-                output.textContent = `Error: ${xhr.statusText}`;
-            }
+    fetch('/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+    })
+    .then((response) => {
+        // Parse the response as JSON
+        return response.json().then((data) => ({ data, response }));
+    })
+    .then(({ data, response }) => {
+        const output = document.getElementById("output");
+        if (response.ok) {
+            output.textContent = data.message;
+            // Redirect to game.html
+            window.location.href = '/game.html';
+        } else {
+            output.textContent = data.message || 'Login failed';
         }
-    };
-    xhr.send();
+    })
+    .catch((err) => {
+        console.error('Login error:', err);
+        const output = document.getElementById("output");
+        output.textContent = 'Error logging in, please try again.';
+    });
 }
 
 
