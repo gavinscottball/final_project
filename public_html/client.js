@@ -127,7 +127,12 @@ function handleCreateAccount(event) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
             username: formData.get('new-username'),
-            password: formData.get('new-password')
+            password: formData.get('new-password'),
+            email: formData.get('email'),
+            real_name: formData.get('real-name'),
+            picture: null, // Handle profile picture logic here
+            bio: formData.get('profile-bio')
+
         })
     })
         .then((response) => {
@@ -141,14 +146,6 @@ function handleCreateAccount(event) {
         })
         .then((data) => {
             alert(data.message || 'Account creation successful!');
-            saveDetails(
-                formData.get('new-username'),
-                formData.get('email'),
-                formData.get('real-name'),
-                null, // Handle profile picture logic here
-                formData.get('profile-bio')
-            );
-
             const popupOverlay = document.getElementById("popupOverlay");
             const loginForm = document.querySelector(".login-form");
             popupOverlay.classList.add("hidden");

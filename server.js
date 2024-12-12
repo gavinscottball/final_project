@@ -45,8 +45,8 @@ mongoose.connect(URL)
 
 // ======================== Utility Functions ========================
 // Add a new player to the database
-async function addPlayer(user, password) {
-    const newPlayer = new Player({ acct_name: user, acct_password: password });
+async function addPlayer(user, password, email, real_name, picture, bio) {
+    const newPlayer = new Player({ acct_name: user, acct_password: password, email: email, real_name: real_name, profile_picture: picture, bio: bio});
     await newPlayer.save();
 }
 
@@ -124,7 +124,7 @@ app.post('/login', async (req, res) => {
 
 // Registration route
 app.post('/register', async (req, res) => {
-    const { username, password } = req.body;
+    const { username, password, email, real_name, picture, bio} = req.body;
 
     if (!username || !password) {
         return res.status(400).json({ message: 'Username and password are required' });
@@ -138,7 +138,7 @@ app.post('/register', async (req, res) => {
     const salt = crypto.randomBytes(SALT_LENGTH).toString('hex');
     const hashedPassword = await hash(password, salt);
 
-    await addPlayer(username, `${salt}:${hashedPassword}`);
+    await addPlayer(username, `${salt}:${hashedPassword}`, email, real_name, picture, bio);
     res.status(200).json({ message: 'User registered successfully' });
 });
 
