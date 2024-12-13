@@ -60,7 +60,10 @@ document.addEventListener("DOMContentLoaded", () => {
 function fetchComments() {
     fetch(`/getComments?sort=${currentSortBy}`, { credentials: 'include' })
         .then(response => response.json())
-        .then(comments => renderComments(comments))
+        .then(comments => {
+            renderComments(comments)
+        }
+        )
         .catch(err => console.error("Error fetching comments:", err));
 }
 
@@ -71,7 +74,7 @@ function fetchComments() {
  * @returns [Return value description]
  */
 
-function postComment(commentText) {
+async function postComment(commentText) {
     fetch('/postComment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }, // Corrected typo
@@ -80,11 +83,7 @@ function postComment(commentText) {
     })
         .then(response => response.json())
         .then(data => {
-            if (data.success) {
-                fetchComments(); // Refresh comments after posting
-            } else {
-                alert(data.error || "Error posting comment.");
-            }
+            fetchComments(); // Refresh comments after posting
         })
         .catch(err => console.error("Error posting comment:", err));
 }
@@ -99,7 +98,6 @@ let currentSortBy = 'newest'; // Default sorting
 function renderComments(comments) {
     const commentList = document.getElementById('commentList');
     commentList.innerHTML = ''; // Clear existing comments
-
     comments.forEach(comment => {
         const li = document.createElement('li');
         li.classList.add('comment-item');
@@ -197,7 +195,7 @@ function showReplyForm(commentId) {
  * @returns [Return value description]
  */
 
-function postReply(parentCommentId, replyText) {
+async function postReply(parentCommentId, replyText) {
     fetch('/postReply', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -244,19 +242,23 @@ function submitReply(event, commentId) {
  */
 
 function likeComment(commentId) {
-    fetch(`/likeComment/${commentId}`, {
+    fetch('/likeComment', {
         method: 'POST',
-        credentials: 'include'
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: commentId }),
+        credentials: 'include',
     })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                fetchComments(); // Refresh comments after liking
+        .then(response => {
+            if (response.ok) {
+                fetchComments();
+                return response.json();
             } else {
-                alert(data.error || "Error liking comment.");
+                throw new Error('You have already liked this comment');
             }
         })
-        .catch(err => console.error("Error liking comment:", err));
+        .catch(err => {
+            alert(err.message);
+        });
 }
 
 /**
