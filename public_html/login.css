@@ -2,10 +2,16 @@ html {
     font-family: "Kanit", serif;
     font-weight: 300;
     font-style: normal;
+    color: white;
+    text-shadow:
+        -1px -1px 0 #000,
+        1px -1px 0 #000,
+        -1px 1px 0 #000,
+        1px 1px 0 #000;
+
 }
 
 body {
-    font-family: Arial, sans-serif;
     padding: 0;
     overflow: hidden;
     height: 100vh;
@@ -13,17 +19,18 @@ body {
     position: relative;
 }
 
+
 .background {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: url('imgs/back1.png');
+    background-image: url('imgs/back4.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    filter: blur(10px);
+    filter: blur(5px);
     z-index: -1;
 }
 
@@ -45,7 +52,7 @@ body {
 
 .login-form {
     width: 350px;
-    background: rgba(255, 255, 255, 0.8);
+    background: rgba(53, 50, 50, 0.8);
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
@@ -57,7 +64,7 @@ body {
 .create-account-form {
     min-width: 50vw;
     min-height: 68vh;
-    background: rgba(255, 255, 255, 0.8);
+    background: rgba(53, 50, 50, 0.8);
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
@@ -74,6 +81,10 @@ form label {
 form input,
 form textarea {
     margin-bottom: 10px;
+    background-color: #000;
+    color: white;
+    border-radius: 5px;
+    
 }
 
 form {
@@ -95,14 +106,14 @@ button {
     padding: 10px 15px;
     margin: 10px 0;
     border: none;
-    background-color: #007bff;
+    background-color: #6f00ff;
     color: white;
     border-radius: 5px;
     cursor: pointer;
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: #323232;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
@@ -138,6 +149,16 @@ button:hover {
     flex: 1;
 }
 
+#createAccountForm textarea {
+    width: 100%;
+    height: 150px; /* Adjust as needed */
+    resize: none; /* Optional: Prevent resizing if you want it fixed */
+    padding: 10px;
+    background-color: #000;
+    color: white;
+}
+
+
 .button-container {
     display: flex;
     gap: 10px;
@@ -157,18 +178,18 @@ button:hover {
 }
 
 .create-btn {
-    background-color: #007bff;
+    background-color: #6f00ff;
 }
 
 .create-btn:hover {
-    background-color: #0056b3;
+    background-color: #323232;
 }
 
 .close-btn {
-    background-color: #6c757d;
+    background-color: #404040;
 }
 
 .close-btn:hover {
-    background-color: #5a6268;
+    background-color: #323232;
 }
 
