@@ -163,7 +163,7 @@ function handleCreateAccount(event) {
             password: formData.get('new-password'),
             email: formData.get('email'),
             real_name: formData.get('real-name'),
-            picture: null, // Handle profile picture logic here
+            picture: formData.get('profile-picture'), // Handle profile picture logic here
             bio: formData.get('profile-bio')
 
         })
@@ -249,28 +249,49 @@ function login(username, password) {
 }
 
 
-// Ensure the script runs only after the DOM is fully loaded
-document.addEventListener("DOMContentLoaded", function () {
-    // Get references to the form and password fields
+
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    // Profile Picture Preview Logic
+    const profilePictureSelect = document.getElementById("profilePicture");
+    const profilePicturePreview = document.getElementById("profilePicturePreview");
+
+    if (profilePictureSelect && profilePicturePreview) {
+        profilePictureSelect.addEventListener("change", (event) => {
+            const selectedAvatar = event.target.value; // Get the selected avatar's file path
+            if (selectedAvatar) {
+                profilePicturePreview.src = selectedAvatar; // Update the preview image
+            }
+        });
+    } else {
+        console.error("Profile picture select or preview element not found.");
+    }
+
+    // Password Validation Logic
     const form = document.getElementById("createAccountForm");
     const newPassword = document.getElementById("newPassword");
     const confirmPassword = document.getElementById("confirmPassword");
 
-    // Add a 'submit' event listener to validate passwords
-    form.addEventListener("submit", function (event) {
-        // Check if the passwords match
-        if (newPassword.value !== confirmPassword.value) {
-            event.preventDefault(); // Prevent form submission
-            alert("Passwords do not match. Please re-enter them.");
-        }
-    });
+    if (form && newPassword && confirmPassword) {
+        // Add a 'submit' event listener to validate passwords
+        form.addEventListener("submit", (event) => {
+            if (newPassword.value !== confirmPassword.value) {
+                event.preventDefault(); // Prevent form submission
+                alert("Passwords do not match. Please re-enter them.");
+            }
+        });
 
-    // Optional: Add real-time feedback for password confirmation
-    confirmPassword.addEventListener("input", function () {
-        if (newPassword.value !== confirmPassword.value) {
-            confirmPassword.setCustomValidity("Passwords do not match.");
-        } else {
-            confirmPassword.setCustomValidity(""); // Clear the error
-        }
-    });
+        // Optional: Add real-time feedback for password confirmation
+        confirmPassword.addEventListener("input", () => {
+            if (newPassword.value !== confirmPassword.value) {
+                confirmPassword.setCustomValidity("Passwords do not match.");
+            } else {
+                confirmPassword.setCustomValidity(""); // Clear the error
+            }
+        });
+    } else {
+        console.error("Form or password fields not found.");
+    }
 });
+
