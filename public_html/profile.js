@@ -22,6 +22,12 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /** Load profile data using user details */
+/**
+ * Function loadProfile - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
+
 function loadProfile(user) {
     if (user) {
         document.getElementById('usernameDisplay').textContent = user.username || 'N/A';
@@ -40,7 +46,20 @@ function loadProfile(user) {
 }
 
 /** Fetch profile data from the server */
+/**
+ * Function fetchProfileFromServer - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
+
 function fetchProfileFromServer() {
+/**
+ * Fetch request to '/get-profile', { - [Purpose of request]
+ * @param url Endpoint URL
+ * @param options Fetch options (headers, body, etc.)
+ * @returns Promise resolving with the response
+ */
+
     fetch('/get-profile', {
         method: 'POST',
         credentials: 'include', // Ensure session cookies are sent
@@ -81,6 +100,13 @@ document.getElementById('editProfileButton').addEventListener('click', () => {
 document.getElementById('saveProfileButton').addEventListener('click', () => {
     const newBio = document.getElementById('bioInput').value;
     const newPicture = document.getElementById('profilePictureSelect').value;
+
+/**
+ * Fetch request to '/update-profile', { - [Purpose of request]
+ * @param url Endpoint URL
+ * @param options Fetch options (headers, body, etc.)
+ * @returns Promise resolving with the response
+ */
 
     fetch('/update-profile', {
         method: 'POST',

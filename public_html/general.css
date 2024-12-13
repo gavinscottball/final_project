@@ -100,8 +100,8 @@ button:hover {
 
 .header-nav {
     width: 100%;
-    border-top: 1px solid #ccc; 
-    background-color: #292929; 
+    border-top: 1px solid #ccc;
+    background-color: #292929;
 
 }
 
@@ -127,12 +127,12 @@ button:hover {
 }
 
 .header-nav a:hover {
-    text-shadow: 
-       -2px -2px 0 #000,  
+    text-shadow:
+        -2px -2px 0 #000,
         2px -2px 0 #000,
         -2px 2px 0 #000,
-         2px 2px 0 #000;
-    
+        2px 2px 0 #000;
+
 }
 
 /* other general styling */
@@ -359,7 +359,8 @@ canvas {
     /* Center align content */
 }
 
-#editProfileButton, #saveProfileButton {
+#editProfileButton,
+#saveProfileButton {
     background-color: #007BFF;
     color: white;
     font-size: 16px;
@@ -370,7 +371,8 @@ canvas {
     margin: 5px;
 }
 
-#editProfileButton:hover, #saveProfileButton:hover {
+#editProfileButton:hover,
+#saveProfileButton:hover {
     background-color: #0056b3;
 }
 

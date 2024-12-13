@@ -105,6 +105,12 @@ async function findPlayer(username) {
 
 
 // Hash a user's password with a salt
+/**
+ * Function hash - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
+
 function hash(password, salt) {
     return new Promise((resolve, reject) => {
         crypto.pbkdf2(password, salt, ITERATIONS, HASH_LENGTH, DIGEST, (err, derivedKey) => {
@@ -115,6 +121,12 @@ function hash(password, salt) {
 }
 
 // Middleware to check if user is logged in
+/**
+ * Function isLoggedIn - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
+
 function isLoggedIn(req, res, next) {
     if (req.session.username) {
         next();

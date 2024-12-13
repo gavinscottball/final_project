@@ -9,6 +9,13 @@
 document.addEventListener("DOMContentLoaded", () => {
     // Check session status
 
+/**
+ * Fetch request to '/session', { credentials: 'include' } - [Purpose of request]
+ * @param url Endpoint URL
+ * @param options Fetch options (headers, body, etc.)
+ * @returns Promise resolving with the response
+ */
+
     fetch('/session', { credentials: 'include' })
         .then(response => {
             if (response.ok) {
@@ -44,7 +51,20 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // Fetch comments from the server
+/**
+ * Function fetchComments - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
+
 function fetchComments() {
+/**
+ * Fetch request to '/getComments', { credentials: 'include' } - [Purpose of request]
+ * @param url Endpoint URL
+ * @param options Fetch options (headers, body, etc.)
+ * @returns Promise resolving with the response
+ */
+
     fetch('/getComments', { credentials: 'include' })
         .then(response => response.json())
         .then(comments => renderComments(comments))
@@ -52,7 +72,20 @@ function fetchComments() {
 }
 
 // Post a new comment
+/**
+ * Function postComment - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
+
 function postComment(commentText) {
+/**
+ * Fetch request to '/postComment', { - [Purpose of request]
+ * @param url Endpoint URL
+ * @param options Fetch options (headers, body, etc.)
+ * @returns Promise resolving with the response
+ */
+
     fetch('/postComment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }, // Corrected typo
@@ -70,6 +103,12 @@ function postComment(commentText) {
         .catch(err => console.error("Error posting comment:", err));
 }
 
+
+/**
+ * Function renderComments - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
 
 function renderComments(comments) {
     const commentList = document.getElementById('commentList');
@@ -139,13 +178,32 @@ function renderComments(comments) {
     });
 }
 
+/**
+ * Function showReplyForm - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
+
 function showReplyForm(commentId) {
     const commentElement = document.querySelector(`[data-id='${commentId}']`);
     const replyForm = commentElement.querySelector('.reply-form');
     replyForm.classList.remove('hidden');
 }
 
+/**
+ * Function postReply - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
+
 function postReply(parentCommentId, replyText) {
+/**
+ * Fetch request to '/postReply', { - [Purpose of request]
+ * @param url Endpoint URL
+ * @param options Fetch options (headers, body, etc.)
+ * @returns Promise resolving with the response
+ */
+
     fetch('/postReply', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -162,6 +220,12 @@ function postReply(parentCommentId, replyText) {
         })
         .catch(err => console.error('Error posting reply:', err));
 }
+
+/**
+ * Function submitReply - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
 
 function submitReply(event, commentId) {
     event.preventDefault();
@@ -180,7 +244,20 @@ function submitReply(event, commentId) {
 }
 
 // Like a comment
+/**
+ * Function likeComment - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
+
 function likeComment(commentId) {
+/**
+ * Fetch request to `/likeComment/${commentId}`, { - [Purpose of request]
+ * @param url Endpoint URL
+ * @param options Fetch options (headers, body, etc.)
+ * @returns Promise resolving with the response
+ */
+
     fetch(`/likeComment/${commentId}`, {
         method: 'POST',
         credentials: 'include'
@@ -197,7 +274,20 @@ function likeComment(commentId) {
 }
 
 // Sort comments
+/**
+ * Function sortComments - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
+
 function sortComments(sortBy) {
+/**
+ * Fetch request to `/getComments?sort=${sortBy}`, { credentials: 'include' } - [Purpose of request]
+ * @param url Endpoint URL
+ * @param options Fetch options (headers, body, etc.)
+ * @returns Promise resolving with the response
+ */
+
     fetch(`/getComments?sort=${sortBy}`, { credentials: 'include' })
         .then(response => response.json())
         .then(comments => renderComments(comments))
@@ -229,6 +319,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 // Add a new entry to the leaderboard
+/**
+ * Function addLeaderboardEntry - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
+
 function addLeaderboardEntry(player, score, time) {
     const leaderboardTableBody = document.querySelector("#leaderboardTable tbody");
 
@@ -276,6 +372,13 @@ function addLeaderboardEntry(player, score, time) {
 
 async function fetchLeaderboard() {
     try {
+/**
+ * Fetch request to '/get-leaderboard' - [Purpose of request]
+ * @param url Endpoint URL
+ * @param options Fetch options (headers, body, etc.)
+ * @returns Promise resolving with the response
+ */
+
         const response = await fetch('/get-leaderboard');
         if (!response.ok) {
             throw new Error('Failed to fetch leaderboard');
@@ -288,6 +391,12 @@ async function fetchLeaderboard() {
         console.error('Error fetching leaderboard:', err);
     }
 }
+
+/**
+ * Function displayLeaderboard - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
 
 function displayLeaderboard(leaderboard) {
     const leaderboardTableBody = document.querySelector("#leaderboardTable tbody");
@@ -316,7 +425,6 @@ function displayLeaderboard(leaderboard) {
         leaderboardTableBody.appendChild(row);
     });
 }
-
 
 
 

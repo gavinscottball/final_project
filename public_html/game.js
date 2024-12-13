@@ -23,6 +23,12 @@ const groundLevel = 350;
 const gameState = createGameState();
 
 // Initialize game
+/**
+ * Function createGameState - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
+
 function createGameState() {
     return {
         scrollSpeed: 4,
@@ -48,6 +54,12 @@ function createGameState() {
 }
 
 // Create player
+/**
+ * Function createPlayer - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
+
 function createPlayer() {
     return {
         x: 300,
@@ -62,6 +74,12 @@ function createPlayer() {
 }
 
 // Event listeners
+/**
+ * Function setupEventListeners - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
+
 function setupEventListeners() {
     canvas.addEventListener('keydown', handleJumpStart);
     canvas.addEventListener('keyup', handleJumpEnd);
@@ -70,6 +88,12 @@ function setupEventListeners() {
     canvas.addEventListener('keyup', handleRightArrowRelease); // Stop acceleration on release
     canvas.addEventListener('click', () => canvas.focus());
 }
+
+/**
+ * Function handleJumpStart - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
 
 function handleJumpStart(e) {
     if (e.code === 'Space' && !gameState.player.isJumping) {
@@ -82,12 +106,24 @@ function handleJumpStart(e) {
     }
 }
 
+/**
+ * Function handleJumpEnd - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
+
 function handleJumpEnd(e) {
     if (e.code === 'Space') {
         gameState.player.isHoldingJump = false;
         gameState.currentGravity = gameState.normalGravity;
     }
 }
+
+/**
+ * Function preventSpacebarScroll - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
 
 function preventSpacebarScroll(e) {
     if (e.code === 'Space') {
@@ -96,6 +132,12 @@ function preventSpacebarScroll(e) {
 }
 
 // Generate obstacles
+/**
+ * Function generateObstacle - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
+
 function generateObstacle() {
     const startX = canvas.width + 40;
     const isWall = Math.random() < 0.5;
@@ -108,6 +150,12 @@ function generateObstacle() {
 
     gameState.obstacleInterval = getRandomInterval(90, 150);
 }
+
+/**
+ * Function createWall - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
 
 function createWall(startX) {
     const obstacleWidth = 40;
@@ -122,6 +170,12 @@ function createWall(startX) {
         height: obstacleHeight
     });
 }
+
+/**
+ * Function createSpikes - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
 
 function createSpikes(startX) {
     const spikeCount = Math.random() < 0.5 ? 1 : 2;
@@ -141,6 +195,12 @@ function createSpikes(startX) {
 }
 
 // Collision detection and resolution
+/**
+ * Function resolveCollisions - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
+
 function resolveCollisions() {
     const player = gameState.player;
 
@@ -151,6 +211,12 @@ function resolveCollisions() {
     });
 }
 
+/**
+ * Function isColliding - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
+
 function isColliding(player, obstacle) {
     return (
         player.x < obstacle.x + obstacle.width &&
@@ -159,6 +225,12 @@ function isColliding(player, obstacle) {
         player.y + player.height > obstacle.y
     );
 }
+
+/**
+ * Function handleCollision - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
 
 function handleCollision(player, obstacle) {
     const overlapX = Math.min(
@@ -213,6 +285,12 @@ function handleCollision(player, obstacle) {
 }
 
 // Game over
+/**
+ * Function gameOver - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
+
 function gameOver() {
     gameState.gameRunning = false;
     ctx.fillStyle = 'black';
@@ -223,6 +301,12 @@ function gameOver() {
 }
 
 // Update functions
+/**
+ * Function updatePlayer - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
+
 function updatePlayer() {
     const player = gameState.player;
 
@@ -250,6 +334,12 @@ function updatePlayer() {
     }
 }
 
+/**
+ * Function updateObstacles - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
+
 function updateObstacles() {
     gameState.obstacles.forEach(obstacle => {
         obstacle.x -= gameState.scrollSpeed;
@@ -268,6 +358,12 @@ function updateObstacles() {
 }
 
 // Render functions
+/**
+ * Function drawBackground - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
+
 function drawBackground() {
     gameState.backgroundX -= gameState.scrollSpeed;
 
@@ -291,6 +387,12 @@ function drawBackground() {
     }
 }
 
+/**
+ * Function drawPlayer - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
+
 function drawPlayer() {
     const player = gameState.player;
 
@@ -302,6 +404,12 @@ function drawPlayer() {
         player.height
     );
 }
+
+/**
+ * Function drawObstacles - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
 
 function drawObstacles() {
     gameState.obstacles.forEach(obstacle => {
@@ -323,6 +431,12 @@ function drawObstacles() {
 
 
 // Utility functions
+/**
+ * Function getRandomInterval - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
+
 function getRandomInterval(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -332,11 +446,23 @@ document.getElementById('restartButton').addEventListener('click', () => {
 });
 
 
+/**
+ * Function handleRightArrowPress - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
+
 function handleRightArrowPress(e) {
     if (e.code === 'ArrowRight') {
         gameState.player.isAcceleratingRight = true;
     }
 }
+
+/**
+ * Function handleRightArrowRelease - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
 
 function handleRightArrowRelease(e) {
     if (e.code === 'ArrowRight') {
@@ -347,6 +473,12 @@ function handleRightArrowRelease(e) {
 
 let animationFrameId;
 let isPaused = false;
+
+/**
+ * Function pauseGame - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
 
 function pauseGame() {
     isPaused = true;
@@ -362,6 +494,12 @@ function pauseGame() {
     ctx.font = '48px sans-serif';
     ctx.fillText('Paused', canvas.width / 2 - 80, canvas.height / 2);
 }
+
+/**
+ * Function resumeGame - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
 
 function resumeGame() {
     if (isPaused) {
@@ -386,6 +524,12 @@ window.addEventListener('keydown', (e) => {
 });
 
 // Update the game loop to account for pause
+/**
+ * Function gameLoop - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
+
 function gameLoop() {
     if (!gameState.gameRunning || isPaused) return;
 
@@ -404,6 +548,12 @@ function gameLoop() {
     drawPlayer();
     drawObstacles();
 }
+
+/**
+ * Function resetGame - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
 
 function resetGame() {
     // Reset all game state
@@ -425,6 +575,12 @@ function resetGame() {
 }
 
 
+/**
+ * Function getTime - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
+
 function getTime() {
     const now = Date.now();
     gameState.elapsedTime = now - gameState.startTime - gameState.totalPauseTime;
@@ -437,6 +593,12 @@ function getTime() {
     }
 }
 
+/**
+ * Function speedUp - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
+
 function speedUp() {
     gameState.scrollSpeed *= 1.05;
     gameState.multiplier *= 1.05;
@@ -444,7 +606,20 @@ function speedUp() {
 }
 
 
+/**
+ * Function saveScore - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
+
 function saveScore() {
+/**
+ * Fetch request to '/update-stats', { - [Purpose of request]
+ * @param url Endpoint URL
+ * @param options Fetch options (headers, body, etc.)
+ * @returns Promise resolving with the response
+ */
+
     fetch('/update-stats', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

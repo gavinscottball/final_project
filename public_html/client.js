@@ -12,7 +12,20 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // Function to check user session
+/**
+ * Function checkSession - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
+
 function checkSession() {
+/**
+ * Fetch request to '/session', { - [Purpose of request]
+ * @param url Endpoint URL
+ * @param options Fetch options (headers, body, etc.)
+ * @returns Promise resolving with the response
+ */
+
     fetch('/session', {
         method: 'GET',
         credentials: 'include', // Ensure cookies are sent
@@ -48,8 +61,21 @@ document.addEventListener('DOMContentLoaded', checkSession);
 // Call checkSession when the page loads
 document.addEventListener('DOMContentLoaded', checkSession);
 
+/**
+ * Function logoutUser - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
+
 function logoutUser() {
     // Send a POST request to the server to log out the user
+/**
+ * Fetch request to '/logout', { - [Purpose of request]
+ * @param url Endpoint URL
+ * @param options Fetch options (headers, body, etc.)
+ * @returns Promise resolving with the response
+ */
+
     fetch('/logout', {
         method: 'POST',
         credentials: 'include', // Include session cookies
@@ -75,6 +101,12 @@ function logoutUser() {
 }
 
 /** Account Handling Functions */
+/**
+ * Function initAccountHandlers - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
+
 function initAccountHandlers() {
     const loginButton = document.getElementById("loginButton");
     const createButton = document.getElementById("createButton");
@@ -111,6 +143,12 @@ function initAccountHandlers() {
     }
 }
 
+/**
+ * Function handleLogin - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
+
 function handleLogin() {
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
@@ -123,9 +161,22 @@ function handleLogin() {
     }
 }
 
+/**
+ * Function handleCreateAccount - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
+
 function handleCreateAccount(event) {
     event.preventDefault();
     const formData = new FormData(event.target);
+
+/**
+ * Fetch request to '/register', { - [Purpose of request]
+ * @param url Endpoint URL
+ * @param options Fetch options (headers, body, etc.)
+ * @returns Promise resolving with the response
+ */
 
     fetch('/register', {
         method: 'POST',
@@ -162,7 +213,20 @@ function handleCreateAccount(event) {
         });
 }
 
+/**
+ * Function saveDetails - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
+
 function saveDetails(username, email, name, picture, bio) {
+/**
+ * Fetch request to '/update-profile', { - [Purpose of request]
+ * @param url Endpoint URL
+ * @param options Fetch options (headers, body, etc.)
+ * @returns Promise resolving with the response
+ */
+
     fetch('/update-profile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -181,7 +245,20 @@ function saveDetails(username, email, name, picture, bio) {
         .catch((err) => console.error('Error saving account details:', err));
 }
 
+/**
+ * Function login - [Describe functionality here]
+ * @param [param_name] [Description]
+ * @returns [Return value description]
+ */
+
 function login(username, password) {
+/**
+ * Fetch request to '/login', { - [Purpose of request]
+ * @param url Endpoint URL
+ * @param options Fetch options (headers, body, etc.)
+ * @returns Promise resolving with the response
+ */
+
     fetch('/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
