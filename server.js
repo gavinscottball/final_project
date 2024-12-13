@@ -70,15 +70,14 @@ const CommentSchema = new mongoose.Schema({
     realName: { type: String, required: true },
     text: { type: String, required: true },
     likes: { type: Number, default: 0 },
-    replies: [
-        {
-            username: { type: String, required: true },
-            realName: { type: String, required: true },
-            text: { type: String, required: true },
-            likes: { type: Number, default: 0 },
-            timestamp: { type: Date, default: Date.now }
-        }
-    ],
+    likedBy: { type: [String], default: [] }, // Store usernames or user IDs
+    replies: [{
+        username: { type: String, required: true },
+        realName: { type: String, required: true },
+        text: { type: String, required: true },
+        likes: { type: Number, default: 0 },
+        timestamp: { type: Date, default: Date.now }
+    }],
     timestamp: { type: Date, default: Date.now }
 });
 
@@ -106,6 +105,36 @@ async function findPlayer(username) {
     }
 }
 
+async function addComment(id, username, realName, text, timestamp){
+    const newComment = new Comment({id: id, username: username, realName: realName, text: text, timestamp: timestamp});
+    await newComment.save();
+}
+
+
+async function findComment(id){
+    try{
+        const comment = await Comment.findOne({id: id});
+        return comment;
+    } catch (err){
+        console.error('Error: Comment not found');
+        throw err;
+    }
+}
+async function addReply(comment, username, realName, likes, text) {
+    if (!username || !realName || !text) {
+        throw new Error("All fields (username, realName, text) are required.");
+    }
+
+    comment.replies.push({
+        username,
+        realName,
+        text,
+        likes,
+        timestamp: new Date(),
+    });
+
+    await comment.save();
+}
 
 // Hash a user's password with a salt
 /**
@@ -320,19 +349,8 @@ app.post('/postComment', async (req, res) => {
     if (!comment) {
         return res.status(400).json({ error: "Comment text is required." });
     }
-
-    const newComment = {
-        id: new Date().getTime(), // Unique ID for the comment
-        username,
-        realName,
-        text: comment,
-        likes: 0,
-        replies: [], // Initialize replies as an empty array
-        timestamp: new Date()
-    };
-
-    comments.push(newComment); // Assuming comments is your in-memory array
-    res.status(201).json({ success: true, comment: newComment });
+    await addComment(new Date().getTime(), username, realName, comment, new Date());
+    res.status(201).json({ messag: 'Successfully posted comment' });
 });
 
 // Post a reply to a comment
@@ -345,47 +363,14 @@ app.post('/postReply', async (req, res) => {
         return res.status(400).json({ error: 'Comment ID and text are required.' });
     }
 
-    const parentComment = comments.find(comment => comment.id === parseInt(commentId));
-    if (parentComment) {
-        // Initialize replies array if it doesn't exist
-        parentComment.replies = parentComment.replies || [];
-
-        const reply = {
-            id: `${commentId}-${parentComment.replies.length + 1}`, // Unique ID for reply
-            username,
-            realName,
-            text,
-            likes: 0,
-            timestamp: new Date()
-        };
-
-        parentComment.replies.push(reply);
-
-        return res.status(200).json({ success: true, reply });
-    }
-
-    // If using a database, handle MongoDB stored comments
     try {
-        const parentCommentDb = await Comment.findOne({ id: commentId });
-        if (!parentCommentDb) {
+        const comment = await findComment(commentId);
+        if (!comment) {
             return res.status(404).json({ error: 'Parent comment not found.' });
         }
 
-        // Initialize replies array if it doesn't exist
-        parentCommentDb.replies = parentCommentDb.replies || [];
-
-        const reply = {
-            username,
-            realName,
-            text,
-            likes: 0,
-            timestamp: new Date()
-        };
-
-        parentCommentDb.replies.push(reply);
-        await parentCommentDb.save();
-
-        res.status(200).json({ success: true, reply });
+        await addReply(comment, username, realName, 0, text);
+        res.status(200).json({ success: true, reply: { username, realName, text } });
     } catch (err) {
         console.error('Error posting reply:', err);
         res.status(500).json({ error: 'Internal server error.' });
@@ -393,61 +378,58 @@ app.post('/postReply', async (req, res) => {
 });
 
 // Like a comment
-app.post('/likeComment/:id', (req, res) => {
+app.post('/likeComment', async (req, res) => {
     if (!req.session || !req.session.user || !req.session.user.username) {
         return res.status(401).json({ error: 'User not logged in' });
     }
 
-    const username = req.session.user.username; // Get the logged-in user's username
-    const comment = comments.find(c => c.id === parseInt(req.params.id));
+    const username = req.session.user.username; // Logged-in user's username
+    const { id } = req.body; // Comment ID
 
-    if (comment) {
-        if (comment.likedBy && comment.likedBy.includes(username)) {
+    try {
+        const comment = await findComment(id); // Fetch the comment
+        if (!comment) {
+            return res.status(404).json({ error: 'Comment not found' });
+        }
+
+        // Check if the user has already liked the comment
+        if (comment.likedBy.includes(username)) {
             return res.status(400).json({ error: 'You have already liked this comment' });
         }
 
-        // Add the user to the likedBy array
-        comment.likedBy = comment.likedBy || [];
+        // Add the user to likedBy array and increment likes
         comment.likedBy.push(username);
-        comment.likes++;
+        comment.likes += 1;
 
-        return res.json({ success: true, likes: comment.likes });
-    } else {
-        return res.status(404).json({ error: 'Comment not found' });
+        await comment.save();
+        res.json({ success: true, likes: comment.likes });
+    } catch (err) {
+        console.error('Error liking comment:', err);
+        res.status(500).json({ error: 'Internal server error' });
     }
 });
 
 // Get comments
 app.get('/getComments', async (req, res) => {
     const sort = req.query.sort || 'newest'; // Default to 'newest'
-    let sortedComments = [...comments]; // Clone in-memory comments array
-
-    // Sorting for in-memory comments
-    if (sort === 'likes') {
-        sortedComments.sort((a, b) => b.likes - a.likes);
-    } else if (sort === 'newest') {
-        sortedComments.sort((a, b) => b.timestamp - a.timestamp);
-    }
+    const comments = await Comment.find();
 
     // Fetch and sort MongoDB-stored comments if they exist
     try {
-        const dbComments = await Comment.find();
-        if (dbComments.length > 0) {
-            let mongoComments = [...dbComments];
+        if (comments .length > 0) {
+            let sortedComments = [...comments];
             if (sort === 'likes') {
-                mongoComments.sort((a, b) => b.likes - a.likes);
+                sortedComments.sort((a, b) => b.likes - a.likes);
             } else if (sort === 'newest') {
-                mongoComments.sort((a, b) => b.timestamp - a.timestamp);
+                sortedComments.sort((a, b) => b.timestamp - a.timestamp);
             }
-
-            // Merge in-memory and MongoDB comments
-            sortedComments = sortedComments.concat(mongoComments);
+            return res.status(200).json(sortedComments)
         }
     } catch (err) {
         console.error('Error fetching MongoDB comments:', err);
+        return res.status(500).json( {error: 'Error finding comments'})
     }
 
-    res.json(sortedComments);
 });
 
 // Get leaderboard
@@ -457,7 +439,6 @@ app.get('/get-leaderboard', async (req, res) => {
         const players = await Player.find();
 
         if (!players || players.length === 0) {
-            console.log("No players found.");
             return res.json([]); // Return an empty array if no players exist
         }
 
