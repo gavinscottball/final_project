@@ -6,10 +6,40 @@ html {
     font-style: normal;
 }
 
+body {
+    overflow: auto; /* Allow scrolling */
+    background: linear-gradient(to bottom, #0a54a3, #824caf); /* Keep your background */
+    height: 100vh; /* Ensure the gradient spans the viewport height */
+    margin: 0; /* Remove default margin */
+    color: white;
+    text-shadow: 
+        -1px -1px 0 #000,  
+         1px -1px 0 #000,
+        -1px 1px 0 #000,
+         1px 1px 0 #000;
+}
+
 #loggedUser {
     color: white;
+    text-decoration: none;
     font-size: 16px;
     margin-right: 10px;
+    text-shadow: 
+    -1px -1px 0 #000,  
+     1px -1px 0 #000,
+     -1px 1px 0 #000,
+      1px 1px 0 #000;
+}
+
+button {
+    color: white;
+    font-family: "Kanit", serif;
+    text-shadow: 
+    -1px -1px 0 #000,  
+     1px -1px 0 #000,
+     -1px 1px 0 #000,
+      1px 1px 0 #000;
+    background-image: url('./imgs/back2.png');
 }
 
 
@@ -21,7 +51,7 @@ html {
     top: 0;
     left: 0;
     width: 100%;
-    background-image: url('./imgs/art1.png');
+    background-image: url('./imgs/back3.png');
     background-size: cover;
     background-position: center;
     border-bottom: 1px solid #ccc;
@@ -173,6 +203,124 @@ html {
 }
 
 
+
+/* GAME PAGE EXCLUSIVE STYLING */
+
+.hidden {
+    display: none;
+}
+
+canvas:focus {
+    outline: none;
+}
+
+.canvas-container {
+    border-radius: 20px;
+    border: 5px black;
+    border-style: solid;
+    position: relative;
+    width: 800px; /* Match the canvas width */
+    height: 400px; /* Match the canvas height */
+    margin: 20px auto;
+    display: block;
+    overflow: hidden; /* Ensures pseudo-element doesn't exceed container */
+}
+
+canvas {
+    border-radius: 20px;
+    position: relative; /* Keep the canvas on top */
+    border: 2px solid black;
+    display: block;
+    z-index: 1; /* Stays above the background */
+}
+
+.canvas-container::before {
+    border-style: solid;
+    border: 5px black;
+    content: ""; /* Pseudo-element for the background image */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    z-index: 0; /* Behind the canvas */
+}
+
+.overlay-text {
+    position: absolute;
+    top: 50%; /* Center vertically */
+    left: 50%; /* Center horizontally */
+    transform: translate(-50%, -50%); /* Adjust to true center */
+    font-size: 24px; /* Adjust text size as needed */
+    color: white;
+    text-shadow: 0 0 5px black; /* Optional: Add text shadow for readability */
+    font-family: "Kanit", serif;
+    text-align: center;
+    pointer-events: none; /* Prevent text from blocking canvas interactions */
+    z-index: 2; /* Ensure text is above everything else */
+}
+
+#restartButton {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    border: 2px black solid;
+    width: 20%;
+    cursor: pointer;
+}
+
+#restartButton:hover {
+    background-color: #0056b3;
+}
+
+#startOverlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 3rem;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 20px 40px;
+    border-radius: 10px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 5;
+    cursor: pointer;
+}
+
+/* PROFILE PAGE EXCLUSIVE STYLNG*/ 
+
+#logoutButton {
+    background-color: #FF4500;
+    color: white;
+    font-size: 16px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: inline-block;
+}
+
+#logoutButton:hover {
+    background-color: #CC3700;
+}
+
+.profile-container {
+    padding: 20px; /* Add padding for spacing */
+    max-width: 800px; /* Set a maximum width */
+    margin: 0 auto; /* Center the container */
+    text-align: center; /* Center align content */
+}
+
 /* SOCIAL PAGE EXCLUSIVE STYLING */
 
 .social-container {
@@ -238,7 +386,7 @@ html {
     border-radius: 5px; /* Rounded corners */
     margin-top: 10px;
     margin-bottom: 10px;
-    background-color: #ccc; /* Background color for comments */
+    background-color: red; /* Background color for comments */
     padding: 15px; /* Maintain padding */
     display: flex;
     flex-direction: column; /* Stack elements vertically */
@@ -275,9 +423,6 @@ html {
     margin-top: 10px; /* Add some spacing from the user's details */
     flex-grow: 1; /* Allow text to take up available space */
 }
-
-
-
 
 .replies-container {
     list-style: none;
@@ -336,17 +481,37 @@ html {
 
 #leaderboardTable {
     width: 100%;
-    border-collapse: collapse;
     margin: 20px 0;
     font-size: 1rem;
     text-align: left;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    overflow: hidden;
+    border-spacing: 0;
+    border-collapse: separate;
+}
+
+#leaderboardTable thead th:first-child {
+    border-top-left-radius: 10px;
+}
+
+#leaderboardTable thead th:last-child {
+    border-top-right-radius: 10px;
+}
+
+#leaderboardTable tfoot td:first-child {
+    border-bottom-left-radius: 10px;
+}
+
+#leaderboardTable tfoot td:last-child {
+    border-bottom-right-radius: 10px;
 }
 
 #leaderboardTable thead th {
     background-color: #007BFF;
     color: white;
     padding: 10px;
-    border: 1px solid #ccc;
+    border-bottom: 2px solid #ccc;
 }
 
 #leaderboardTable tbody tr:nth-child(even) {
@@ -362,82 +527,6 @@ html {
     border: 1px solid #ccc;
     text-align: center;
 }
-
-#leaderboardTable th:first-child,
-#leaderboardTable td:first-child {
-    text-align: center;
-    width: 10%; /* Adjust width for position column */
-}
-
-#leaderboardTable th:last-child,
-#leaderboardTable td:last-child {
-    text-align: center;
-    width: 15%; /* Adjust the width as needed */
-}
-
-#leaderboardTable td, #leaderboardTable th {
-    padding: 10px;
-    border: 1px solid #ccc;
-    text-align: center;
-}
-
-/* GAME PAGE EXCLUSIVE STYLING */
-canvas {
-    border: 2px solid black;
-    margin: 20px auto;
-    display: block;
-}
-
-canvas:focus {
-    outline: none;
-}
-
-#restartButton {
-    display: block;
-    margin: 20px auto;
-    padding: 10px 20px;
-    font-size: 16px;
-    background-color: #007BFF;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-#restartButton:hover {
-    background-color: #0056b3;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-#logoutButton {
-    display: block;
-    margin: 20px auto;
-    padding: 10px 20px;
-    font-size: 16px;
-    background-color: #FF4500;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-#logoutButton:hover {
-    background-color: #CC3700;
-}
-
-
-
 
 
 

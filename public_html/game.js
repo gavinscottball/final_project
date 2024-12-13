@@ -459,6 +459,25 @@ function saveScore() {
 }
 
 // Initialization
+document.addEventListener("DOMContentLoaded", () => {
+    // Get the overlay text element
+    const overlayText = document.querySelector(".overlay-text");
+
+    // Debugging: Log to ensure the element is found
+    if (!overlayText) {
+        console.error("Overlay text element not found!");
+        return;
+    } else {
+        console.log("Overlay text element found:", overlayText);
+    }
+
+    // Set a timeout to hide the overlay text after 5 seconds
+    setTimeout(() => {
+        console.log("Hiding overlay text...");
+        overlayText.classList.add("hidden");
+    }, 5000); // 5000 milliseconds = 5 seconds
+});
+
 Promise.all([
     new Promise(resolve => (backgroundImg.onload = resolve)),
     new Promise(resolve => (spriteImg.onload = resolve))
@@ -469,5 +488,9 @@ Promise.all([
     gameState.pauseStart = null;
     gameState.lastSpeedUp = 0;
     gameState.score = 0;
-    gameLoop();
+
+    // Delay the game start for 5 minutes (300,000 milliseconds)
+    setTimeout(() => {
+        gameLoop(); // Start the game loop after 5 minutes
+    }, 5000);
 });

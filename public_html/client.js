@@ -189,7 +189,7 @@ function login(username, password) {
             const output = document.getElementById("output");
             if (response.ok) {
                 output.textContent = data.message;
-                window.location.href = '/game.html'; // Redirect to a logged-in page
+                window.location.href = '/about.html'; // Redirect to a logged-in page
             } else {
                 output.textContent = data.message || 'Login failed';
             }
