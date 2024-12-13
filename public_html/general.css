@@ -279,6 +279,18 @@ html {
     width: 10%; /* Adjust width for position column */
 }
 
+#leaderboardTable th:last-child,
+#leaderboardTable td:last-child {
+    text-align: center;
+    width: 15%; /* Adjust the width as needed */
+}
+
+#leaderboardTable td, #leaderboardTable th {
+    padding: 10px;
+    border: 1px solid #ccc;
+    text-align: center;
+}
+
 /* GAME PAGE EXCLUSIVE STYLING */
 canvas {
     border: 2px solid black;

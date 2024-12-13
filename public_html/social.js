@@ -156,20 +156,24 @@ function initializeLeaderboard() {
 }
 
 // Add a new entry to the leaderboard
-function addLeaderboardEntry(player, score) {
+function addLeaderboardEntry(player, score, time) {
     const leaderboardTableBody = document.querySelector("#leaderboardTable tbody");
 
-    // Add the new entry to a temporary array
+    // Create an array of current players
     const players = Array.from(leaderboardTableBody.children).map(row => {
         const cells = row.children;
-        return { name: cells[1].textContent, score: parseInt(cells[2].textContent, 10) };
+        return {
+            name: cells[1].textContent,
+            score: parseInt(cells[2].textContent, 10),
+            time: parseFloat(cells[3].textContent) // Parse time as a float
+        };
     });
 
     // Add the new player
-    players.push({ name: player, score });
+    players.push({ name: player, score, time });
 
-    // Sort players by score (descending order)
-    players.sort((a, b) => b.score - a.score);
+    // Sort players by score (descending) and time (ascending as a tiebreaker)
+    players.sort((a, b) => b.score - a.score || a.time - b.time);
 
     // Clear the table and rebuild it
     leaderboardTableBody.innerHTML = "";
@@ -185,9 +189,13 @@ function addLeaderboardEntry(player, score) {
         const scoreCell = document.createElement("td");
         scoreCell.textContent = player.score;
 
+        const timeCell = document.createElement("td");
+        timeCell.textContent = player.time.toFixed(2); // Format time to 2 decimal places
+
         newRow.appendChild(positionCell);
         newRow.appendChild(playerCell);
         newRow.appendChild(scoreCell);
+        newRow.appendChild(timeCell);
 
         leaderboardTableBody.appendChild(newRow);
     });
@@ -200,17 +208,17 @@ function addLeaderboardEntry(player, score) {
 // them so we just need the score from the database
 function populatePhonyLeaderboard() {
     const players = [
-        { name: "Herobrine", score: 420 },
-        { name: "Joey", score: -473 },
-        { name: "'Hawk' Tua Selusi", score: 690 },
-        { name: "Mater", score: 9001 },
-        { name: "Phony5", score: 90 },
-        { name: "Phony6", score: 300 },
-        { name: "Phony7", score: 240 },
-        { name: "Phony8", score: 110 }
+        { name: "Herobrine", score: 420, time: 35.5 },
+        { name: "Joey", score: -473, time: 120.0 },
+        { name: "'Hawk' Tua Selusi", score: 690, time: 27.8 },
+        { name: "Mater", score: 9001, time: 15.0 },
+        { name: "Phony5", score: 90, time: 50.2 },
+        { name: "Phony6", score: 300, time: 60.1 },
+        { name: "Phony7", score: 300, time: 45.0 },
+        { name: "Phony8", score: 110, time: 70.3 }
     ];
 
-    players.forEach(player => addLeaderboardEntry(player.name, player.score));
+    players.forEach(player => addLeaderboardEntry(player.name, player.score, player.time));
 }
 
 
