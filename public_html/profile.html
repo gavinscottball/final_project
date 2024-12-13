@@ -30,13 +30,19 @@
     </div>
 
     <div class="content">
-        <h1 class="title">Tee hee</h1>
+        <h1 class="title">Profile</h1>
         <div class="profile-container">
             <img id="profilePicture" src="" alt="Profile Picture" width="150" height="150">
             <h2 id="usernameDisplay">USERNAME</h2>
             <p><strong>Email:</strong> <span id="emailDisplay">N/A</span></p>
             <p><strong>Real Name:</strong> <span id="realNameDisplay">N/A</span></p>
-            <p><strong>Bio:</strong> <span id="bioDisplay">N/A</span></p>
+            <p>
+                <strong>Bio:</strong>
+                <span id="bioDisplay">N/A</span>
+                <textarea id="bioInput" style="display:none;"></textarea>
+            </p>
+            <button id="editProfileButton">Edit Profile</button>
+            <button id="saveProfileButton" style="display:none;">Save Profile</button>
             <button id="logoutButton">Log Out</button>
         </div>
     </div>

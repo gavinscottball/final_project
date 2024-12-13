@@ -359,6 +359,32 @@ canvas {
     /* Center align content */
 }
 
+#editProfileButton, #saveProfileButton {
+    background-color: #007BFF;
+    color: white;
+    font-size: 16px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 5px;
+}
+
+#editProfileButton:hover, #saveProfileButton:hover {
+    background-color: #0056b3;
+}
+
+#bioInput {
+    width: 100%;
+    height: 80px;
+    padding: 10px;
+    font-family: "Kanit", serif;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
 /* SOCIAL PAGE EXCLUSIVE STYLING */
 
 .social-container {

@@ -242,7 +242,7 @@ app.post('/update-stats', isLoggedIn, async (req, res) => {
 
 // Update profile route
 app.post('/update-profile', isLoggedIn, async (req, res) => {
-    const { email, name, picture, bio } = req.body;
+    const { bio } = req.body;
     const username = req.session.username;
 
     try {
@@ -251,10 +251,7 @@ app.post('/update-profile', isLoggedIn, async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        player.email = email;
-        player.real_name = name;
-        player.profile_picture = picture;
-        player.bio = bio;
+        if (bio) player.bio = bio;
 
         await player.save();
         res.status(200).json({ message: 'Profile updated successfully' });

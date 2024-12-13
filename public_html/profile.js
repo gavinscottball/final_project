@@ -19,9 +19,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (document.readyState === 'complete') {
         fetchProfileFromServer();
     }
-
-    // Initialize profile update functionality
-    initProfileUpdate();
 });
 
 /** Load profile data using user details */
@@ -63,50 +60,41 @@ function fetchProfileFromServer() {
         });
 }
 
-/** Initialize profile update functionality */
-function initProfileUpdate() {
-    const profileForm = document.getElementById('profileForm');
+document.getElementById('editProfileButton').addEventListener('click', () => {
+    document.getElementById('bioDisplay').style.display = 'none';
+    document.getElementById('bioInput').style.display = 'inline';
+    document.getElementById('bioInput').value = document.getElementById('bioDisplay').textContent;
 
-    if (profileForm) {
-        profileForm.addEventListener('submit', (event) => {
-            event.preventDefault();
-            const formData = new FormData(profileForm);
+    document.getElementById('editProfileButton').style.display = 'none';
+    document.getElementById('saveProfileButton').style.display = 'inline';
+});
 
-            const updatedData = {
-                email: formData.get('email'),
-                name: formData.get('real-name'),
-                picture: null, // Update picture logic can go here if implemented
-                bio: formData.get('bio'),
-            };
+document.getElementById('saveProfileButton').addEventListener('click', () => {
+    const newBio = document.getElementById('bioInput').value;
 
-            updateProfile(updatedData);
-        });
-    }
-}
-
-/** Update user profile information */
-function updateProfile(data) {
     fetch('/update-profile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include', // Ensure session cookies are sent
-        body: JSON.stringify(data),
+        credentials: 'include',
+        body: JSON.stringify({ bio: newBio }),
     })
-        .then((response) => {
-            if (response.ok) {
-                alert('Profile updated successfully!');
-                fetchProfileFromServer(); // Refresh profile data
-            } else {
-                return response.json().then((data) => {
-                    throw new Error(data.message || 'Error updating profile');
-                });
-            }
+        .then(response => {
+            if (!response.ok) throw new Error('Failed to update profile');
+            return response.json();
         })
-        .catch((err) => {
+        .then(() => {
+            document.getElementById('bioDisplay').textContent = newBio;
+            document.getElementById('bioDisplay').style.display = 'inline';
+            document.getElementById('bioInput').style.display = 'none';
+
+            document.getElementById('editProfileButton').style.display = 'inline';
+            document.getElementById('saveProfileButton').style.display = 'none';
+        })
+        .catch(err => {
             console.error('Error updating profile:', err);
-            alert(err.message || 'Unable to update profile. Please try again.');
+            alert('Unable to save changes. Please try again.');
         });
-}
+});
 
 document.getElementById('logoutButton').addEventListener('click', () => {
     // Call the logout function from client.js
