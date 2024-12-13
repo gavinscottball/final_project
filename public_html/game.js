@@ -19,6 +19,8 @@ const wallSprite = new Image();
 wallSprite.src = './imgs/wallSprite.png';
 const wallSprite1 = new Image();
 wallSprite1.src = './imgs/wallSprite1.png';
+const wallSprite2 = new Image();
+wallSprite2.src = './imgs/wallSprite2.png';
 const spikeSprite = new Image();
 spikeSprite.src = './imgs/spikeSprite.png';
 
@@ -146,16 +148,33 @@ function preventSpacebarScroll(e) {
 
 function generateObstacle() {
     const startX = canvas.width + 40;
-    const randomObstacleType = Math.random();
+    const clusterChance = Math.random();
 
-    if (randomObstacleType < 0.4) {
-        createWall(startX);
-    } else if (randomObstacleType < 0.8) {
-        createWall2(startX);
+    // Ensure no overlap
+    const lastObstacle = gameState.obstacles[gameState.obstacles.length - 1];
+    const minSpacing = 80; // Minimum space between obstacles
+    const adjustedStartX = lastObstacle
+        ? Math.max(startX, lastObstacle.x + lastObstacle.width + minSpacing)
+        : startX;
+
+    // Adjust chance of clusters to be higher than single walls
+    if (clusterChance < 0.7) {
+        createWallCluster(adjustedStartX);
     } else {
-        createSpikes(startX);
+        const randomObstacleType = Math.random();
+
+        if (randomObstacleType < 0.3) {
+            createWall(adjustedStartX);
+        } else if (randomObstacleType < 0.6) {
+            createWall2(adjustedStartX);
+        } else if (randomObstacleType < 0.9) {
+            createWall3(adjustedStartX);
+        } else {
+            createSpikes(adjustedStartX);
+        }
     }
 
+    // Randomize the next interval slightly for variety
     gameState.obstacleInterval = getRandomInterval(90, 150);
 }
 
@@ -166,10 +185,11 @@ function generateObstacle() {
  */
 
 function createWall(startX) {
-    const obstacleWidth = 40;
-    const obstacleHeight = 100;
-    const y = groundLevel - obstacleHeight;
+    const obstacleWidth = 40; // Width of the wall
+    const obstacleHeight = 100; // Height of the wall
+    const y = groundLevel - obstacleHeight; // Calculate the vertical position
 
+    // Add the wall to the game state
     gameState.obstacles.push({
         type: 'wall',
         x: startX,
@@ -193,27 +213,102 @@ function createWall2(startX) {
     });
 }
 
+function createWall3(startX) {
+    const obstacleWidth = 40; // Same width as other walls
+    const obstacleHeight = 60; // Slightly shorter than wall2
+    const y = groundLevel - obstacleHeight;
+
+    gameState.obstacles.push({
+        type: 'wall3',
+        x: startX,
+        y: y,
+        width: obstacleWidth,
+        height: obstacleHeight
+    });
+}
+
+function createWallCluster(startX) {
+    const clusterSize = Math.floor(Math.random() * 19) + 5; // Random size between 2 and 20
+    const wallTypes = [createWall, createWall2, createWall3]; // Possible wall types
+
+    let lastWallType = null; // Keep track of the previous wall type
+    let sameTypeCount = 0; // Count of consecutive walls of the same type
+    let currentX = startX; // Track the x-coordinate for proper spacing
+    let lastSpikePosition = -Infinity; // Track the last spike's position
+    const maxSpikes = Math.floor(clusterSize / 10); // Limit spikes to 1 per 10 walls
+    let spikesAdded = 0; // Count spikes added
+
+    for (let i = 0; i < clusterSize; i++) {
+        // Choose a wall type. Ensure at least 5 of the same type next to each other.
+        let wallType;
+        if (sameTypeCount < 5) {
+            wallType = lastWallType || wallTypes[Math.floor(Math.random() * wallTypes.length)];
+        } else {
+            wallType = wallTypes[Math.floor(Math.random() * wallTypes.length)];
+        }
+
+        // If the new wall type is different, reset the sameTypeCount.
+        if (wallType !== lastWallType) {
+            sameTypeCount = 1;
+        } else {
+            sameTypeCount++;
+        }
+
+        // Update the lastWallType for the next iteration.
+        lastWallType = wallType;
+
+        // Determine wall dimensions and position
+        const obstacleWidth = 40;
+        const obstacleHeight =
+            wallType === createWall ? 100 : wallType === createWall2 ? 80 : 60;
+        const y = groundLevel - obstacleHeight;
+
+        // Add the wall to the game state
+        gameState.obstacles.push({
+            type: wallType === createWall ? 'wall' : wallType === createWall2 ? 'wall2' : 'wall3',
+            x: currentX,
+            y: y,
+            width: obstacleWidth,
+            height: obstacleHeight
+        });
+
+        // Add spikes only if conditions are met
+        const isEligibleForSpike = 
+            i >= 7 &&               // Not in the first 7 walls
+            i <= clusterSize - 3 && // Not in the last 2 walls
+            i - lastSpikePosition >= 5 && // At least 5 walls apart
+            spikesAdded < maxSpikes; // Spike count limit not exceeded
+
+        if (isEligibleForSpike && Math.random() < 0.5) { // 50% chance for eligible walls
+            createSpikes(currentX, y);
+            lastSpikePosition = i;
+            spikesAdded++;
+        }
+
+        // Increment x position for the next wall
+        currentX += obstacleWidth; // Walls are 40px wide
+    }
+}
+
 /**
  * Function createSpikes - [Describe functionality here]
  * @param [param_name] [Description]
  * @returns [Return value description]
  */
 
-function createSpikes(startX) {
-    const spikeCount = Math.random() < 0.5 ? 1 : 2;
-    const spikeWidth = 20;
-    const spikeHeight = 30;
-    const y = groundLevel - spikeHeight;
+function createSpikes(startX, wallTopY) {
+    const spikeWidth = 20; // Width of each spike
+    const spikeHeight = 30; // Height of each spike
+    const y = wallTopY - spikeHeight; // Place spikes above the wall's top
 
-    for (let i = 0; i < spikeCount; i++) {
-        gameState.obstacles.push({
-            type: 'spike',
-            x: startX + i * (spikeWidth + 5),
-            y: y,
-            width: spikeWidth,
-            height: spikeHeight
-        });
-    }
+    // Add the spike to the game state
+    gameState.obstacles.push({
+        type: 'spike',
+        x: startX,
+        y: y,
+        width: spikeWidth,
+        height: spikeHeight
+    });
 }
 
 // Collision detection and resolution
@@ -315,10 +410,19 @@ function handleCollision(player, obstacle) {
 
 function gameOver() {
     gameState.gameRunning = false;
-    ctx.fillStyle = 'black';
-    ctx.font = '48px sans-serif';
-    ctx.fillText('Game Over', canvas.width / 2 - 100, canvas.height / 2);
+
+    // Change the content of the "playGameTitle" element to "Game Over"
+    const titleElement = document.getElementById('playGameTitle');
+    if (titleElement) {
+        titleElement.textContent = "Game Over";
+    } else {
+        console.error('Element with ID "playGameTitle" not found.');
+    }
+
+    // Optionally, log the player's time
     console.log(`Player survived for ${gameState.elapsedTime / 1000} seconds`);
+
+    // Save the player's score
     saveScore();
 }
 
@@ -439,17 +543,16 @@ function drawObstacles() {
             ctx.drawImage(wallSprite, obstacle.x, obstacle.y, obstacle.width, obstacle.height);
         } else if (obstacle.type === 'wall2') {
             ctx.drawImage(wallSprite1, obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+        } else if (obstacle.type === 'wall3') {
+            ctx.drawImage(wallSprite2, obstacle.x, obstacle.y, obstacle.width, obstacle.height);
         } else if (obstacle.type === 'spike') {
-            const spikeCount = Math.ceil(obstacle.width / 20); // Adjust for multiple spikes
-            for (let i = 0; i < spikeCount; i++) {
-                ctx.drawImage(
-                    spikeSprite,
-                    obstacle.x + i * 20, // Position spikes side by side
-                    obstacle.y,
-                    20, // Width of each spike
-                    30  // Height of each spike
-                );
-            }
+            ctx.drawImage(
+                spikeSprite,
+                obstacle.x,
+                obstacle.y,
+                obstacle.width,
+                obstacle.height
+            );
         }
     });
 }
@@ -516,9 +619,6 @@ function pauseGame() {
     }
     ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = 'white';
-    ctx.font = '48px sans-serif';
-    ctx.fillText('Paused', canvas.width / 2 - 80, canvas.height / 2);
 }
 
 /**
@@ -584,6 +684,14 @@ function gameLoop() {
 function resetGame() {
     // Reset all game state
     Object.assign(gameState, createGameState());
+
+    // Reset the title element to "Play Shape Run"
+    const titleElement = document.getElementById('playGameTitle');
+    if (titleElement) {
+        titleElement.textContent = "Play Shape Run";
+    } else {
+        console.error('Element with ID "playGameTitle" not found.');
+    }
 
     // Set the start time to now
     gameState.startTime = Date.now();
@@ -669,37 +777,50 @@ function saveScore() {
 
 // Initialization
 document.addEventListener("DOMContentLoaded", () => {
-    // Get the overlay text element
-    const overlayText = document.querySelector(".overlay-text");
+    const titleElement = document.getElementById('playGameTitle');
+    const startOverlay = document.getElementById('startOverlay'); // Select the overlay
 
-    // Debugging: Log to ensure the element is found
-    if (!overlayText) {
-        console.error("Overlay text element not found!");
-        return;
+    if (!titleElement) {
+        console.error('Element with ID "playGameTitle" not found.');
     } else {
-        console.log("Overlay text element found:", overlayText);
+        titleElement.textContent = "Play Shape Run"; // Set initial title
     }
 
-    // Set a timeout to hide the overlay text after 5 seconds
-    setTimeout(() => {
-        console.log("Hiding overlay text...");
-        overlayText.classList.add("hidden");
-    }, 5000); // 5000 milliseconds = 5 seconds
-});
+    if (!startOverlay) {
+        console.error('Element with ID "startOverlay" not found.');
+    }
 
-Promise.all([
-    new Promise(resolve => (backgroundImg.onload = resolve)),
-    new Promise(resolve => (spriteImg.onload = resolve))
-]).then(() => {
-    setupEventListeners();
-    gameState.startTime = Date.now();
-    gameState.totalPauseTime = 0;
-    gameState.pauseStart = null;
-    gameState.lastSpeedUp = 0;
-    gameState.score = 0;
+    // Wait for all assets to load before starting the game
+    Promise.all([
+        new Promise((resolve) => (backgroundImg.onload = resolve)),
+        new Promise((resolve) => (spriteImg.onload = resolve)),
+        new Promise((resolve) => (wallSprite.onload = resolve)),
+        new Promise((resolve) => (wallSprite1.onload = resolve)),
+        new Promise((resolve) => (wallSprite2.onload = resolve)),
+        new Promise((resolve) => (spikeSprite.onload = resolve))
+    ])
+    .then(() => {
+        console.log("All assets loaded successfully.");
 
-    // Delay the game start for 5 minutes (300,000 milliseconds)
-    setTimeout(() => {
-        gameLoop(); // Start the game loop after 5 minutes
-    }, 5000);
+        setupEventListeners();
+        gameState.startTime = Date.now();
+        gameState.totalPauseTime = 0;
+        gameState.pauseStart = null;
+        gameState.lastSpeedUp = 0;
+        gameState.score = 0;
+
+        // Start the game loop after a short delay
+        setTimeout(() => {
+            if (startOverlay) {
+                startOverlay.style.display = "none"; // Hide the overlay
+            }
+            if (titleElement) {
+                titleElement.textContent = "Play Shape Run"; // Ensure title is reset
+            }
+            gameLoop(); // Begin the game loop
+        }, 5000);
+    })
+    .catch((error) => {
+        console.error("Error loading assets:", error);
+    });
 });
