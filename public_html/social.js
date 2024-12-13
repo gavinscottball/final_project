@@ -89,7 +89,7 @@ function renderComments(comments) {
 
         const usernameSpan = document.createElement("span");
         usernameSpan.className = "comment-username";
-        usernameSpan.textContent = `(${comment.username})`;
+        usernameSpan.textContent = `@${comment.username}`;
 
         const textSpan = document.createElement("span");
         textSpan.className = "comment-text";
