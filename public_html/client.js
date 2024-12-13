@@ -22,7 +22,7 @@ function checkSession() {
             // Update loggedUser element in the header
             const loggedUserElement = document.getElementById('loggedUser');
             if (loggedUserElement) {
-                loggedUserElement.textContent = user.username;
+                loggedUserElement.textContent = `${user.username}'s Account`;
                 loggedUserElement.href = '/profile.html';
             }
 

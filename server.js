@@ -47,6 +47,26 @@ const LeaderboardSchema = new mongoose.Schema({
 const Leaderboard = mongoose.model("Leaderboard", LeaderboardSchema);
 let leaderboard = new Leaderboard();
 
+const CommentSchema = new mongoose.Schema({
+    id: { type: Number, unique: true },
+    username: { type: String, required: true },
+    realName: { type: String, required: true },
+    text: { type: String, required: true },
+    likes: { type: Number, default: 0 },
+    replies: [
+        {
+            username: { type: String, required: true },
+            realName: { type: String, required: true },
+            text: { type: String, required: true },
+            likes: { type: Number, default: 0 },
+            timestamp: { type: Date, default: Date.now }
+        }
+    ],
+    timestamp: { type: Date, default: Date.now }
+});
+
+const Comment = mongoose.model("Comment", CommentSchema);
+
 mongoose.connect(URL)
     .then(() => console.log("Connected to MongoDB"))
     .catch((err) => console.log(err));
@@ -269,32 +289,83 @@ const comments = []; // In-memory comments array for simplicity
 let commentId = 1;
 
 // Post a new comment
-app.post('/postComment', (req, res) => {
-    console.log("Session object on /postComment:", req.session);
+app.post('/postComment', async (req, res) => {
+    const { comment } = req.body;
+    const username = req.session.user?.username || "Anonymous";
+    const realName = req.session.user?.realName || "Anonymous";
 
-    if (req.session && req.session.user && req.session.user.username) {
-        const username = req.session.user.username;
-        const realName = req.session.user.realName || "Anonymous"; // Ensure this is now a string
-        const text = req.body.comment;
+    if (!comment) {
+        return res.status(400).json({ error: "Comment text is required." });
+    }
 
-        if (text) {
-            const newComment = { 
-                id: commentId++, 
-                username, 
-                realName, 
-                text, 
-                likes: 0, 
-                likedBy: [], 
-                timestamp: Date.now() 
-            };
-            comments.push(newComment);
+    const newComment = {
+        id: new Date().getTime(), // Unique ID for the comment
+        username,
+        realName,
+        text: comment,
+        likes: 0,
+        replies: [], // Initialize replies as an empty array
+        timestamp: new Date()
+    };
 
-            return res.json({ success: true, comment: newComment });
-        } else {
-            return res.status(400).json({ error: 'Comment text is required' });
+    comments.push(newComment); // Assuming comments is your in-memory array
+    res.status(201).json({ success: true, comment: newComment });
+});
+
+// Post a reply to a comment
+app.post('/postReply', async (req, res) => {
+    const { commentId, text } = req.body;
+    const username = req.session.user?.username || "Anonymous";
+    const realName = req.session.user?.realName || "Anonymous";
+
+    if (!commentId || !text) {
+        return res.status(400).json({ error: 'Comment ID and text are required.' });
+    }
+
+    const parentComment = comments.find(comment => comment.id === parseInt(commentId));
+    if (parentComment) {
+        // Initialize replies array if it doesn't exist
+        parentComment.replies = parentComment.replies || [];
+
+        const reply = {
+            id: `${commentId}-${parentComment.replies.length + 1}`, // Unique ID for reply
+            username,
+            realName,
+            text,
+            likes: 0,
+            timestamp: new Date()
+        };
+
+        parentComment.replies.push(reply);
+
+        return res.status(200).json({ success: true, reply });
+    }
+
+    // If using a database, handle MongoDB stored comments
+    try {
+        const parentCommentDb = await Comment.findOne({ id: commentId });
+        if (!parentCommentDb) {
+            return res.status(404).json({ error: 'Parent comment not found.' });
         }
-    } else {
-        return res.status(401).json({ error: 'User not logged in' });
+
+        // Initialize replies array if it doesn't exist
+        parentCommentDb.replies = parentCommentDb.replies || [];
+
+        const reply = {
+            username,
+            realName,
+            text,
+            likes: 0,
+            timestamp: new Date()
+        };
+
+        parentCommentDb.replies.push(reply);
+        await parentCommentDb.save();
+
+        res.status(200).json({ success: true, reply });
+    } catch (err) {
+        console.error('Error posting reply:', err);
+        res.status(500).json({ error: 'Internal server error.' });
     }
 });
 
@@ -323,15 +394,33 @@ app.post('/likeComment/:id', (req, res) => {
     }
 });
 
-// Get all comments
-app.get('/getComments', (req, res) => {
-    const sort = req.query.sort;
-    let sortedComments = [...comments];
+app.get('/getComments', async (req, res) => {
+    const sort = req.query.sort || 'newest'; // Default to 'newest'
+    let sortedComments = [...comments]; // Clone in-memory comments array
 
+    // Sorting for in-memory comments
     if (sort === 'likes') {
         sortedComments.sort((a, b) => b.likes - a.likes);
     } else if (sort === 'newest') {
         sortedComments.sort((a, b) => b.timestamp - a.timestamp);
+    }
+
+    // Fetch and sort MongoDB-stored comments if they exist
+    try {
+        const dbComments = await Comment.find();
+        if (dbComments.length > 0) {
+            let mongoComments = [...dbComments];
+            if (sort === 'likes') {
+                mongoComments.sort((a, b) => b.likes - a.likes);
+            } else if (sort === 'newest') {
+                mongoComments.sort((a, b) => b.timestamp - a.timestamp);
+            }
+
+            // Merge in-memory and MongoDB comments
+            sortedComments = sortedComments.concat(mongoComments);
+        }
+    } catch (err) {
+        console.error('Error fetching MongoDB comments:', err);
     }
 
     res.json(sortedComments);

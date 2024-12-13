@@ -10,10 +10,13 @@
 </head>
 <body>
 
+    <!-- Header Section -->
     <div class="header">
         <div class="header-content">
             <h2 class="header-title">Shape Run</h2>
-            <h2 class="header-account" id="username"><a id="loggedUser" href="profile.html">USERNAME</a></h2> 
+            <h2 class="header-account" id="username">
+                <a id="loggedUser" href="profile.html">USERNAME</a>
+            </h2> 
         </div>
         <nav class="header-nav">
             <ul>
@@ -25,8 +28,11 @@
         </nav>
     </div>
     
+    <!-- Main Content -->
     <div class="content">
         <div class="social-container">
+            
+            <!-- Leaderboard Section -->
             <div class="leaderboard-area">
                 <h2 class="section-title">Leaderboard</h2>
                 <table id="leaderboardTable">
@@ -43,25 +49,30 @@
                     </tbody>
                 </table>
             </div>
-        
+            
+            <!-- Comments Section -->
             <div class="social-area">
                 <h1 class="section-title">Comments</h1>
-                <div class="container">
-                    <div class="comment-form">
-                        <input type="text" id="commentInput" placeholder="Write a comment..." />
-                        <button id="addCommentBtn">Post Comment</button>
-                    </div>
-                    <div class="sort-controls">
-                        <button id="sortLikesBtn">Sort by Likes</button>
-                        <button id="sortNewestBtn">Sort by Newest</button>
-                    </div>
-                    <ul id="commentList" class="comment-list"></ul>
+
+                <!-- Comment Form -->
+                <div class="comment-form">
+                    <input type="text" id="commentInput" placeholder="Write a comment..." />
+                    <button id="addCommentBtn">Post Comment</button>
                 </div>
+                
+                <!-- Sorting Buttons -->
+                <div class="sort-controls">
+                    <button id="sortLikesBtn">Sort by Likes</button>
+                    <button id="sortNewestBtn">Sort by Newest</button>
+                </div>
+                
+                <!-- Comments List -->
+                <ul id="commentList" class="comment-list"></ul>
             </div>
         </div>
     </div>
 
-    <!-- Link the JavaScript file -->
+    <!-- JavaScript Files -->
     <script src="client.js" defer></script>
     <script src="social.js" defer></script>
 </body>

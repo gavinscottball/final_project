@@ -66,42 +66,35 @@ function postComment(commentText) {
 
 
 function renderComments(comments) {
-    const commentList = document.getElementById("commentList");
-    commentList.innerHTML = ""; // Clear existing comments
-
-    if (comments.length === 0) {
-        // Display a message if there are no comments
-        const emptyMessage = document.createElement("p");
-        emptyMessage.textContent = "No comments yet. Be the first to comment!";
-        emptyMessage.style.textAlign = "center";
-        emptyMessage.style.color = "#555";
-        commentList.appendChild(emptyMessage);
-        return;
-    }
+    const commentList = document.getElementById('commentList');
+    commentList.innerHTML = '';
 
     comments.forEach(comment => {
-        const li = document.createElement("li");
-        li.classList.add("comment-item");
+        const li = document.createElement('li');
+        li.classList.add('comment-item');
+        li.setAttribute('data-id', comment.id);
 
-        const realNameSpan = document.createElement("span");
-        realNameSpan.className = "comment-realname";
+        // Comment content
+        const realNameSpan = document.createElement('span');
+        realNameSpan.className = 'comment-realname';
         realNameSpan.textContent = comment.realName;
 
-        const usernameSpan = document.createElement("span");
-        usernameSpan.className = "comment-username";
+        const usernameSpan = document.createElement('span');
+        usernameSpan.className = 'comment-username';
         usernameSpan.textContent = `@${comment.username}`;
 
-        const textSpan = document.createElement("span");
-        textSpan.className = "comment-text";
-        textSpan.textContent = `: ${comment.text}`;
+        const textSpan = document.createElement('span');
+        textSpan.className = 'comment-text';
+        textSpan.textContent = comment.text;
 
-        const actionsDiv = document.createElement("div");
-        actionsDiv.className = "comment-actions";
+        // Actions
+        const actionsDiv = document.createElement('div');
+        actionsDiv.className = 'comment-actions';
 
-        const likeBtn = document.createElement("button");
-        likeBtn.className = "like-button";
+        const likeBtn = document.createElement('button');
+        likeBtn.className = 'like-button';
         likeBtn.textContent = `Like (${comment.likes})`;
-        likeBtn.addEventListener("click", () => likeComment(comment.id));
+        likeBtn.addEventListener('click', () => likeComment(comment.id));
 
         actionsDiv.appendChild(likeBtn);
         li.appendChild(realNameSpan);
@@ -109,8 +102,75 @@ function renderComments(comments) {
         li.appendChild(textSpan);
         li.appendChild(actionsDiv);
 
+        // Replies
+        const repliesContainer = document.createElement('ul');
+        repliesContainer.classList.add('replies-container');
+        comment.replies?.forEach(reply => {
+            const replyLi = document.createElement('li');
+            replyLi.classList.add('comment-reply');
+
+            const replyText = document.createElement('span');
+            replyText.className = 'comment-text';
+            replyText.textContent = `@${reply.username}: ${reply.text}`;
+
+            replyLi.appendChild(replyText);
+            repliesContainer.appendChild(replyLi);
+        });
+
+        li.appendChild(repliesContainer);
+
+        // Reply form
+        const replyForm = document.createElement('form');
+        replyForm.className = 'reply-form';
+        replyForm.innerHTML = `
+            <input type="text" class="reply-input" placeholder="Write a reply...">
+            <button type="submit">Reply</button>
+        `;
+        replyForm.addEventListener('submit', event => submitReply(event, comment.id));
+
+        li.appendChild(replyForm);
         commentList.appendChild(li);
     });
+}
+
+function showReplyForm(commentId) {
+    const commentElement = document.querySelector(`[data-id='${commentId}']`);
+    const replyForm = commentElement.querySelector('.reply-form');
+    replyForm.classList.remove('hidden');
+}
+
+function postReply(parentCommentId, replyText) {
+    fetch('/postReply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ commentId: parentCommentId, text: replyText })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            fetchComments(); // Refresh comments to include the new reply
+        } else {
+            alert(data.error || 'Error posting reply.');
+        }
+    })
+    .catch(err => console.error('Error posting reply:', err));
+}
+
+function submitReply(event, commentId) {
+    event.preventDefault();
+
+    const commentElement = document.querySelector(`[data-id='${commentId}']`);
+    const replyInput = commentElement.querySelector('.reply-input');
+
+    const replyText = replyInput.value.trim();
+    if (!replyText) {
+        alert('Reply text cannot be empty!');
+        return;
+    }
+
+    postReply(commentId, replyText);
+    replyInput.value = ''; // Clear input
 }
 
 // Like a comment
