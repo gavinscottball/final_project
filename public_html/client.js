@@ -1,22 +1,20 @@
 /**
- * @file server.js
- * @description This file contains the logic for user logins and new account creation
+ * @file client.js
+ * @description This file contains the logic for user logins and new account creation.
  * 
  * @authors [Gavin Ball, Joshua Stambaugh]
  */
 
-// Runs on page load
+// ======================== Initial Setup ========================
 document.addEventListener("DOMContentLoaded", () => {
     checkSession(); // Verify user session and update UI
     initAccountHandlers(); // Initialize login, registration, and logout functionality
 });
 
+// ======================== Session Management ========================
 /**
- * Function checkSession - Checks the user's session
- * @param none
- * @returns none
+ * Check the user's session and update the UI accordingly.
  */
-
 function checkSession() {
     fetch('/session', {
         method: 'GET',
@@ -47,20 +45,10 @@ function checkSession() {
         });
 }
 
-// Check session on DOMContentLoaded
-document.addEventListener('DOMContentLoaded', checkSession);
-
-// Call checkSession when the page loads
-document.addEventListener('DOMContentLoaded', checkSession);
-
 /**
- * Function logoutUser - Logs the user out of the server
- * @param none
- * @returns none
+ * Log the user out of the server and clear session data.
  */
-
 function logoutUser() {
-    // Send a POST request to the server to log out the user
     fetch('/logout', {
         method: 'POST',
         credentials: 'include', // Include session cookies
@@ -70,12 +58,9 @@ function logoutUser() {
     })
         .then(response => {
             if (response.ok) {
-                // Clear session data (if any stored on the client-side)
                 localStorage.removeItem('userToken');
                 sessionStorage.removeItem('loggedInUser');
-
-                // Redirect the user to the login or welcome page
-                window.location.href = 'index.html'; // Update this path as needed
+                window.location.href = 'index.html'; // Redirect to the homepage
             } else {
                 console.error('Failed to log out');
             }
@@ -85,12 +70,10 @@ function logoutUser() {
         });
 }
 
+// ======================== Event Handlers ========================
 /**
- * Function initAccountHandlers - Initialization of event listeners
- * @param none
- * @returns none
+ * Initialize event listeners for account management buttons and forms.
  */
-
 function initAccountHandlers() {
     const loginButton = document.getElementById("loginButton");
     const createButton = document.getElementById("createButton");
@@ -123,16 +106,14 @@ function initAccountHandlers() {
 
     const logoutButton = document.getElementById("logoutButton");
     if (logoutButton) {
-        logoutButton.addEventListener("click", logout);
+        logoutButton.addEventListener("click", logoutUser);
     }
 }
 
+// ======================== Login and Registration ========================
 /**
- * Function handleLogin - Logs a user into the server
- * @param none
- * @returns none
+ * Handle login button click to log a user into the server.
  */
-
 function handleLogin() {
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
@@ -146,11 +127,9 @@ function handleLogin() {
 }
 
 /**
- * Function handleCreateAccount - Registers a new user
- * @param event, account creation event
- * @returns none
+ * Handle account creation form submission.
+ * @param {Event} event - The form submit event.
  */
-
 function handleCreateAccount(event) {
     event.preventDefault();
     const formData = new FormData(event.target);
@@ -163,9 +142,8 @@ function handleCreateAccount(event) {
             password: formData.get('new-password'),
             email: formData.get('email'),
             real_name: formData.get('real-name'),
-            picture: formData.get('profile-picture'), // Handle profile picture logic here
+            picture: formData.get('profile-picture'),
             bio: formData.get('profile-bio')
-
         })
     })
         .then((response) => {
@@ -191,39 +169,11 @@ function handleCreateAccount(event) {
 }
 
 /**
- * Function saveDetails - Saves a user's profile details
- * @param username, email, name, picture, bio are all a user's profile details
- * @returns none
+ * Log a user into the site.
+ * @param {string} username - The user's username.
+ * @param {string} password - The user's password.
  */
-
-function saveDetails(username, email, name, picture, bio) {
-
-    fetch('/update-profile', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            username: username,
-            email: email || '',
-            name: name || '',
-            picture: picture || null, // Use null if no picture provided
-            bio: bio || ''
-        })
-    })
-        .then((response) => response.json())
-        .then((data) => {
-            console.log('Account details saved:', data);
-        })
-        .catch((err) => console.error('Error saving account details:', err));
-}
-
-/**
- * Function login - Logs a user into the site
- * @param username and password, the user's login details
- * @returns none
- */
-
 function login(username, password) {
-
     fetch('/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -248,50 +198,67 @@ function login(username, password) {
         });
 }
 
+// ======================== Profile Management ========================
+/**
+ * Save a user's profile details to the server.
+ * @param {string} username - The username.
+ * @param {string} email - The user's email.
+ * @param {string} name - The user's real name.
+ * @param {string} picture - The user's profile picture.
+ * @param {string} bio - The user's bio.
+ */
+function saveDetails(username, email, name, picture, bio) {
+    fetch('/update-profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            username: username,
+            email: email || '',
+            name: name || '',
+            picture: picture || null,
+            bio: bio || ''
+        })
+    })
+        .then((response) => response.json())
+        .catch((err) => console.error('Error saving account details:', err));
+}
 
-
-
-
+// ======================== Miscellaneous ========================
+/**
+ * Profile picture preview logic.
+ */
 document.addEventListener("DOMContentLoaded", () => {
-    // Profile Picture Preview Logic
     const profilePictureSelect = document.getElementById("profilePicture");
     const profilePicturePreview = document.getElementById("profilePicturePreview");
 
     if (profilePictureSelect && profilePicturePreview) {
         profilePictureSelect.addEventListener("change", (event) => {
-            const selectedAvatar = event.target.value; // Get the selected avatar's file path
+            const selectedAvatar = event.target.value;
             if (selectedAvatar) {
-                profilePicturePreview.src = selectedAvatar; // Update the preview image
+                profilePicturePreview.src = selectedAvatar;
             }
         });
-    } else {
-        console.error("Profile picture select or preview element not found.");
     }
 
-    // Password Validation Logic
+    // Password validation logic
     const form = document.getElementById("createAccountForm");
     const newPassword = document.getElementById("newPassword");
     const confirmPassword = document.getElementById("confirmPassword");
 
     if (form && newPassword && confirmPassword) {
-        // Add a 'submit' event listener to validate passwords
         form.addEventListener("submit", (event) => {
             if (newPassword.value !== confirmPassword.value) {
-                event.preventDefault(); // Prevent form submission
+                event.preventDefault();
                 alert("Passwords do not match. Please re-enter them.");
             }
         });
 
-        // Optional: Add real-time feedback for password confirmation
         confirmPassword.addEventListener("input", () => {
             if (newPassword.value !== confirmPassword.value) {
                 confirmPassword.setCustomValidity("Passwords do not match.");
             } else {
-                confirmPassword.setCustomValidity(""); // Clear the error
+                confirmPassword.setCustomValidity("");
             }
         });
-    } else {
-        console.error("Form or password fields not found.");
     }
 });
-

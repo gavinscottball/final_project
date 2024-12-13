@@ -1,6 +1,6 @@
 /**
  * @file server.js
- * @description This file contains the main server-side logic for the game website, 
+ * @description Main server-side logic for the game website, 
  *              including route definitions, database interactions, and session management.
  * 
  * @authors [Gavin Ball, Joshua Stambaugh]
@@ -11,7 +11,6 @@
  * @requires crypto
  */
 
-
 const express = require('express');
 const session = require('express-session');
 const app = express();
@@ -19,6 +18,7 @@ const path = require('path');
 const PORT = 3000;
 const mongoose = require('mongoose');
 const crypto = require('crypto');
+
 // ======================== Static Setup ========================
 app.use(express.json());
 app.use(express.static('public_html'));
@@ -33,16 +33,18 @@ app.use(session({
     }
 }));
 
-// ======================== Password Constants ========================
+// ======================== Constants ========================
+// Password hashing constants
 const SALT_LENGTH = 16;
 const HASH_LENGTH = 64;
 const ITERATIONS = 100000;
 const DIGEST = 'sha256';
 
-// ======================== Database Setup ========================
+// Database connection URL
 const URL = "mongodb://127.0.0.1/new_db";
 
-// Schema responsible for saving the leaderboard
+// ======================== Database Schemas ========================
+// Player schema
 const PlayerSchema = new mongoose.Schema({
     acct_name: { type: String, required: true, unique: true },
     acct_password: { type: String, required: true },
@@ -50,27 +52,25 @@ const PlayerSchema = new mongoose.Schema({
     real_name: { type: String, default: "" },
     bio: { type: String, default: "" },
     profile_picture: { type: String, default: "imgs/default.png" },
-    stats: { type: [{ score: Number, time: Number }], default: [] } // Define as an array of objects
+    stats: { type: [{ score: Number, time: Number }], default: [] }
 });
-
 const Player = mongoose.model("Player", PlayerSchema);
 
-// Schema responsible for saving the leaderboard
+// Leaderboard schema
 const LeaderboardSchema = new mongoose.Schema({
     board: { type: [{ username: String, score: Number, time: Number }], default: [] }
 });
-
 const Leaderboard = mongoose.model("Leaderboard", LeaderboardSchema);
 let leaderboard = new Leaderboard();
 
-// Schema responsible for saving comments and their replies
+// Comment schema
 const CommentSchema = new mongoose.Schema({
     id: { type: Number, unique: true },
     username: { type: String, required: true },
     realName: { type: String, required: true },
     text: { type: String, required: true },
     likes: { type: Number, default: 0 },
-    likedBy: { type: [String], default: [] }, // Store usernames or user IDs
+    likedBy: { type: [String], default: [] },
     replies: [{
         username: { type: String, required: true },
         realName: { type: String, required: true },
@@ -80,69 +80,15 @@ const CommentSchema = new mongoose.Schema({
     }],
     timestamp: { type: Date, default: Date.now }
 });
-
 const Comment = mongoose.model("Comment", CommentSchema);
 
+// ======================== Database Connection ========================
 mongoose.connect(URL)
     .then(() => console.log("Connected to MongoDB"))
     .catch((err) => console.log(err));
 
 // ======================== Utility Functions ========================
-// Add a new player to the database
-async function addPlayer(user, password, email, real_name, picture, bio) {
-    const newPlayer = new Player({ acct_name: user, acct_password: password, email: email, real_name: real_name, profile_picture: picture, bio: bio });
-    await newPlayer.save();
-}
-
-// Find a player's account details in the database
-async function findPlayer(username) {
-    try {
-        const player = await Player.findOne({ acct_name: username });
-        return player;
-    } catch (err) {
-        console.error('Error: User not found in database: ', err);
-        throw err;
-    }
-}
-
-async function addComment(id, username, realName, text, timestamp){
-    const newComment = new Comment({id: id, username: username, realName: realName, text: text, timestamp: timestamp});
-    await newComment.save();
-}
-
-
-async function findComment(id){
-    try{
-        const comment = await Comment.findOne({id: id});
-        return comment;
-    } catch (err){
-        console.error('Error: Comment not found');
-        throw err;
-    }
-}
-async function addReply(comment, username, realName, likes, text) {
-    if (!username || !realName || !text) {
-        throw new Error("All fields (username, realName, text) are required.");
-    }
-
-    comment.replies.push({
-        username,
-        realName,
-        text,
-        likes,
-        timestamp: new Date(),
-    });
-
-    await comment.save();
-}
-
 // Hash a user's password with a salt
-/**
- * Function hash - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
- */
-
 function hash(password, salt) {
     return new Promise((resolve, reject) => {
         crypto.pbkdf2(password, salt, ITERATIONS, HASH_LENGTH, DIGEST, (err, derivedKey) => {
@@ -152,13 +98,51 @@ function hash(password, salt) {
     });
 }
 
-// Middleware to check if user is logged in
-/**
- * Function isLoggedIn - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
- */
+// Add a new player to the database
+async function addPlayer(user, password, email, real_name, picture, bio) {
+    const newPlayer = new Player({ acct_name: user, acct_password: password, email, real_name, profile_picture: picture, bio });
+    await newPlayer.save();
+}
 
+// Find a player's account details in the database
+async function findPlayer(username) {
+    try {
+        return await Player.findOne({ acct_name: username });
+    } catch (err) {
+        console.error('Error: User not found in database: ', err);
+        throw err;
+    }
+}
+
+// Add a new comment
+async function addComment(id, username, realName, text, timestamp) {
+    const newComment = new Comment({ id, username, realName, text, timestamp });
+    await newComment.save();
+}
+
+// Find a comment by ID
+async function findComment(id) {
+    try {
+        return await Comment.findOne({ id });
+    } catch (err) {
+        console.error('Error: Comment not found');
+        throw err;
+    }
+}
+
+// Add a reply to a comment
+async function addReply(comment, username, realName, likes, text) {
+    comment.replies.push({
+        username,
+        realName,
+        text,
+        likes,
+        timestamp: new Date(),
+    });
+    await comment.save();
+}
+
+// Middleware to check if user is logged in
 function isLoggedIn(req, res, next) {
     if (req.session.username) {
         next();
@@ -340,6 +324,8 @@ app.get('/getUsername', (req, res) => {
 const comments = []; // In-memory comments array for simplicity
 let commentId = 1;
 
+
+// ======================== Comments Routes ========================
 // Post a new comment
 app.post('/postComment', async (req, res) => {
     const { comment } = req.body;
@@ -382,7 +368,6 @@ app.post('/likeComment', async (req, res) => {
     if (!req.session || !req.session.user || !req.session.user.username) {
         return res.status(401).json({ error: 'User not logged in' });
     }
-
     const username = req.session.user.username; // Logged-in user's username
     const { id } = req.body; // Comment ID
 
@@ -416,7 +401,7 @@ app.get('/getComments', async (req, res) => {
 
     // Fetch and sort MongoDB-stored comments if they exist
     try {
-        if (comments .length > 0) {
+        if (comments.length > 0) {
             let sortedComments = [...comments];
             if (sort === 'likes') {
                 sortedComments.sort((a, b) => b.likes - a.likes);
@@ -427,11 +412,12 @@ app.get('/getComments', async (req, res) => {
         }
     } catch (err) {
         console.error('Error fetching MongoDB comments:', err);
-        return res.status(500).json( {error: 'Error finding comments'})
+        return res.status(500).json({ error: 'Error finding comments' })
     }
 
 });
 
+// ======================== Leaderboard Routes ========================
 // Get leaderboard
 app.get('/get-leaderboard', async (req, res) => {
     try {
@@ -439,7 +425,7 @@ app.get('/get-leaderboard', async (req, res) => {
         const players = await Player.find();
 
         if (!players || players.length === 0) {
-            return res.json([]); // Return an empty array if no players exist
+            return res.status(500).json( {message: 'Error: no users found'});
         }
 
         // Process the data to extract the highest score for each user
@@ -467,7 +453,6 @@ app.get('/get-leaderboard', async (req, res) => {
         res.status(500).json({ error: 'Error fetching leaderboard' });
     }
 });
-
 
 // ======================== Server Startup ========================
 app.listen(PORT, () => {

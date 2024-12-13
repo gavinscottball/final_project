@@ -1,10 +1,11 @@
 /**
- * @file server.js
- * @description This file contains the main logic for the profile page
+ * @file profile.js
+ * @description This file contains the main logic for the profile page.
  * 
  * @authors [Gavin Ball, Joshua Stambaugh]
  */
 
+// ======================== Initial Setup ========================
 document.addEventListener("DOMContentLoaded", () => {
     // Verify session and update the header
     checkSession();
@@ -21,12 +22,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
+// ======================== Profile Loading ========================
 /**
- * Function loadProfile - Loads the profile of a user
- * @param user, the logged in user
- * @returns none
+ * Load the profile of a user and display it on the page.
+ * @param {Object} user - The logged-in user data.
  */
-
 function loadProfile(user) {
     if (user) {
         document.getElementById('usernameDisplay').textContent = user.username || 'N/A';
@@ -44,11 +44,9 @@ function loadProfile(user) {
     }
 }
 
-
+// ======================== Fetching Profile Data ========================
 /**
- * Function fetchProfileFromServer - Fetches the user's profile
- * @param none
- * @returns none
+ * Fetch the user's profile from the server.
  */
 function fetchProfileFromServer() {
     fetch('/get-profile', {
@@ -70,8 +68,8 @@ function fetchProfileFromServer() {
         });
 }
 
-
-// Edit profile
+// ======================== Profile Editing ========================
+// Edit profile button logic
 document.getElementById('editProfileButton').addEventListener('click', () => {
     // Toggle bio editing
     document.getElementById('bioDisplay').style.display = 'none';
@@ -90,7 +88,7 @@ document.getElementById('editProfileButton').addEventListener('click', () => {
     document.getElementById('saveProfileButton').style.display = 'inline';
 });
 
-// Save profile
+// Save profile button logic
 document.getElementById('saveProfileButton').addEventListener('click', () => {
     const newBio = document.getElementById('bioInput').value;
     const newPicture = document.getElementById('profilePictureSelect').value;
@@ -131,8 +129,10 @@ document.getElementById('saveProfileButton').addEventListener('click', () => {
         });
 });
 
-// Logout button
+// ======================== Logout ========================
+/**
+ * Logout button logic.
+ */
 document.getElementById('logoutButton').addEventListener('click', () => {
-    // Call the logout function from client.js
-    logoutUser();
+    logoutUser(); // Call the logout function from client.js
 });

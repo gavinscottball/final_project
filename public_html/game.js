@@ -1,16 +1,17 @@
 /**
- * @file server.js
+ * @file game.js
  * @description This file contains the logic for the game, 
- *              including interactions with the server
+ *               including interactions with the server
  * 
  * @authors [Gavin Ball, Joshua Stambaugh]
  */
 
-// Canvas setup
+
+// ======================== Canvas Setup ========================
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-// Images
+// ======================== Assets ========================
 const backgroundImg = new Image();
 backgroundImg.src = './imgs/env0.png';
 const spriteImg = new Image();
@@ -24,19 +25,15 @@ wallSprite2.src = './imgs/wallSprite2.png';
 const spikeSprite = new Image();
 spikeSprite.src = './imgs/spikeSprite.png';
 
-// Constants
+// ======================== Game State Variables ========================
+let isPaused = false; // Tracks whether the game is paused
+let animationFrameId; // Tracks the current animation frame
 const groundLevel = 350;
 
-// Game state
-const gameState = createGameState();
+// ======================== Game State ========================
+const gameState = createGameState(); // Main game state object
 
-// Initialize game
-/**
- * Function createGameState - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
- */
-
+// Initialize game state
 function createGameState() {
     return {
         scrollSpeed: 4,
@@ -62,12 +59,6 @@ function createGameState() {
 }
 
 // Create player
-/**
- * Function createPlayer - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
- */
-
 function createPlayer() {
     return {
         x: 300,
@@ -81,13 +72,8 @@ function createPlayer() {
     };
 }
 
-// Event listeners
-/**
- * Function setupEventListeners - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
- */
-
+// ======================== Event Listeners ========================
+// Setup event listeners for the game.
 function setupEventListeners() {
     canvas.addEventListener('keydown', handleJumpStart);
     canvas.addEventListener('keyup', handleJumpEnd);
@@ -97,11 +83,8 @@ function setupEventListeners() {
     canvas.addEventListener('click', () => canvas.focus());
 }
 
-/**
- * Function handleJumpStart - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
- */
+
+// Handle the start of a jump.
 
 function handleJumpStart(e) {
     if (e.code === 'Space' && !gameState.player.isJumping) {
@@ -114,11 +97,8 @@ function handleJumpStart(e) {
     }
 }
 
-/**
- * Function handleJumpEnd - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
- */
+
+// Handle the end of a jump.
 
 function handleJumpEnd(e) {
     if (e.code === 'Space') {
@@ -127,11 +107,8 @@ function handleJumpEnd(e) {
     }
 }
 
-/**
- * Function preventSpacebarScroll - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
- */
+
+// Prevent the spacebar from scrolling the page.
 
 function preventSpacebarScroll(e) {
     if (e.code === 'Space') {
@@ -139,13 +116,43 @@ function preventSpacebarScroll(e) {
     }
 }
 
-// Generate obstacles
-/**
- * Function generateObstacle - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
- */
 
+// Handle right arrow press for acceleration.
+
+function handleRightArrowPress(e) {
+    if (e.code === 'ArrowRight') {
+        gameState.player.isAcceleratingRight = true;
+    }
+}
+
+
+// Handle right arrow release to stop acceleration.
+
+function handleRightArrowRelease(e) {
+    if (e.code === 'ArrowRight') {
+        gameState.player.isAcceleratingRight = false;
+    }
+}
+
+// Set up a listener for pause button
+window.addEventListener('keydown', (e) => {
+    if (e.code === 'Escape') {
+        e.preventDefault(); // Prevent default tab behavior
+        if (isPaused) {
+            resumeGame();
+        } else {
+            pauseGame();
+        }
+    }
+});
+
+
+//Set up event handler for restart button
+document.getElementById('restartButton').addEventListener('click', () => {
+    resetGame();
+});
+// ======================== Obstacles ========================
+// Generate obstacles in the game.
 function generateObstacle() {
     const startX = canvas.width + 40;
     const clusterChance = Math.random();
@@ -178,17 +185,11 @@ function generateObstacle() {
     gameState.obstacleInterval = getRandomInterval(90, 150);
 }
 
-/**
- * Function createWall - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
- */
-
+// Wall creation logic
 function createWall(startX) {
     const obstacleWidth = 40; // Width of the wall
     const obstacleHeight = 100; // Height of the wall
     const y = groundLevel - obstacleHeight; // Calculate the vertical position
-
     // Add the wall to the game state
     gameState.obstacles.push({
         type: 'wall',
@@ -199,11 +200,11 @@ function createWall(startX) {
     });
 }
 
+// Wall creation logic
 function createWall2(startX) {
     const obstacleWidth = 40; // Width of wall2
     const obstacleHeight = 80; // Height of wall2
     const y = groundLevel - obstacleHeight;
-
     gameState.obstacles.push({
         type: 'wall2',
         x: startX,
@@ -213,11 +214,11 @@ function createWall2(startX) {
     });
 }
 
+// Wall creation logic
 function createWall3(startX) {
     const obstacleWidth = 40; // Same width as other walls
     const obstacleHeight = 60; // Slightly shorter than wall2
     const y = groundLevel - obstacleHeight;
-
     gameState.obstacles.push({
         type: 'wall3',
         x: startX,
@@ -227,6 +228,7 @@ function createWall3(startX) {
     });
 }
 
+// Wall creation logic
 function createWallCluster(startX) {
     const clusterSize = Math.floor(Math.random() * 19) + 5; // Random size between 2 and 20
     const wallTypes = [createWall, createWall2, createWall3]; // Possible wall types
@@ -246,23 +248,19 @@ function createWallCluster(startX) {
         } else {
             wallType = wallTypes[Math.floor(Math.random() * wallTypes.length)];
         }
-
         // If the new wall type is different, reset the sameTypeCount.
         if (wallType !== lastWallType) {
             sameTypeCount = 1;
         } else {
             sameTypeCount++;
         }
-
         // Update the lastWallType for the next iteration.
         lastWallType = wallType;
-
         // Determine wall dimensions and position
         const obstacleWidth = 40;
         const obstacleHeight =
             wallType === createWall ? 100 : wallType === createWall2 ? 80 : 60;
         const y = groundLevel - obstacleHeight;
-
         // Add the wall to the game state
         gameState.obstacles.push({
             type: wallType === createWall ? 'wall' : wallType === createWall2 ? 'wall2' : 'wall3',
@@ -271,9 +269,8 @@ function createWallCluster(startX) {
             width: obstacleWidth,
             height: obstacleHeight
         });
-
         // Add spikes only if conditions are met
-        const isEligibleForSpike = 
+        const isEligibleForSpike =
             i >= 7 &&               // Not in the first 7 walls
             i <= clusterSize - 3 && // Not in the last 2 walls
             i - lastSpikePosition >= 5 && // At least 5 walls apart
@@ -284,18 +281,12 @@ function createWallCluster(startX) {
             lastSpikePosition = i;
             spikesAdded++;
         }
-
         // Increment x position for the next wall
         currentX += obstacleWidth; // Walls are 40px wide
     }
 }
 
-/**
- * Function createSpikes - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
- */
-
+// Spike creation logic
 function createSpikes(startX, wallTopY) {
     const spikeWidth = 20; // Width of each spike
     const spikeHeight = 30; // Height of each spike
@@ -311,13 +302,8 @@ function createSpikes(startX, wallTopY) {
     });
 }
 
-// Collision detection and resolution
-/**
- * Function resolveCollisions - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
- */
-
+// ======================== Game Mechanics ========================
+// Resolve collisions between the player and obstacles.
 function resolveCollisions() {
     const player = gameState.player;
 
@@ -328,12 +314,7 @@ function resolveCollisions() {
     });
 }
 
-/**
- * Function isColliding - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
- */
-
+// Check if the player is colliding with an obstacle.
 function isColliding(player, obstacle) {
     return (
         player.x < obstacle.x + obstacle.width &&
@@ -343,12 +324,7 @@ function isColliding(player, obstacle) {
     );
 }
 
-/**
- * Function handleCollision - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
- */
-
+// Handle collision between the player and an obstacle.
 function handleCollision(player, obstacle) {
     const overlapX = Math.min(
         player.x + player.width - obstacle.x,
@@ -401,13 +377,7 @@ function handleCollision(player, obstacle) {
     }
 }
 
-// Game over
-/**
- * Function gameOver - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
- */
-
+// End the game when a game-over condition is met.
 function gameOver() {
     gameState.gameRunning = false;
 
@@ -418,21 +388,12 @@ function gameOver() {
     } else {
         console.error('Element with ID "playGameTitle" not found.');
     }
-
-    // Optionally, log the player's time
-    console.log(`Player survived for ${gameState.elapsedTime / 1000} seconds`);
-
     // Save the player's score
     saveScore();
 }
 
-// Update functions
-/**
- * Function updatePlayer - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
- */
-
+// ======================== Updates ========================
+// Player position updates
 function updatePlayer() {
     const player = gameState.player;
 
@@ -460,12 +421,7 @@ function updatePlayer() {
     }
 }
 
-/**
- * Function updateObstacles - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
- */
-
+// Obstacle position updates
 function updateObstacles() {
     gameState.obstacles.forEach(obstacle => {
         obstacle.x -= gameState.scrollSpeed;
@@ -483,13 +439,8 @@ function updateObstacles() {
     }
 }
 
-// Render functions
-/**
- * Function drawBackground - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
- */
-
+// ======================== Rendering ========================
+// Draw background logic
 function drawBackground() {
     gameState.backgroundX -= gameState.scrollSpeed;
 
@@ -513,12 +464,7 @@ function drawBackground() {
     }
 }
 
-/**
- * Function drawPlayer - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
- */
-
+// Draw player logic
 function drawPlayer() {
     const player = gameState.player;
 
@@ -531,12 +477,7 @@ function drawPlayer() {
     );
 }
 
-/**
- * Function drawObstacles - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
- */
-
+// Draw obstacles logic
 function drawObstacles() {
     gameState.obstacles.forEach(obstacle => {
         if (obstacle.type === 'wall') {
@@ -557,105 +498,8 @@ function drawObstacles() {
     });
 }
 
-
-
-// Utility functions
-/**
- * Function getRandomInterval - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
- */
-
-function getRandomInterval(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-document.getElementById('restartButton').addEventListener('click', () => {
-    resetGame();
-});
-
-
-/**
- * Function handleRightArrowPress - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
- */
-
-function handleRightArrowPress(e) {
-    if (e.code === 'ArrowRight') {
-        gameState.player.isAcceleratingRight = true;
-    }
-}
-
-/**
- * Function handleRightArrowRelease - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
- */
-
-function handleRightArrowRelease(e) {
-    if (e.code === 'ArrowRight') {
-        gameState.player.isAcceleratingRight = false;
-    }
-}
-
-
-let animationFrameId;
-let isPaused = false;
-
-/**
- * Function pauseGame - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
- */
-
-function pauseGame() {
-    isPaused = true;
-
-    gameState.pauseStart = Date.now(); // Get the time the user paused
-
-    if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
-    }
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-}
-
-/**
- * Function resumeGame - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
- */
-
-function resumeGame() {
-    if (isPaused) {
-        isPaused = false;
-        const pausedDuration = Date.now() - gameState.pauseStart;
-        gameState.totalPauseTime += pausedDuration;
-        gameState.pauseStart = null;
-        gameLoop(); // Restart the game loop
-    }
-}
-
-// Event listener for Tab key to toggle pause/resume
-window.addEventListener('keydown', (e) => {
-    if (e.code === 'Escape') {
-        e.preventDefault(); // Prevent default tab behavior
-        if (isPaused) {
-            resumeGame();
-        } else {
-            pauseGame();
-        }
-    }
-});
-
-// Update the game loop to account for pause
-/**
- * Function gameLoop - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
- */
-
+// ======================== Game Loop ========================
+// Main game loop to update and render the game.
 function gameLoop() {
     if (!gameState.gameRunning || isPaused) return;
 
@@ -675,12 +519,7 @@ function gameLoop() {
     drawObstacles();
 }
 
-/**
- * Function resetGame - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
- */
-
+// Reset the game to its initial state.
 function resetGame() {
     // Reset all game state
     Object.assign(gameState, createGameState());
@@ -708,17 +547,17 @@ function resetGame() {
     gameLoop();
 }
 
+// ======================== Utilities ========================
+// Gets a random number in an interval
+function getRandomInterval(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
-/**
- * Function getTime - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
- */
-
+// Get the time survived
 function getTime() {
     const now = Date.now();
     gameState.elapsedTime = now - gameState.startTime - gameState.totalPauseTime;
-    gameState.score += 10 * gameState.multiplier;
+    gameState.score += 10// gameState.multiplier;
 
     // If elapsed time has passed another 5000ms interval since the last speed-up
     if (gameState.elapsedTime - gameState.lastSpeedUp >= 4950) {
@@ -727,33 +566,14 @@ function getTime() {
     }
 }
 
-/**
- * Function speedUp - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
- */
-
+// Speed up the game
 function speedUp() {
     gameState.scrollSpeed *= 1.05;
     gameState.multiplier *= 1.05;
-    console.log(`Speed up to ${gameState.scrollSpeed.toFixed(2)}, multiplier is ${gameState.multiplier.toFixed(2)}`)
 }
 
-
-/**
- * Function saveScore - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
- */
-
+// Save the player's score
 function saveScore() {
-/**
- * Fetch request to '/update-stats', { - [Purpose of request]
- * @param url Endpoint URL
- * @param options Fetch options (headers, body, etc.)
- * @returns Promise resolving with the response
- */
-
     fetch('/update-stats', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -769,13 +589,34 @@ function saveScore() {
             }
             return response.json();
         })
-        .then((data) => {
-            console.log('Stats saved:', data);
-        })
         .catch((err) => console.error('Error saving stats:', err));
 }
 
-// Initialization
+// Pauses the game
+function pauseGame() {
+    isPaused = true;
+
+    gameState.pauseStart = Date.now(); // Get the time the user paused
+
+    if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+    }
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+// Resumes the game
+function resumeGame() {
+    if (isPaused) {
+        isPaused = false;
+        const pausedDuration = Date.now() - gameState.pauseStart;
+        gameState.totalPauseTime += pausedDuration;
+        gameState.pauseStart = null;
+        gameLoop(); // Restart the game loop
+    }
+}
+
+// ======================== Initialization ========================
 document.addEventListener("DOMContentLoaded", () => {
     const titleElement = document.getElementById('playGameTitle');
     const startOverlay = document.getElementById('startOverlay'); // Select the overlay
@@ -799,28 +640,26 @@ document.addEventListener("DOMContentLoaded", () => {
         new Promise((resolve) => (wallSprite2.onload = resolve)),
         new Promise((resolve) => (spikeSprite.onload = resolve))
     ])
-    .then(() => {
-        console.log("All assets loaded successfully.");
+        .then(() => {
+            setupEventListeners();
+            gameState.startTime = Date.now();
+            gameState.totalPauseTime = 0;
+            gameState.pauseStart = null;
+            gameState.lastSpeedUp = 0;
+            gameState.score = 0;
 
-        setupEventListeners();
-        gameState.startTime = Date.now();
-        gameState.totalPauseTime = 0;
-        gameState.pauseStart = null;
-        gameState.lastSpeedUp = 0;
-        gameState.score = 0;
-
-        // Start the game loop after a short delay
-        setTimeout(() => {
-            if (startOverlay) {
-                startOverlay.style.display = "none"; // Hide the overlay
-            }
-            if (titleElement) {
-                titleElement.textContent = "Play Shape Run"; // Ensure title is reset
-            }
-            gameLoop(); // Begin the game loop
-        }, 5000);
-    })
-    .catch((error) => {
-        console.error("Error loading assets:", error);
-    });
+            // Start the game loop after a short delay
+            setTimeout(() => {
+                if (startOverlay) {
+                    startOverlay.style.display = "none"; // Hide the overlay
+                }
+                if (titleElement) {
+                    titleElement.textContent = "Play Shape Run"; // Ensure title is reset
+                }
+                gameLoop(); // Begin the game loop
+            }, 5000);
+        })
+        .catch((error) => {
+            console.error("Error loading assets:", error);
+        });
 });

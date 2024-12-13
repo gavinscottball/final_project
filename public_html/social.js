@@ -1,21 +1,13 @@
 /**
  * @file social.js
- * @description This file contains the logic comments on the leaderboard
+ * @description This file contains the logic for comments on the leaderboard.
  * 
  * @authors [Gavin Ball, Joshua Stambaugh]
  */
 
-
+// ======================== Initial Setup ========================
 document.addEventListener("DOMContentLoaded", () => {
     // Check session status
-
-/**
- * Fetch request to '/session', { credentials: 'include' } - [Purpose of request]
- * @param url Endpoint URL
- * @param options Fetch options (headers, body, etc.)
- * @returns Promise resolving with the response
- */
-
     fetch('/session', { credentials: 'include' })
         .then(response => {
             if (response.ok) {
@@ -25,15 +17,13 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         })
         .then(data => {
-
-            // Proceed with fetching comments if logged in
-            fetchComments();
+            fetchComments(); // Fetch comments if logged in
         })
         .catch(err => {
             console.error("Error fetching session status:", err);
         });
 
-    // Add event listener for posting comments
+    // Add event listeners for buttons
     document.getElementById("addCommentBtn").addEventListener("click", () => {
         const commentInput = document.getElementById("commentInput");
         const commentText = commentInput.value.trim();
@@ -50,49 +40,40 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("sortNewestBtn").addEventListener("click", () => sortComments("newest"));
 });
 
-// Fetch comments from the server
+// ======================== Comment Fetching ========================
 /**
- * Function fetchComments - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
+ * Fetch comments from the server.
  */
-
 function fetchComments() {
     fetch(`/getComments?sort=${currentSortBy}`, { credentials: 'include' })
         .then(response => response.json())
-        .then(comments => {
-            renderComments(comments)
-        }
-        )
+        .then(comments => renderComments(comments))
         .catch(err => console.error("Error fetching comments:", err));
 }
 
-// Post a new comment
+// ======================== Comment Posting ========================
 /**
- * Function postComment - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
+ * Post a new comment to the server.
+ * @param {string} commentText - The comment text to post.
  */
-
 async function postComment(commentText) {
     fetch('/postComment', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' }, // Corrected typo
-        credentials: 'include', // Include cookies
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ comment: commentText })
     })
         .then(response => response.json())
-        .then(data => {
+        .then(() => {
             fetchComments(); // Refresh comments after posting
         })
         .catch(err => console.error("Error posting comment:", err));
 }
 
-
+// ======================== Comment Rendering ========================
 /**
- * Function renderComments - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
+ * Render comments on the page.
+ * @param {Array} comments - List of comments to render.
  */
 let currentSortBy = 'newest'; // Default sorting
 function renderComments(comments) {
@@ -134,7 +115,7 @@ function renderComments(comments) {
         // Replies container
         const repliesContainer = document.createElement('ul');
         repliesContainer.classList.add('replies-container');
-        renderReplies(comment.replies, repliesContainer); // Render replies using the new function
+        renderReplies(comment.replies, repliesContainer); // Render replies
         li.appendChild(repliesContainer);
 
         // Reply form
@@ -151,74 +132,39 @@ function renderComments(comments) {
     });
 }
 
+/**
+ * Render replies for a comment.
+ * @param {Array} replies - List of replies to render.
+ * @param {HTMLElement} container - Container for replies.
+ */
 function renderReplies(replies, container) {
     container.innerHTML = ''; // Clear existing replies
-
     replies?.forEach(reply => {
         const replyLi = document.createElement('li');
         replyLi.classList.add('comment-reply');
 
-        // Create a span for the username
         const usernameSpan = document.createElement('span');
         usernameSpan.className = 'comment-username';
         usernameSpan.textContent = `@${reply.username}: `;
         usernameSpan.style.color = 'rgb(233, 45, 134)'; // Set color for the username
 
-        // Create a span for the reply text
         const replyTextSpan = document.createElement('span');
         replyTextSpan.className = 'comment-text';
         replyTextSpan.textContent = reply.text;
         replyTextSpan.style.color = 'white'; // Set color for the reply text
 
-        // Append both spans to the reply list item
         replyLi.appendChild(usernameSpan);
         replyLi.appendChild(replyTextSpan);
         container.appendChild(replyLi);
     });
 }
 
+// ======================== Reply Handling ========================
 /**
- * Function showReplyForm - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
+ * Submit a reply to a comment.
+ * @param {Event} event - The submit event.
+ * @param {number} commentId - The ID of the comment to reply to.
  */
-
-function showReplyForm(commentId) {
-    const commentElement = document.querySelector(`[data-id='${commentId}']`);
-    const replyForm = commentElement.querySelector('.reply-form');
-    replyForm.classList.remove('hidden');
-}
-
-/**
- * Function postReply - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
- */
-
-async function postReply(parentCommentId, replyText) {
-    fetch('/postReply', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ commentId: parentCommentId, text: replyText })
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                fetchComments(); // Refresh comments while maintaining current sorting
-            } else {
-                alert(data.error || 'Error posting reply.');
-            }
-        })
-        .catch(err => console.error('Error posting reply:', err));
-}
-
-/**
- * Function submitReply - SUbmission for a reply to an existing comment
- * @param event, commentId
- * @returns none
- */
-
 function submitReply(event, commentId) {
     event.preventDefault();
 
@@ -236,11 +182,33 @@ function submitReply(event, commentId) {
 }
 
 /**
- * Function likeComment - Functions to like a comment
- * @param commentId, the unique id for a comment
- * @returns none
+ * Post a reply to the server.
+ * @param {number} parentCommentId - The ID of the parent comment.
+ * @param {string} replyText - The reply text.
  */
+async function postReply(parentCommentId, replyText) {
+    fetch('/postReply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ commentId: parentCommentId, text: replyText })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                fetchComments(); // Refresh comments
+            } else {
+                alert(data.error || 'Error posting reply.');
+            }
+        })
+        .catch(err => console.error('Error posting reply:', err));
+}
 
+// ======================== Comment Actions ========================
+/**
+ * Like a comment.
+ * @param {number} commentId - The ID of the comment to like.
+ */
 function likeComment(commentId) {
     fetch('/likeComment', {
         method: 'POST',
@@ -250,7 +218,7 @@ function likeComment(commentId) {
     })
         .then(response => {
             if (response.ok) {
-                fetchComments();
+                fetchComments(); // Refresh comments
                 return response.json();
             } else {
                 throw new Error('You have already liked this comment');
@@ -262,86 +230,26 @@ function likeComment(commentId) {
 }
 
 /**
- * Function sortComments - Sorts the comments
- * @param sortBy, how the comments should be sorted
- * @returns none
+ * Sort comments based on a criterion.
+ * @param {string} sortBy - The criterion to sort by (e.g., "likes", "newest").
  */
-
 function sortComments(sortBy) {
-    currentSortBy = sortBy; // Update the global sorting state
+    currentSortBy = sortBy; // Update global sort state
     fetch(`/getComments?sort=${sortBy}`, { credentials: 'include' })
         .then(response => response.json())
         .then(comments => renderComments(comments))
         .catch(err => console.error("Error sorting comments:", err));
 }
 
-
-// Javascript for leaderboard
-let leaderboardPolling;
-
+// ======================== Leaderboard Handling ========================
 document.addEventListener("DOMContentLoaded", () => {
     fetchLeaderboard();
     leaderboardPolling = setInterval(fetchLeaderboard, 5000); // Poll every 5 seconds
 });
 
-
 /**
- * Function addLeaderboardEntry - Adds a new entry to the leaderboard
- * @param player, score, time are leaderboard entry details
- * @returns none
+ * Fetch the leaderboard from the server.
  */
-
-function addLeaderboardEntry(player, score, time) {
-    const leaderboardTableBody = document.querySelector("#leaderboardTable tbody");
-
-    // Create an array of current players
-    const players = Array.from(leaderboardTableBody.children).map(row => {
-        const cells = row.children;
-        return {
-            name: cells[1].textContent,
-            score: parseInt(cells[2].textContent, 10),
-            time: parseFloat(cells[3].textContent) // Parse time as a float
-        };
-    });
-
-    // Add the new player
-    players.push({ name: player, score, time });
-
-    // Sort players by score (descending) and time (ascending as a tiebreaker)
-    players.sort((a, b) => b.score - a.score || a.time - b.time);
-
-    // Clear the table and rebuild it
-    leaderboardTableBody.innerHTML = "";
-    players.forEach((player, index) => {
-        const newRow = document.createElement("tr");
-
-        const positionCell = document.createElement("td");
-        positionCell.textContent = index + 1; // Rank based on sorted order
-
-        const playerCell = document.createElement("td");
-        playerCell.textContent = player.name;
-
-        const scoreCell = document.createElement("td");
-        scoreCell.textContent = player.score;
-
-        const timeCell = document.createElement("td");
-        timeCell.textContent = player.time.toFixed(2); // Format time to 2 decimal places
-
-        newRow.appendChild(positionCell);
-        newRow.appendChild(playerCell);
-        newRow.appendChild(scoreCell);
-        newRow.appendChild(timeCell);
-
-        leaderboardTableBody.appendChild(newRow);
-    });
-}
-
-/**
- * Function displayLeaderboard - Gets the leaderboard from the database
- * @param none
- * @returns none
- */
-
 async function fetchLeaderboard() {
     try {
         const response = await fetch('/get-leaderboard');
@@ -350,7 +258,6 @@ async function fetchLeaderboard() {
         }
 
         const leaderboard = await response.json();
-
         displayLeaderboard(leaderboard);
     } catch (err) {
         console.error('Error fetching leaderboard:', err);
@@ -358,11 +265,9 @@ async function fetchLeaderboard() {
 }
 
 /**
- * Function displayLeaderboard - Displays the player leaderboard
- * @param leaderboard, the database object
- * @returns none
+ * Display the leaderboard on the page.
+ * @param {Array} leaderboard - The leaderboard data.
  */
-
 function displayLeaderboard(leaderboard) {
     const leaderboardTableBody = document.querySelector("#leaderboardTable tbody");
     leaderboardTableBody.innerHTML = ""; // Clear existing content
@@ -380,7 +285,7 @@ function displayLeaderboard(leaderboard) {
         scoreCell.textContent = entry.score;
 
         const timeCell = document.createElement("td");
-        timeCell.textContent = entry.time.toFixed(2); // Format time to 2 decimal places
+        timeCell.textContent = entry.time.toFixed(2);
 
         row.appendChild(positionCell);
         row.appendChild(usernameCell);
@@ -390,6 +295,3 @@ function displayLeaderboard(leaderboard) {
         leaderboardTableBody.appendChild(row);
     });
 }
-
-
-
