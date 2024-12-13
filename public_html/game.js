@@ -433,7 +433,6 @@ function speedUp(){
     gameState.scrollSpeed *= 1.05;
     gameState.multiplier *= 1.05;
     console.log(`Speed up to ${gameState.scrollSpeed.toFixed(2)}, multiplier is ${gameState.multiplier.toFixed(2)}`)
-    getScore();
 }
 
 

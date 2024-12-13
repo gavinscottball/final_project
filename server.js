@@ -39,6 +39,14 @@ const PlayerSchema = new mongoose.Schema({
 
 const Player = mongoose.model("Player", PlayerSchema);
 
+
+const LeaderboardSchema = new mongoose.Schema({
+    board: { type: [{username: String, score: Number, time: Number}], default: []}
+});
+
+const Leaderboard = mongoose.model("Leaderboard", LeaderboardSchema);
+let leaderboard = new Leaderboard();
+
 mongoose.connect(URL)
     .then(() => console.log("Connected to MongoDB"))
     .catch((err) => console.log(err));
@@ -60,6 +68,7 @@ async function findPlayer(username) {
         throw err;
     }
 }
+
 
 // Hash a user's password with a salt
 function hash(password, salt) {
@@ -185,7 +194,11 @@ app.post('/update-stats', isLoggedIn, async (req, res) => {
         player.stats.push({ score, time });
         await player.save(); // Save updated player document to the database
         console.log(`${username} saved their stats, scored ${score} points in ${time} seconds`);
-        res.status(200).json({ message: 'Stats saved successfully' });
+
+        leaderboard.board.push({username: username, score: score, time: time});
+        await leaderboard.save();
+
+        res.status(200).json({ message: 'Stats saved successfully to user and leaderboard' });
     } catch (err) {
         console.error('Error saving stats:', err);
         res.status(500).json({ message: 'Error saving stats' });
