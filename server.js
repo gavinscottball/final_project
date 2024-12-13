@@ -338,8 +338,40 @@ app.get('/getComments', (req, res) => {
 });
 
 // Get leaderboard
-app.get('/get-leadboard', (res) => {
-    res.json(leaderboard);
+app.get('/get-leaderboard', async (req, res) => {
+    try {
+        // Fetch all players
+        const players = await Player.find();
+
+        if (!players || players.length === 0) {
+            console.log("No players found.");
+            return res.json([]); // Return an empty array if no players exist
+        }
+
+        // Process the data to extract the highest score for each user
+        const leaderboard = players
+            .filter(player => player.stats && player.stats.length > 0) // Exclude players with no stats
+            .map(player => {
+                // Find the highest score in the player's stats
+                const highestStat = player.stats.reduce((max, stat) => {
+                    return stat.score > max.score ? stat : max;
+                }, { score: 0, time: Infinity });
+
+                return {
+                    username: player.acct_name,
+                    score: Math.floor(highestStat.score/10),
+                    time: highestStat.time
+                };
+            });
+
+        // Sort the leaderboard by score (descending) and time (ascending as a tiebreaker)
+        leaderboard.sort((a, b) => b.score - a.score || a.time - b.time);
+
+        res.json(leaderboard);
+    } catch (err) {
+        console.error('Error fetching leaderboard:', err);
+        res.status(500).json({ error: 'Error fetching leaderboard' });
+    }
 });
 
 

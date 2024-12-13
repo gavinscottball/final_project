@@ -1,3 +1,5 @@
+// javascript for comments
+
 document.addEventListener("DOMContentLoaded", () => {
     // Check session status
     
@@ -10,14 +12,12 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         })
         .then(data => {
-            console.log("Session status:", data);
 
             // Proceed with fetching comments if logged in
             fetchComments();
         })
         .catch(err => {
             console.error("Error fetching session status:", err);
-            alert("You must be logged in to view and post comments.");
         });
     
     // Add event listener for posting comments
@@ -36,9 +36,6 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("sortLikesBtn").addEventListener("click", () => sortComments("likes"));
     document.getElementById("sortNewestBtn").addEventListener("click", () => sortComments("newest"));
 });
-
-
-// javascript for comments
 
 // Fetch comments from the server
 function fetchComments() {
@@ -142,18 +139,28 @@ function sortComments(sortBy) {
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Javascript for leaderboard
+let leaderboardPolling;
 
 document.addEventListener("DOMContentLoaded", () => {
-    initializeLeaderboard();
-    populatePhonyLeaderboard();
+    fetchLeaderboard();
+    leaderboardPolling = setInterval(fetchLeaderboard, 5000); // Poll every 5 seconds
 });
 
-// Initialize leaderboard with default empty rows
-function initializeLeaderboard() {
-    const leaderboardTableBody = document.querySelector("#leaderboardTable tbody");
-    leaderboardTableBody.innerHTML = ""; // Clear all rows
-}
 
 // Add a new entry to the leaderboard
 function addLeaderboardEntry(player, score, time) {
@@ -201,24 +208,49 @@ function addLeaderboardEntry(player, score, time) {
     });
 }
 
+async function fetchLeaderboard() {
+    try {
+        const response = await fetch('/get-leaderboard');
+        if (!response.ok) {
+            throw new Error('Failed to fetch leaderboard');
+        }
 
-// leaderboard testing, DELETE LATER:
-//########################################READ THIS########################################
-// This is how you can add the score and the player name to the leaderboard. It automatically sorts and ranks and sizes
-// them so we just need the score from the database
-function populatePhonyLeaderboard() {
-    const players = [
-        { name: "Herobrine", score: 420, time: 35.5 },
-        { name: "Joey", score: -473, time: 120.0 },
-        { name: "'Hawk' Tua Selusi", score: 690, time: 27.8 },
-        { name: "Mater", score: 9001, time: 15.0 },
-        { name: "Phony5", score: 90, time: 50.2 },
-        { name: "Phony6", score: 300, time: 60.1 },
-        { name: "Phony7", score: 300, time: 45.0 },
-        { name: "Phony8", score: 110, time: 70.3 }
-    ];
+        const leaderboard = await response.json();
 
-    players.forEach(player => addLeaderboardEntry(player.name, player.score, player.time));
+        displayLeaderboard(leaderboard);
+    } catch (err) {
+        console.error('Error fetching leaderboard:', err);
+    }
 }
+
+function displayLeaderboard(leaderboard) {
+    const leaderboardTableBody = document.querySelector("#leaderboardTable tbody");
+    leaderboardTableBody.innerHTML = ""; // Clear existing content
+
+    leaderboard.forEach((entry, index) => {
+        const row = document.createElement("tr");
+
+        const positionCell = document.createElement("td");
+        positionCell.textContent = index + 1;
+
+        const usernameCell = document.createElement("td");
+        usernameCell.textContent = entry.username;
+
+        const scoreCell = document.createElement("td");
+        scoreCell.textContent = entry.score;
+
+        const timeCell = document.createElement("td");
+        timeCell.textContent = entry.time.toFixed(2); // Format time to 2 decimal places
+
+        row.appendChild(positionCell);
+        row.appendChild(usernameCell);
+        row.appendChild(scoreCell);
+        row.appendChild(timeCell);
+
+        leaderboardTableBody.appendChild(row);
+    });
+}
+
+
 
 
