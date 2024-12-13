@@ -11,21 +11,13 @@ document.addEventListener("DOMContentLoaded", () => {
     initAccountHandlers(); // Initialize login, registration, and logout functionality
 });
 
-// Function to check user session
 /**
- * Function checkSession - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
+ * Function checkSession - Checks the user's session
+ * @param none
+ * @returns none
  */
 
 function checkSession() {
-/**
- * Fetch request to '/session', { - [Purpose of request]
- * @param url Endpoint URL
- * @param options Fetch options (headers, body, etc.)
- * @returns Promise resolving with the response
- */
-
     fetch('/session', {
         method: 'GET',
         credentials: 'include', // Ensure cookies are sent
@@ -62,20 +54,13 @@ document.addEventListener('DOMContentLoaded', checkSession);
 document.addEventListener('DOMContentLoaded', checkSession);
 
 /**
- * Function logoutUser - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
+ * Function logoutUser - Logs the user out of the server
+ * @param none
+ * @returns none
  */
 
 function logoutUser() {
     // Send a POST request to the server to log out the user
-/**
- * Fetch request to '/logout', { - [Purpose of request]
- * @param url Endpoint URL
- * @param options Fetch options (headers, body, etc.)
- * @returns Promise resolving with the response
- */
-
     fetch('/logout', {
         method: 'POST',
         credentials: 'include', // Include session cookies
@@ -100,11 +85,10 @@ function logoutUser() {
         });
 }
 
-/** Account Handling Functions */
 /**
- * Function initAccountHandlers - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
+ * Function initAccountHandlers - Initialization of event listeners
+ * @param none
+ * @returns none
  */
 
 function initAccountHandlers() {
@@ -144,9 +128,9 @@ function initAccountHandlers() {
 }
 
 /**
- * Function handleLogin - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
+ * Function handleLogin - Logs a user into the server
+ * @param none
+ * @returns none
  */
 
 function handleLogin() {
@@ -162,21 +146,14 @@ function handleLogin() {
 }
 
 /**
- * Function handleCreateAccount - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
+ * Function handleCreateAccount - Registers a new user
+ * @param event, account creation event
+ * @returns none
  */
 
 function handleCreateAccount(event) {
     event.preventDefault();
     const formData = new FormData(event.target);
-
-/**
- * Fetch request to '/register', { - [Purpose of request]
- * @param url Endpoint URL
- * @param options Fetch options (headers, body, etc.)
- * @returns Promise resolving with the response
- */
 
     fetch('/register', {
         method: 'POST',
@@ -214,18 +191,12 @@ function handleCreateAccount(event) {
 }
 
 /**
- * Function saveDetails - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
+ * Function saveDetails - Saves a user's profile details
+ * @param username, email, name, picture, bio are all a user's profile details
+ * @returns none
  */
 
 function saveDetails(username, email, name, picture, bio) {
-/**
- * Fetch request to '/update-profile', { - [Purpose of request]
- * @param url Endpoint URL
- * @param options Fetch options (headers, body, etc.)
- * @returns Promise resolving with the response
- */
 
     fetch('/update-profile', {
         method: 'POST',
@@ -246,18 +217,12 @@ function saveDetails(username, email, name, picture, bio) {
 }
 
 /**
- * Function login - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
+ * Function login - Logs a user into the site
+ * @param username and password, the user's login details
+ * @returns none
  */
 
 function login(username, password) {
-/**
- * Fetch request to '/login', { - [Purpose of request]
- * @param url Endpoint URL
- * @param options Fetch options (headers, body, etc.)
- * @returns Promise resolving with the response
- */
 
     fetch('/login', {
         method: 'POST',

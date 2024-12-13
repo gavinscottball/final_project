@@ -58,13 +58,6 @@ document.addEventListener("DOMContentLoaded", () => {
  */
 
 function fetchComments() {
-/**
- * Fetch request to '/getComments', { credentials: 'include' } - [Purpose of request]
- * @param url Endpoint URL
- * @param options Fetch options (headers, body, etc.)
- * @returns Promise resolving with the response
- */
-
     fetch('/getComments', { credentials: 'include' })
         .then(response => response.json())
         .then(comments => renderComments(comments))
@@ -79,13 +72,6 @@ function fetchComments() {
  */
 
 function postComment(commentText) {
-/**
- * Fetch request to '/postComment', { - [Purpose of request]
- * @param url Endpoint URL
- * @param options Fetch options (headers, body, etc.)
- * @returns Promise resolving with the response
- */
-
     fetch('/postComment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }, // Corrected typo
@@ -197,13 +183,6 @@ function showReplyForm(commentId) {
  */
 
 function postReply(parentCommentId, replyText) {
-/**
- * Fetch request to '/postReply', { - [Purpose of request]
- * @param url Endpoint URL
- * @param options Fetch options (headers, body, etc.)
- * @returns Promise resolving with the response
- */
-
     fetch('/postReply', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -222,9 +201,9 @@ function postReply(parentCommentId, replyText) {
 }
 
 /**
- * Function submitReply - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
+ * Function submitReply - SUbmission for a reply to an existing comment
+ * @param event, commentId
+ * @returns none
  */
 
 function submitReply(event, commentId) {
@@ -243,21 +222,13 @@ function submitReply(event, commentId) {
     replyInput.value = ''; // Clear input
 }
 
-// Like a comment
 /**
- * Function likeComment - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
+ * Function likeComment - Functions to like a comment
+ * @param commentId, the unique id for a comment
+ * @returns none
  */
 
 function likeComment(commentId) {
-/**
- * Fetch request to `/likeComment/${commentId}`, { - [Purpose of request]
- * @param url Endpoint URL
- * @param options Fetch options (headers, body, etc.)
- * @returns Promise resolving with the response
- */
-
     fetch(`/likeComment/${commentId}`, {
         method: 'POST',
         credentials: 'include'
@@ -273,40 +244,18 @@ function likeComment(commentId) {
         .catch(err => console.error("Error liking comment:", err));
 }
 
-// Sort comments
 /**
- * Function sortComments - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
+ * Function sortComments - Sorts the comments
+ * @param sortBy, how the comments should be sorted
+ * @returns none
  */
 
 function sortComments(sortBy) {
-/**
- * Fetch request to `/getComments?sort=${sortBy}`, { credentials: 'include' } - [Purpose of request]
- * @param url Endpoint URL
- * @param options Fetch options (headers, body, etc.)
- * @returns Promise resolving with the response
- */
-
     fetch(`/getComments?sort=${sortBy}`, { credentials: 'include' })
         .then(response => response.json())
         .then(comments => renderComments(comments))
         .catch(err => console.error("Error sorting comments:", err));
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 // Javascript for leaderboard
@@ -318,11 +267,10 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
-// Add a new entry to the leaderboard
 /**
- * Function addLeaderboardEntry - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
+ * Function addLeaderboardEntry - Adds a new entry to the leaderboard
+ * @param player, score, time are leaderboard entry details
+ * @returns none
  */
 
 function addLeaderboardEntry(player, score, time) {
@@ -370,15 +318,14 @@ function addLeaderboardEntry(player, score, time) {
     });
 }
 
-async function fetchLeaderboard() {
-    try {
 /**
- * Fetch request to '/get-leaderboard' - [Purpose of request]
- * @param url Endpoint URL
- * @param options Fetch options (headers, body, etc.)
- * @returns Promise resolving with the response
+ * Function displayLeaderboard - Gets the leaderboard from the database
+ * @param none
+ * @returns none
  */
 
+async function fetchLeaderboard() {
+    try {
         const response = await fetch('/get-leaderboard');
         if (!response.ok) {
             throw new Error('Failed to fetch leaderboard');
@@ -393,9 +340,9 @@ async function fetchLeaderboard() {
 }
 
 /**
- * Function displayLeaderboard - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
+ * Function displayLeaderboard - Displays the player leaderboard
+ * @param leaderboard, the database object
+ * @returns none
  */
 
 function displayLeaderboard(leaderboard) {

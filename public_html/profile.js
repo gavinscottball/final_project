@@ -21,11 +21,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-/** Load profile data using user details */
 /**
- * Function loadProfile - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
+ * Function loadProfile - Loads the profile of a user
+ * @param user, the logged in user
+ * @returns none
  */
 
 function loadProfile(user) {
@@ -47,9 +46,9 @@ function loadProfile(user) {
 
 
 /**
- * Function fetchProfileFromServer - [Describe functionality here]
- * @param [param_name] [Description]
- * @returns [Return value description]
+ * Function fetchProfileFromServer - Fetches the user's profile
+ * @param none
+ * @returns none
  */
 function fetchProfileFromServer() {
     fetch('/get-profile', {
@@ -72,7 +71,7 @@ function fetchProfileFromServer() {
 }
 
 
-
+// Edit profile
 document.getElementById('editProfileButton').addEventListener('click', () => {
     // Toggle bio editing
     document.getElementById('bioDisplay').style.display = 'none';
@@ -91,6 +90,7 @@ document.getElementById('editProfileButton').addEventListener('click', () => {
     document.getElementById('saveProfileButton').style.display = 'inline';
 });
 
+// Save profile
 document.getElementById('saveProfileButton').addEventListener('click', () => {
     const newBio = document.getElementById('bioInput').value;
     const newPicture = document.getElementById('profilePictureSelect').value;
@@ -131,9 +131,7 @@ document.getElementById('saveProfileButton').addEventListener('click', () => {
         });
 });
 
-document.getElementById('editProfileButton').style.display = 'inline';
-document.getElementById('saveProfileButton').style.display = 'none';
-
+// Logout button
 document.getElementById('logoutButton').addEventListener('click', () => {
     // Call the logout function from client.js
     logoutUser();

@@ -29,6 +29,7 @@ app.use(session({
     cookie: {
         secure: false, // Set to true if using HTTPS
         httpOnly: true, // Prevent JavaScript access to cookies
+        sameSite: 'lax',
     }
 }));
 
@@ -41,6 +42,7 @@ const DIGEST = 'sha256';
 // ======================== Database Setup ========================
 const URL = "mongodb://127.0.0.1/new_db";
 
+// Schema responsible for saving the leaderboard
 const PlayerSchema = new mongoose.Schema({
     acct_name: { type: String, required: true, unique: true },
     acct_password: { type: String, required: true },
@@ -53,7 +55,7 @@ const PlayerSchema = new mongoose.Schema({
 
 const Player = mongoose.model("Player", PlayerSchema);
 
-
+// Schema responsible for saving the leaderboard
 const LeaderboardSchema = new mongoose.Schema({
     board: { type: [{ username: String, score: Number, time: Number }], default: [] }
 });
@@ -61,6 +63,7 @@ const LeaderboardSchema = new mongoose.Schema({
 const Leaderboard = mongoose.model("Leaderboard", LeaderboardSchema);
 let leaderboard = new Leaderboard();
 
+// Schema responsible for saving comments and their replies
 const CommentSchema = new mongoose.Schema({
     id: { type: Number, unique: true },
     username: { type: String, required: true },
@@ -222,7 +225,7 @@ app.post('/get-profile', isLoggedIn, async (req, res) => {
     }
 });
 
-
+// Update stats route
 app.post('/update-stats', isLoggedIn, async (req, res) => {
     const { score, time } = req.body;
     const username = req.session.username;
@@ -242,7 +245,6 @@ app.post('/update-stats', isLoggedIn, async (req, res) => {
 
         leaderboard.board.push({ username: username, score: score, time: time });
         await leaderboard.save();
-
         res.status(200).json({ message: 'Stats saved successfully to user and leaderboard' });
     } catch (err) {
         console.error('Error saving stats:', err);
@@ -289,19 +291,12 @@ app.post('/logout', (req, res) => {
     });
 });
 
+// Session route
 app.get('/session', (req, res) => {
     if (req.session && req.session.user) {
         res.status(200).json(req.session.user); // Send user data
     } else {
         res.status(401).json({ message: 'Unauthorized' }); // Send 401 if no session
-    }
-});
-// Delete later
-app.get('/session', (req, res) => {
-    if (req.session && req.session.username) {
-        res.json({ loggedIn: true, username: req.session.username });
-    } else {
-        res.status(401).json({ loggedIn: false });
     }
 });
 
@@ -422,6 +417,7 @@ app.post('/likeComment/:id', (req, res) => {
     }
 });
 
+// Get comments
 app.get('/getComments', async (req, res) => {
     const sort = req.query.sort || 'newest'; // Default to 'newest'
     let sortedComments = [...comments]; // Clone in-memory comments array
