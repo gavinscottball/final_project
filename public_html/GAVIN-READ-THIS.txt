@@ -1,1 +1,0 @@
-I have left you somewhat useful comments on client.js and index.html

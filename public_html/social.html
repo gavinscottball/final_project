@@ -1,3 +1,9 @@
+<!--
+Authors: Josh Stambuagh & Gavin Ball
+This HTML document sets up our social area. social.js does most of the heavy lifting here,
+but this page sets up the comments and leaderboard areas.
+-->
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -14,7 +20,7 @@
 
 <body>
 
-    <!-- Header Section -->
+    <!-- header -->
     <div class="header">
         <div class="header-content">
             <h2 class="header-title">Shape Run</h2>
@@ -32,11 +38,10 @@
         </nav>
     </div>
 
-    <!-- Main Content -->
     <div class="content">
         <div class="social-container">
 
-            <!-- Leaderboard Section -->
+            <!-- leaderboard -->
             <div class="leaderboard-area">
                 <h2 class="section-title">Leaderboard</h2>
                 <table id="leaderboardTable">
@@ -49,17 +54,15 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Rows will be dynamically added here -->
+                        <!-- rows added in js -->
                     </tbody>
                 </table>
             </div>
 
-            <!-- Comments Section -->
+            <!-- comments -->
             <div class="social-area">
                 <h1 class="section-title">Comments</h1>
 
-                <!-- Comment Form -->
-                <!-- Comment Form -->
                 <div class="comment-controls">
                     <div class="comment-form">
                         <input type="text" id="commentInput" placeholder="Write a comment...">
@@ -72,13 +75,11 @@
                     </div>
                 </div>
 
-                <!-- Comments List -->
                 <ul id="commentList" class="comment-list"></ul>
             </div>
         </div>
     </div>
 
-    <!-- JavaScript Files -->
     <script src="client.js" defer></script>
     <script src="social.js" defer></script>
 </body>
