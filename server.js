@@ -88,7 +88,12 @@ mongoose.connect(URL)
     .catch((err) => console.log(err));
 
 // ======================== Utility Functions ========================
-// Hash a user's password with a salt
+/**
+ * Hash the user's password with a salt.
+ * @param {string} password - The user's password.
+ * @param {string} salt - The salt for hashing.
+ * @returns {Promise<string>} - A promise that resolves to a hashed password.
+ */
 function hash(password, salt) {
     return new Promise((resolve, reject) => {
         crypto.pbkdf2(password, salt, ITERATIONS, HASH_LENGTH, DIGEST, (err, derivedKey) => {
@@ -98,13 +103,25 @@ function hash(password, salt) {
     });
 }
 
-// Add a new player to the database
+/**
+ * Creates a new player and saves it to the database.
+ * @param {string} user - The username.
+ * @param {string} password - The user's hashed password.
+ * @param {string} email - The user's email.
+ * @param {string} real_name - The user's name.
+ * @param {string} picture - A string representing the user's profile picture.
+ * @param {string} bio - The user's bio.
+ */
 async function addPlayer(user, password, email, real_name, picture, bio) {
     const newPlayer = new Player({ acct_name: user, acct_password: password, email, real_name, profile_picture: picture, bio });
     await newPlayer.save();
 }
 
-// Find a player's account details in the database
+/**
+ * Finds the player's account in the database
+ * @param {string} username - The username.
+ * @returns {Promise<Player|null} - A promise that resolves to a player object.
+ */
 async function findPlayer(username) {
     try {
         return await Player.findOne({ acct_name: username });
@@ -114,13 +131,24 @@ async function findPlayer(username) {
     }
 }
 
-// Add a new comment
+/**
+ * Create a new comment and save it in the database.
+ * @param {number} id - The unique comment id.
+ * @param {string} username - The username of the commenter.
+ * @param {string} realName - The name of the commenter
+ * @param {string} text - The text contained in the comment
+ * @param {Date} timestamp - The timestamp of when the comment was published
+ */
 async function addComment(id, username, realName, text, timestamp) {
     const newComment = new Comment({ id, username, realName, text, timestamp });
     await newComment.save();
 }
 
-// Find a comment by ID
+/**
+ * Finds a comment by its unique ID.
+ * @param {number} id - The unique ID of the comment.
+ * @returns {Promise<Comment|null>} - A promise that resolves to the comment object if found, otherwise null.
+ */
 async function findComment(id) {
     try {
         return await Comment.findOne({ id });
@@ -130,7 +158,14 @@ async function findComment(id) {
     }
 }
 
-// Add a reply to a comment
+/**
+ * Adds a reply to an existing comment.
+ * @param {Comment} comment - The comment object to which the reply is being added.
+ * @param {string} username - The username of the replier.
+ * @param {string} realName - The real name of the replier.
+ * @param {number} likes - The initial number of likes for the reply.
+ * @param {string} text - The content of the reply.
+ */
 async function addReply(comment, username, realName, likes, text) {
     comment.replies.push({
         username,
@@ -142,7 +177,12 @@ async function addReply(comment, username, realName, likes, text) {
     await comment.save();
 }
 
-// Middleware to check if user is logged in
+/**
+ * Middleware function to check if a user is logged in.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @param {Function} next - The next middleware function.
+ */
 function isLoggedIn(req, res, next) {
     if (req.session.username) {
         next();

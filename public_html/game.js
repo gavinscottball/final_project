@@ -33,7 +33,10 @@ const groundLevel = 350;
 // ======================== Game State ========================
 const gameState = createGameState(); // Main game state object
 
-// Initialize game state
+/**
+ * Initializes and returns the main game state object.
+ * @returns {Object} - The initial game state containing all game-related variables.
+ */
 function createGameState() {
     return {
         scrollSpeed: 4,
@@ -58,7 +61,10 @@ function createGameState() {
     };
 }
 
-// Create player
+/**
+ * Creates and returns the initial player object.
+ * @returns {Object} - The player object with default attributes like position, size, and velocity.
+ */
 function createPlayer() {
     return {
         x: 300,
@@ -73,7 +79,9 @@ function createPlayer() {
 }
 
 // ======================== Event Listeners ========================
-// Setup event listeners for the game.
+/**
+ * Sets up all the necessary event listeners for game controls and interactions.
+ */
 function setupEventListeners() {
     canvas.addEventListener('keydown', handleJumpStart);
     canvas.addEventListener('keyup', handleJumpEnd);
@@ -83,9 +91,10 @@ function setupEventListeners() {
     canvas.addEventListener('click', () => canvas.focus());
 }
 
-
-// Handle the start of a jump.
-
+/**
+ * Handles the start of a jump when the spacebar is pressed.
+ * @param {KeyboardEvent} e - The keyboard event triggered by pressing a key.
+ */
 function handleJumpStart(e) {
     if (e.code === 'Space' && !gameState.player.isJumping) {
         gameState.player.velocityY = gameState.jumpForce;
@@ -97,9 +106,10 @@ function handleJumpStart(e) {
     }
 }
 
-
-// Handle the end of a jump.
-
+/**
+ * Handles the end of a jump when the spacebar is released.
+ * @param {KeyboardEvent} e - The keyboard event triggered by releasing a key.
+ */
 function handleJumpEnd(e) {
     if (e.code === 'Space') {
         gameState.player.isHoldingJump = false;
@@ -107,27 +117,30 @@ function handleJumpEnd(e) {
     }
 }
 
-
-// Prevent the spacebar from scrolling the page.
-
+/**
+ * Prevents the default scrolling behavior of the spacebar.
+ * @param {KeyboardEvent} e - The keyboard event triggered by pressing a key.
+ */
 function preventSpacebarScroll(e) {
     if (e.code === 'Space') {
         e.preventDefault();
     }
 }
 
-
-// Handle right arrow press for acceleration.
-
+/**
+ * Handles player acceleration when pressing the arrow key.
+ * @param {KeyboardEvent} e - The keyboard event triggered by pressing a key.
+ */
 function handleRightArrowPress(e) {
     if (e.code === 'ArrowRight') {
         gameState.player.isAcceleratingRight = true;
     }
 }
 
-
-// Handle right arrow release to stop acceleration.
-
+/**
+ * Handles the end of player acceleration when releasing the arrow key.
+ * @param {KeyboardEvent} e - The keyboard event triggered by pressing a key.
+ */
 function handleRightArrowRelease(e) {
     if (e.code === 'ArrowRight') {
         gameState.player.isAcceleratingRight = false;
@@ -152,7 +165,9 @@ document.getElementById('restartButton').addEventListener('click', () => {
     resetGame();
 });
 // ======================== Obstacles ========================
-// Generate obstacles in the game.
+/**
+ * Generates and adds a new obstacle to the game state.
+ */
 function generateObstacle() {
     const startX = canvas.width + 40;
     const clusterChance = Math.random();
@@ -185,7 +200,10 @@ function generateObstacle() {
     gameState.obstacleInterval = getRandomInterval(90, 150);
 }
 
-// Wall creation logic
+/**
+ * Creates a wall obstacle and adds it to the game state.
+ * @param {number} startX - The x-coordinate where the wall should start.
+ */
 function createWall(startX) {
     const obstacleWidth = 40; // Width of the wall
     const obstacleHeight = 100; // Height of the wall
@@ -200,7 +218,10 @@ function createWall(startX) {
     });
 }
 
-// Wall creation logic
+/**
+ * Creates a wall obstacle and adds it to the game state.
+ * @param {number} startX - The x-coordinate where the wall should start.
+ */
 function createWall2(startX) {
     const obstacleWidth = 40; // Width of wall2
     const obstacleHeight = 80; // Height of wall2
@@ -214,7 +235,10 @@ function createWall2(startX) {
     });
 }
 
-// Wall creation logic
+/**
+ * Creates a wall obstacle and adds it to the game state.
+ * @param {number} startX - The x-coordinate where the wall should start.
+ */
 function createWall3(startX) {
     const obstacleWidth = 40; // Same width as other walls
     const obstacleHeight = 60; // Slightly shorter than wall2
@@ -228,7 +252,10 @@ function createWall3(startX) {
     });
 }
 
-// Wall creation logic
+/**
+ * Creates a cluster of walls and optionally spikes, ensuring proper spacing and variety.
+ * @param {number} startX - The x-coordinate where the cluster should start.
+ */
 function createWallCluster(startX) {
     const clusterSize = Math.floor(Math.random() * 19) + 5; // Random size between 2 and 20
     const wallTypes = [createWall, createWall2, createWall3]; // Possible wall types
@@ -286,7 +313,11 @@ function createWallCluster(startX) {
     }
 }
 
-// Spike creation logic
+/**
+ * Creates spike obstacles and adds them to the game state.
+ * @param {number} startX - The x-coordinate for the spike.
+ * @param {number} wallTopY - The y-coordinate above the wall for placing the spike.
+ */
 function createSpikes(startX, wallTopY) {
     const spikeWidth = 20; // Width of each spike
     const spikeHeight = 30; // Height of each spike
@@ -303,7 +334,9 @@ function createSpikes(startX, wallTopY) {
 }
 
 // ======================== Game Mechanics ========================
-// Resolve collisions between the player and obstacles.
+/**
+ * Detects and resolves collisions between the player and obstacles.
+ */
 function resolveCollisions() {
     const player = gameState.player;
 
@@ -314,7 +347,12 @@ function resolveCollisions() {
     });
 }
 
-// Check if the player is colliding with an obstacle.
+/**
+ * Checks whether the player is colliding with a given obstacle.
+ * @param {Object} player - The player object.
+ * @param {Object} obstacle - The obstacle object.
+ * @returns {boolean} - True if the player is colliding with the obstacle, otherwise false.
+ */
 function isColliding(player, obstacle) {
     return (
         player.x < obstacle.x + obstacle.width &&
@@ -324,7 +362,11 @@ function isColliding(player, obstacle) {
     );
 }
 
-// Handle collision between the player and an obstacle.
+/**
+ * Handles the collision response between the player and an obstacle.
+ * @param {Object} player - The player object.
+ * @param {Object} obstacle - The obstacle object.
+ */
 function handleCollision(player, obstacle) {
     const overlapX = Math.min(
         player.x + player.width - obstacle.x,
@@ -377,7 +419,9 @@ function handleCollision(player, obstacle) {
     }
 }
 
-// End the game when a game-over condition is met.
+/**
+ * End the game when a game-over condition is met.
+ */
 function gameOver() {
     gameState.gameRunning = false;
 
@@ -393,7 +437,9 @@ function gameOver() {
 }
 
 // ======================== Updates ========================
-// Player position updates
+/**
+ * Updates the player's position and velocity based on game state and user input.
+ */
 function updatePlayer() {
     const player = gameState.player;
 
@@ -421,7 +467,9 @@ function updatePlayer() {
     }
 }
 
-// Obstacle position updates
+/**
+ * Updates the positions of obstacles and removes those that are off-screen.
+ */
 function updateObstacles() {
     gameState.obstacles.forEach(obstacle => {
         obstacle.x -= gameState.scrollSpeed;
@@ -440,7 +488,9 @@ function updateObstacles() {
 }
 
 // ======================== Rendering ========================
-// Draw background logic
+/**
+ * Draws the scrolling background of the game.
+ */
 function drawBackground() {
     gameState.backgroundX -= gameState.scrollSpeed;
 
@@ -464,7 +514,9 @@ function drawBackground() {
     }
 }
 
-// Draw player logic
+/**
+ * Draws the player character on the canvas.
+ */
 function drawPlayer() {
     const player = gameState.player;
 
@@ -477,7 +529,9 @@ function drawPlayer() {
     );
 }
 
-// Draw obstacles logic
+/**
+ * Draws all obstacles currently in the game state.
+ */
 function drawObstacles() {
     gameState.obstacles.forEach(obstacle => {
         if (obstacle.type === 'wall') {
@@ -499,7 +553,9 @@ function drawObstacles() {
 }
 
 // ======================== Game Loop ========================
-// Main game loop to update and render the game.
+/**
+ * The main game loop that updates and renders the game on each frame.
+ */
 function gameLoop() {
     if (!gameState.gameRunning || isPaused) return;
 
@@ -519,7 +575,9 @@ function gameLoop() {
     drawObstacles();
 }
 
-// Reset the game to its initial state.
+/**
+ * Resets the game state and starts a new game.
+ */
 function resetGame() {
     // Reset all game state
     Object.assign(gameState, createGameState());
@@ -548,12 +606,19 @@ function resetGame() {
 }
 
 // ======================== Utilities ========================
-// Gets a random number in an interval
+/**
+ * Generates a random number within a specified range.
+ * @param {number} min - The minimum value (inclusive).
+ * @param {number} max - The maximum value (inclusive).
+ * @returns {number} - A random number between min and max.
+ */
 function getRandomInterval(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-// Get the time survived
+/**
+ * Calculates and updates the elapsed time and score for the current game session.
+ */
 function getTime() {
     const now = Date.now();
     gameState.elapsedTime = now - gameState.startTime - gameState.totalPauseTime;
@@ -566,13 +631,17 @@ function getTime() {
     }
 }
 
-// Speed up the game
+/**
+ * Increases the game's scroll speed and score multiplier for added difficulty.
+ */
 function speedUp() {
     gameState.scrollSpeed *= 1.05;
     gameState.multiplier *= 1.05;
 }
 
-// Save the player's score
+/**
+ * Sends the player's score and elapsed time to the server for saving.
+ */
 function saveScore() {
     fetch('/update-stats', {
         method: 'POST',
@@ -592,7 +661,9 @@ function saveScore() {
         .catch((err) => console.error('Error saving stats:', err));
 }
 
-// Pauses the game
+/**
+ * Pauses the game, stopping the animation loop and recording the pause time.
+ */
 function pauseGame() {
     isPaused = true;
 
@@ -605,7 +676,9 @@ function pauseGame() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
-// Resumes the game
+/**
+ * Resumes the game from a paused state, adjusting the total pause time.
+ */
 function resumeGame() {
     if (isPaused) {
         isPaused = false;
@@ -617,6 +690,9 @@ function resumeGame() {
 }
 
 // ======================== Initialization ========================
+/**
+ * Initializes the game once the DOM content has fully loaded and assets are ready.
+ */
 document.addEventListener("DOMContentLoaded", () => {
     const titleElement = document.getElementById('playGameTitle');
     const startOverlay = document.getElementById('startOverlay'); // Select the overlay

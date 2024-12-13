@@ -224,9 +224,7 @@ function saveDetails(username, email, name, picture, bio) {
 }
 
 // ======================== Miscellaneous ========================
-/**
- * Profile picture preview logic.
- */
+// Profile picture preview logic.
 document.addEventListener("DOMContentLoaded", () => {
     const profilePictureSelect = document.getElementById("profilePicture");
     const profilePicturePreview = document.getElementById("profilePicturePreview");
