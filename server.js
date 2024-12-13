@@ -266,6 +266,11 @@ app.post('/update-profile', isLoggedIn, async (req, res) => {
         if (picture) player.profile_picture = picture;
 
         await player.save();
+
+        // Update the session object with the new data
+        req.session.user.bio = player.bio;
+        req.session.user.profilePicture = player.profile_picture;
+
         res.status(200).json({ message: 'Profile updated successfully' });
     } catch (err) {
         console.error(err);

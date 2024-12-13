@@ -45,13 +45,12 @@ function loadProfile(user) {
     }
 }
 
-/** Fetch profile data from the server */
+
 /**
  * Function fetchProfileFromServer - [Describe functionality here]
  * @param [param_name] [Description]
  * @returns [Return value description]
  */
-
 function fetchProfileFromServer() {
     fetch('/get-profile', {
         method: 'POST',
@@ -71,6 +70,8 @@ function fetchProfileFromServer() {
             window.location.href = '/login.html'; // Redirect if unauthorized
         });
 }
+
+
 
 document.getElementById('editProfileButton').addEventListener('click', () => {
     // Toggle bio editing
@@ -94,13 +95,6 @@ document.getElementById('saveProfileButton').addEventListener('click', () => {
     const newBio = document.getElementById('bioInput').value;
     const newPicture = document.getElementById('profilePictureSelect').value;
 
-    /**
-     * Fetch request to '/update-profile', { - [Purpose of request]
-     * @param url Endpoint URL
-     * @param options Fetch options (headers, body, etc.)
-     * @returns Promise resolving with the response
-     */
-
     fetch('/update-profile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -113,9 +107,12 @@ document.getElementById('saveProfileButton').addEventListener('click', () => {
         })
         .then(() => {
             // Update bio display
-            document.getElementById('bioDisplay').textContent = newBio;
-            document.getElementById('bioDisplay').style.display = 'inline';
-            document.getElementById('bioInput').style.display = 'none';
+            const bioDisplay = document.getElementById('bioDisplay');
+            bioDisplay.textContent = newBio;
+            bioDisplay.style.display = 'inline';
+
+            const bioInput = document.getElementById('bioInput');
+            bioInput.style.display = 'none';
 
             // Update profile picture display
             const profilePicture = document.getElementById('profilePicture');
@@ -133,6 +130,9 @@ document.getElementById('saveProfileButton').addEventListener('click', () => {
             alert('Unable to save changes. Please try again.');
         });
 });
+
+document.getElementById('editProfileButton').style.display = 'inline';
+document.getElementById('saveProfileButton').style.display = 'none';
 
 document.getElementById('logoutButton').addEventListener('click', () => {
     // Call the logout function from client.js
