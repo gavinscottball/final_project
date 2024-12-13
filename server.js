@@ -337,6 +337,11 @@ app.get('/getComments', (req, res) => {
     res.json(sortedComments);
 });
 
+// Get leaderboard
+app.get('/get-leadboard', (res) => {
+    res.json(leaderboard);
+});
+
 
 // ======================== Server Startup ========================
 app.listen(PORT, () => {
