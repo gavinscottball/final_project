@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
  */
 
 function fetchComments() {
-    fetch('/getComments', { credentials: 'include' })
+    fetch(`/getComments?sort=${currentSortBy}`, { credentials: 'include' })
         .then(response => response.json())
         .then(comments => renderComments(comments))
         .catch(err => console.error("Error fetching comments:", err));
@@ -95,10 +95,10 @@ function postComment(commentText) {
  * @param [param_name] [Description]
  * @returns [Return value description]
  */
-
+let currentSortBy = 'newest'; // Default sorting
 function renderComments(comments) {
     const commentList = document.getElementById('commentList');
-    commentList.innerHTML = '';
+    commentList.innerHTML = ''; // Clear existing comments
 
     comments.forEach(comment => {
         const li = document.createElement('li');
@@ -133,21 +133,10 @@ function renderComments(comments) {
         li.appendChild(textSpan);
         li.appendChild(actionsDiv);
 
-        // Replies
+        // Replies container
         const repliesContainer = document.createElement('ul');
         repliesContainer.classList.add('replies-container');
-        comment.replies?.forEach(reply => {
-            const replyLi = document.createElement('li');
-            replyLi.classList.add('comment-reply');
-
-            const replyText = document.createElement('span');
-            replyText.className = 'comment-text';
-            replyText.textContent = `@${reply.username}: ${reply.text}`;
-
-            replyLi.appendChild(replyText);
-            repliesContainer.appendChild(replyLi);
-        });
-
+        renderReplies(comment.replies, repliesContainer); // Render replies using the new function
         li.appendChild(repliesContainer);
 
         // Reply form
@@ -161,6 +150,32 @@ function renderComments(comments) {
 
         li.appendChild(replyForm);
         commentList.appendChild(li);
+    });
+}
+
+function renderReplies(replies, container) {
+    container.innerHTML = ''; // Clear existing replies
+
+    replies?.forEach(reply => {
+        const replyLi = document.createElement('li');
+        replyLi.classList.add('comment-reply');
+
+        // Create a span for the username
+        const usernameSpan = document.createElement('span');
+        usernameSpan.className = 'comment-username';
+        usernameSpan.textContent = `@${reply.username}: `;
+        usernameSpan.style.color = 'rgb(233, 45, 134)'; // Set color for the username
+
+        // Create a span for the reply text
+        const replyTextSpan = document.createElement('span');
+        replyTextSpan.className = 'comment-text';
+        replyTextSpan.textContent = reply.text;
+        replyTextSpan.style.color = 'white'; // Set color for the reply text
+
+        // Append both spans to the reply list item
+        replyLi.appendChild(usernameSpan);
+        replyLi.appendChild(replyTextSpan);
+        container.appendChild(replyLi);
     });
 }
 
@@ -192,7 +207,7 @@ function postReply(parentCommentId, replyText) {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                fetchComments(); // Refresh comments to include the new reply
+                fetchComments(); // Refresh comments while maintaining current sorting
             } else {
                 alert(data.error || 'Error posting reply.');
             }
@@ -251,6 +266,7 @@ function likeComment(commentId) {
  */
 
 function sortComments(sortBy) {
+    currentSortBy = sortBy; // Update the global sorting state
     fetch(`/getComments?sort=${sortBy}`, { credentials: 'include' })
         .then(response => response.json())
         .then(comments => renderComments(comments))

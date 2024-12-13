@@ -8,10 +8,11 @@ html, body {
     height: auto;
     min-height: 100%;
     padding: 0;
+    min-width: 800px;
 }
 
 body {
-    background: linear-gradient(to bottom, #0a54a3, #824caf);
+    background: linear-gradient(to bottom, #0a54a3, #F652A0);
     color: white;
     margin: 0;
     padding: 0;
@@ -74,7 +75,6 @@ button:hover {
 
 
 .header-content {
-    backdrop-filter: blur(5px);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -188,25 +188,27 @@ button:hover {
 
 .instructions-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 30px;
-    margin-top: 20px;
-    padding: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Flexible grid columns */
+    gap: 30px; /* Space between items */
+    justify-content: center; /* Horizontally center the grid */
+    align-content: center; /* Vertically center the grid */
+    margin: 0 auto; /* Center the grid within the page */
+    padding: 0; /* Remove extra padding */
+    box-sizing: border-box; /* Include padding/border in width */
+    max-width: 1200px; /* Optional: Restrict grid width for better layout */
 }
 
 .instruction-item {
     text-align: center;
-    border: 1px solid #ccc;
+    border: 1px solid white;
     padding: 15px;
     border-radius: 8px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    width: 90%;
-    margin: 5px;
-
+    width: calc(100% - 30px); /* Adjust width to fit inside grid gaps */
+    margin: 0 auto; /* Center individual items */
     background-image: url('./imgs/back1.png');
     background-position: center;
     background-repeat: no-repeat;
-    background-size: auto;
 }
 
 .instruction-item:hover {
@@ -245,9 +247,9 @@ canvas:focus {
     border: 5px black;
     border-style: solid;
     position: relative;
-    width: 800px;
+    width: 700px;
     /* Match the canvas width */
-    height: 400px;
+    height: 350px;
     /* Match the canvas height */
     margin: 20px auto;
     display: block;
@@ -310,7 +312,7 @@ canvas {
     color: white;
     border: none;
     border-radius: 10px;
-    border: 2px black solid;
+    border: 1px solid white;
     width: 20%;
     cursor: pointer;
 }
@@ -388,7 +390,7 @@ canvas {
     padding: 10px;
     font-family: "Kanit", serif;
     font-size: 16px;
-    border: 1px solid #ccc;
+    border: 1px solid white;
     border-radius: 5px;
     margin-top: 10px;
 }
@@ -397,7 +399,7 @@ canvas {
     font-family: "Kanit", serif;
     font-size: 16px;
     padding: 5px;
-    border: 1px solid #ccc;
+    border: 1px solid white;
     border-radius: 5px;
     margin-top: 10px;
     display: block;
@@ -420,9 +422,9 @@ canvas {
 .leaderboard-area {
     flex: 1;
     padding: 20px;
-    border: 1px solid #ccc;
+    border: 1px solid white;
     border-radius: 8px;
-    background-color: #292929;
+    background-color: #292929b0;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
@@ -439,11 +441,12 @@ canvas {
 .social-area {
     flex: 1;
     padding: 20px;
-    border: 1px solid #ccc;
+    border: 1px solid white;
     border-radius: 8px;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
+    background-color: #292929b0;
     /* Stack child elements vertically */
     align-items: center;
     /* Center all child elements horizontally */
@@ -481,15 +484,15 @@ canvas {
     /* Remove default list styling */
     margin: 0 auto;
     /* Center horizontally */
-    width: 35vw;
+    width: 40vw;
     /* Current width - already preferred */
     max-width: 800px;
     /* Restrict the width for readability */
-    border-radius: 5px;
+    border-radius: 10px;
     /* Rounded corners */
     margin-top: 10px;
     margin-bottom: 10px;
-    background-color: red;
+    background-color: #00000075;
     /* Background color for comments */
     padding: 15px;
     /* Maintain padding */
@@ -507,16 +510,16 @@ canvas {
     /* Larger font size for the name */
     font-weight: bold;
     /* Emphasis on the real name */
-    color: black;
     /* Black color for better emphasis */
-    margin-bottom: 2px;
     /* Space between real name and username */
 }
 
 .comment-username {
     font-size: 10pt;
+    font-weight: 200;
     /* Slightly smaller than the name */
-    color: #007BFF;
+    color: rgb(233, 45, 134);
+    text-shadow: none;
     /* Blue color for username */
     margin-bottom: 10px;
     /* Space between username and text */
@@ -532,7 +535,6 @@ canvas {
 .comment-text {
     text-align: left;
     /* Align text to the left */
-    color: #333;
     /* Adjust text color for readability */
     font-size: 14px;
     /* Adjust font size */
@@ -540,11 +542,12 @@ canvas {
     /* Preserve line breaks */
     word-wrap: break-word;
     /* Prevent long words from breaking layout */
-    margin-top: 10px;
     /* Add some spacing from the user's details */
     flex-grow: 1;
     /* Allow text to take up available space */
 }
+
+
 
 .replies-container {
     list-style: none;
@@ -557,9 +560,9 @@ canvas {
 
 .comment-reply {
     margin-top: 10px;
-    background-color: #f9f9f9;
     padding: 10px;
     border-radius: 8px;
+    text-align: left;
 }
 
 .reply-form {
@@ -571,22 +574,91 @@ canvas {
 .reply-input {
     flex: 1;
     padding: 5px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    border: 1px solid white;
+    border-radius: 5px;
+    background-color: black;
+    color: white;
 }
 
-.reply-form button {
+.social-area button {
     padding: 5px 10px;
-    background-color: #007BFF;
+    border: 1px solid white;
     color: white;
-    border: none;
-    border-radius: 4px;
+    border-radius: 5px;
     cursor: pointer;
 }
 
-.reply-form button:hover {
+
+
+
+
+
+
+.comment-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Space between comment form and sort controls */
+    width: 100%;
+    margin-bottom: 20px; /* Space below the comment controls */
+}
+
+.comment-form {
+    display: flex;
+    flex-direction: row; /* Arrange input and button horizontally */
+    justify-content: center; /* Center the entire row */
+    align-items: center; /* Align items vertically */
+    gap: 10px; /* Space between input and button */
+    width: 100%; /* Ensure it spans the full width of the container */
+}
+
+.comment-form input {
+    padding: 10px;
+    border: 1px solid white;
+    border-radius: 5px;
+    background-color: black;
+    color: white;
+    box-sizing: border-box;
+    width: 75%;
+}
+
+.comment-form button {
+    padding: 10px;
+    border: 1px solid white;
+    border-radius: 5px;
+    background-color: #007BFF;
+    color: white;
+    cursor: pointer;
+    width: 15%;
+}
+
+.comment-form button:hover {
     background-color: #0056b3;
 }
+
+.sort-controls {
+    display: flex;
+    justify-content: center;
+    gap: 20px; /* Space between sort buttons */
+    width: 100%;
+}
+
+.sort-controls button {
+    width: 44%; /* Consistent width for buttons */
+    padding: 10px;
+    border: 1px solid white;
+    border-radius: 5px;
+    background-color: #292929b0;
+    cursor: pointer;
+    color: white;
+}
+
+.sort-controls button:hover {
+    background-color: rgb(233, 45, 134);
+}
+
+
+
+
 
 
 
@@ -604,11 +676,11 @@ canvas {
 }
 
 #leaderboardTable {
-    width: 100%;
+    width: 42vw;
     margin: 20px 0;
     font-size: 1rem;
     text-align: left;
-    border: 1px solid #ccc;
+    border: 1px solid white;
     border-radius: 10px;
     overflow: hidden;
     border-spacing: 0;
@@ -632,24 +704,24 @@ canvas {
 }
 
 #leaderboardTable thead th {
-    background-color: #007BFF;
+    background-color: rgb(233, 45, 134);
     color: white;
     padding: 10px;
-    border-bottom: 2px solid #ccc;
+    border-bottom: 1px solid #ccc;
 }
 
 #leaderboardTable tbody tr:nth-child(even) {
-    background-color: #f9f9f9;
+    background-color: #00000075;
 }
 
 #leaderboardTable tbody tr:hover {
-    background-color: #f1f1f1;
+    background-color: rgb(233, 45, 134);
 }
 
 #leaderboardTable td,
 #leaderboardTable th {
     padding: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid white;
     text-align: center;
 }
 
