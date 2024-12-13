@@ -47,7 +47,7 @@ const PlayerSchema = new mongoose.Schema({
     email: { type: String, default: "" },
     real_name: { type: String, default: "" },
     bio: { type: String, default: "" },
-    profile_picture: { type: String, default: "" },
+    profile_picture: { type: String, default: "imgs/default.png" },
     stats: { type: [{ score: Number, time: Number }], default: [] } // Define as an array of objects
 });
 
@@ -153,7 +153,7 @@ app.post('/login', async (req, res) => {
                 realName: player.real_name || "Anonymous",
                 email: player.email || "",
                 bio: player.bio || "",
-                profilePicture: player.profile_picture || "",
+                profilePicture: player.profile_picture || "imgs/default.png",
             };
             req.session.username = player.acct_name;
             return res.status(200).json({ message: 'Login successful' });
@@ -242,7 +242,7 @@ app.post('/update-stats', isLoggedIn, async (req, res) => {
 
 // Update profile route
 app.post('/update-profile', isLoggedIn, async (req, res) => {
-    const { bio } = req.body;
+    const { bio, picture } = req.body;
     const username = req.session.username;
 
     try {
@@ -252,6 +252,7 @@ app.post('/update-profile', isLoggedIn, async (req, res) => {
         }
 
         if (bio) player.bio = bio;
+        if (picture) player.profile_picture = picture;
 
         await player.save();
         res.status(200).json({ message: 'Profile updated successfully' });

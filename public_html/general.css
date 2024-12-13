@@ -385,6 +385,18 @@ canvas {
     margin-top: 10px;
 }
 
+#profilePictureSelect {
+    font-family: "Kanit", serif;
+    font-size: 16px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-top: 10px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 /* SOCIAL PAGE EXCLUSIVE STYLING */
 
 .social-container {

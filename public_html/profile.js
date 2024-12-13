@@ -31,7 +31,7 @@ function loadProfile(user) {
 
         const profilePicture = document.getElementById('profilePicture');
         if (user.profilePicture) {
-            profilePicture.src = `/uploads/${user.profilePicture}`;
+            profilePicture.src = `${user.profilePicture}`;
             profilePicture.alt = `${user.username}'s profile picture`;
         } else {
             profilePicture.alt = 'No profile picture available';
@@ -61,32 +61,51 @@ function fetchProfileFromServer() {
 }
 
 document.getElementById('editProfileButton').addEventListener('click', () => {
+    // Toggle bio editing
     document.getElementById('bioDisplay').style.display = 'none';
     document.getElementById('bioInput').style.display = 'inline';
     document.getElementById('bioInput').value = document.getElementById('bioDisplay').textContent;
 
+    // Toggle profile picture editing
+    const profilePicture = document.getElementById('profilePicture');
+    const profilePictureSelect = document.getElementById('profilePictureSelect');
+    profilePicture.style.display = 'none';
+    profilePictureSelect.style.display = 'inline';
+    profilePictureSelect.value = profilePicture.src.split('/').pop(); // Preselect the current picture
+
+    // Toggle buttons
     document.getElementById('editProfileButton').style.display = 'none';
     document.getElementById('saveProfileButton').style.display = 'inline';
 });
 
 document.getElementById('saveProfileButton').addEventListener('click', () => {
     const newBio = document.getElementById('bioInput').value;
+    const newPicture = document.getElementById('profilePictureSelect').value;
 
     fetch('/update-profile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ bio: newBio }),
+        body: JSON.stringify({ bio: newBio, picture: newPicture }),
     })
         .then(response => {
             if (!response.ok) throw new Error('Failed to update profile');
             return response.json();
         })
         .then(() => {
+            // Update bio display
             document.getElementById('bioDisplay').textContent = newBio;
             document.getElementById('bioDisplay').style.display = 'inline';
             document.getElementById('bioInput').style.display = 'none';
 
+            // Update profile picture display
+            const profilePicture = document.getElementById('profilePicture');
+            const profilePictureSelect = document.getElementById('profilePictureSelect');
+            profilePicture.src = `${newPicture}`;
+            profilePicture.style.display = 'inline';
+            profilePictureSelect.style.display = 'none';
+
+            // Toggle buttons
             document.getElementById('editProfileButton').style.display = 'inline';
             document.getElementById('saveProfileButton').style.display = 'none';
         })
