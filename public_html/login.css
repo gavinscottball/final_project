@@ -89,6 +89,8 @@ input {
     background: rgba(255, 255, 255, 0.9);
 }
 
+
+
 button {
     padding: 10px 15px;
     margin: 10px 0;
@@ -101,6 +103,7 @@ button {
 
 button:hover {
     background-color: #0056b3;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .popup-overlay {
@@ -168,3 +171,4 @@ button:hover {
 .close-btn:hover {
     background-color: #5a6268;
 }
+

@@ -201,3 +201,29 @@ function login(username, password) {
         });
 }
 
+
+// Ensure the script runs only after the DOM is fully loaded
+document.addEventListener("DOMContentLoaded", function () {
+    // Get references to the form and password fields
+    const form = document.getElementById("createAccountForm");
+    const newPassword = document.getElementById("newPassword");
+    const confirmPassword = document.getElementById("confirmPassword");
+
+    // Add a 'submit' event listener to validate passwords
+    form.addEventListener("submit", function (event) {
+        // Check if the passwords match
+        if (newPassword.value !== confirmPassword.value) {
+            event.preventDefault(); // Prevent form submission
+            alert("Passwords do not match. Please re-enter them.");
+        }
+    });
+
+    // Optional: Add real-time feedback for password confirmation
+    confirmPassword.addEventListener("input", function () {
+        if (newPassword.value !== confirmPassword.value) {
+            confirmPassword.setCustomValidity("Passwords do not match.");
+        } else {
+            confirmPassword.setCustomValidity(""); // Clear the error
+        }
+    });
+});
