@@ -239,7 +239,6 @@ app.post('/update-stats', isLoggedIn, async (req, res) => {
 
         player.stats.push({ score, time });
         await player.save(); // Save updated player document to the database
-        console.log(`${username} saved their stats, scored ${score} points in ${time} seconds`);
 
         leaderboard.board.push({ username: username, score: score, time: time });
         await leaderboard.save();

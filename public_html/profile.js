@@ -53,13 +53,6 @@ function loadProfile(user) {
  */
 
 function fetchProfileFromServer() {
-/**
- * Fetch request to '/get-profile', { - [Purpose of request]
- * @param url Endpoint URL
- * @param options Fetch options (headers, body, etc.)
- * @returns Promise resolving with the response
- */
-
     fetch('/get-profile', {
         method: 'POST',
         credentials: 'include', // Ensure session cookies are sent
@@ -71,7 +64,7 @@ function fetchProfileFromServer() {
             return response.json();
         })
         .then((data) => {
-            loadProfile(data);
+            loadProfile(data); // Load and display the fetched profile data
         })
         .catch((err) => {
             console.error('Error fetching profile data:', err);
@@ -101,12 +94,12 @@ document.getElementById('saveProfileButton').addEventListener('click', () => {
     const newBio = document.getElementById('bioInput').value;
     const newPicture = document.getElementById('profilePictureSelect').value;
 
-/**
- * Fetch request to '/update-profile', { - [Purpose of request]
- * @param url Endpoint URL
- * @param options Fetch options (headers, body, etc.)
- * @returns Promise resolving with the response
- */
+    /**
+     * Fetch request to '/update-profile', { - [Purpose of request]
+     * @param url Endpoint URL
+     * @param options Fetch options (headers, body, etc.)
+     * @returns Promise resolving with the response
+     */
 
     fetch('/update-profile', {
         method: 'POST',
