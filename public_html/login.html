@@ -1,36 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login and Create Account</title>
-    <link rel="stylesheet" href="login.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Login and Create Account</title>
+	<link rel="stylesheet" href="login.css">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link
+		href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+		rel="stylesheet">
 </head>
+
 <body>
-    <div class="background"></div>
-    <div class="container">
-        <div class="login-form">
-            <h1><a href="about.html">Login (BYPASS)</a></h1>
-            <form>
-                <label for="username">Username:</label>
-                <input type="text" id="username" name="username" required>
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
-                <button type="button" id="loginButton">Log In</button>
-                <button type="button" id="createButton">Create Account</button>
-            </form>
-            <div id="output"></div>
-        </div>
-        <div class="popup-overlay hidden" id="popupOverlay">
-            <div class="create-account-form">
-                <h1>Create an Account</h1>
+	<div class="background"></div>
+	<div class="container">
+		<div class="login-form">
+			<h1><a href="about.html">Login (BYPASS)</a></h1>
+			<form>
+				<label for="username">Username:</label>
+				<input type="text" id="username" name="username" required>
+				<label for="password">Password:</label>
+				<input type="password" id="password" name="password" required>
+				<button type="button" id="loginButton">Log In</button>
+				<button type="button" id="createButton">Create Account</button>
+			</form>
+			<div id="output"></div>
+		</div>
+		<div class="popup-overlay hidden" id="popupOverlay">
+			<div class="create-account-form">
+				<h1>Create an Account</h1>
 
 
 				<!-- inputs for creating accounts should be in client.js already -->
-                <form id="createAccountForm">
+				<form id="createAccountForm">
 					<div class="form-group">
 						<label for="newUsername">Username:</label>
 						<input type="text" id="newUsername" name="new-username">
@@ -64,9 +68,10 @@
 						<button type="button" id="closeButton" class="close-btn">Back</button>
 					</div>
 				</form>
-            </div>
-        </div>
-    </div>
-    <script src="client.js"></script>
+			</div>
+		</div>
+	</div>
+	<script src="client.js"></script>
 </body>
+
 </html>

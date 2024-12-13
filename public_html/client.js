@@ -1,4 +1,9 @@
-/** client.js - Handles user sessions, account management functionality */
+/**
+ * @file server.js
+ * @description This file contains the logic for user logins and new account creation
+ * 
+ * @authors [Gavin Ball, Joshua Stambaugh]
+ */
 
 // Runs on page load
 document.addEventListener("DOMContentLoaded", () => {
@@ -57,7 +62,7 @@ function logoutUser() {
                 // Clear session data (if any stored on the client-side)
                 localStorage.removeItem('userToken');
                 sessionStorage.removeItem('loggedInUser');
-                
+
                 // Redirect the user to the login or welcome page
                 window.location.href = 'index.html'; // Update this path as needed
             } else {
