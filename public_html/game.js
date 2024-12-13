@@ -15,6 +15,12 @@ const backgroundImg = new Image();
 backgroundImg.src = './imgs/env0.png';
 const spriteImg = new Image();
 spriteImg.src = './imgs/sprite1.png';
+const wallSprite = new Image();
+wallSprite.src = './imgs/wallSprite.png';
+const wallSprite1 = new Image();
+wallSprite1.src = './imgs/wallSprite1.png';
+const spikeSprite = new Image();
+spikeSprite.src = './imgs/spikeSprite.png';
 
 // Constants
 const groundLevel = 350;
@@ -140,10 +146,12 @@ function preventSpacebarScroll(e) {
 
 function generateObstacle() {
     const startX = canvas.width + 40;
-    const isWall = Math.random() < 0.5;
+    const randomObstacleType = Math.random();
 
-    if (isWall) {
+    if (randomObstacleType < 0.4) {
         createWall(startX);
+    } else if (randomObstacleType < 0.8) {
+        createWall2(startX);
     } else {
         createSpikes(startX);
     }
@@ -164,6 +172,20 @@ function createWall(startX) {
 
     gameState.obstacles.push({
         type: 'wall',
+        x: startX,
+        y: y,
+        width: obstacleWidth,
+        height: obstacleHeight
+    });
+}
+
+function createWall2(startX) {
+    const obstacleWidth = 40; // Width of wall2
+    const obstacleHeight = 80; // Height of wall2
+    const y = groundLevel - obstacleHeight;
+
+    gameState.obstacles.push({
+        type: 'wall2',
         x: startX,
         y: y,
         width: obstacleWidth,
@@ -413,17 +435,21 @@ function drawPlayer() {
 
 function drawObstacles() {
     gameState.obstacles.forEach(obstacle => {
-        ctx.fillStyle = obstacle.type === 'wall' ? 'gray' : 'red';
-
-        if (obstacle.type === 'spike') {
-            ctx.beginPath();
-            ctx.moveTo(obstacle.x, obstacle.y + obstacle.height);
-            ctx.lineTo(obstacle.x + obstacle.width / 2, obstacle.y);
-            ctx.lineTo(obstacle.x + obstacle.width, obstacle.y + obstacle.height);
-            ctx.closePath();
-            ctx.fill();
-        } else {
-            ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+        if (obstacle.type === 'wall') {
+            ctx.drawImage(wallSprite, obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+        } else if (obstacle.type === 'wall2') {
+            ctx.drawImage(wallSprite1, obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+        } else if (obstacle.type === 'spike') {
+            const spikeCount = Math.ceil(obstacle.width / 20); // Adjust for multiple spikes
+            for (let i = 0; i < spikeCount; i++) {
+                ctx.drawImage(
+                    spikeSprite,
+                    obstacle.x + i * 20, // Position spikes side by side
+                    obstacle.y,
+                    20, // Width of each spike
+                    30  // Height of each spike
+                );
+            }
         }
     });
 }
