@@ -1,3 +1,17 @@
+/**
+ * @file server.js
+ * @description This file contains the main server-side logic for the game website, 
+ *              including route definitions, database interactions, and session management.
+ * 
+ * @authors [Gavin Ball, Joshua Stambaugh]
+ * 
+ * @requires express
+ * @requires mongoose
+ * @requires express-session
+ * @requires crypto
+ */
+
+
 const express = require('express');
 const session = require('express-session');
 const app = express();
@@ -9,7 +23,7 @@ const crypto = require('crypto');
 app.use(express.json());
 app.use(express.static('public_html'));
 app.use(session({
-    secret: 'd9fbc9729a1ebd6c57a3a99157bc830ace827bd7e274ec2f4f432bc6fd123b6', 
+    secret: 'd9fbc9729a1ebd6c57a3a99157bc830ace827bd7e274ec2f4f432bc6fd123b6',
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -41,7 +55,7 @@ const Player = mongoose.model("Player", PlayerSchema);
 
 
 const LeaderboardSchema = new mongoose.Schema({
-    board: { type: [{username: String, score: Number, time: Number}], default: []}
+    board: { type: [{ username: String, score: Number, time: Number }], default: [] }
 });
 
 const Leaderboard = mongoose.model("Leaderboard", LeaderboardSchema);
@@ -74,7 +88,7 @@ mongoose.connect(URL)
 // ======================== Utility Functions ========================
 // Add a new player to the database
 async function addPlayer(user, password, email, real_name, picture, bio) {
-    const newPlayer = new Player({ acct_name: user, acct_password: password, email: email, real_name: real_name, profile_picture: picture, bio: bio});
+    const newPlayer = new Player({ acct_name: user, acct_password: password, email: email, real_name: real_name, profile_picture: picture, bio: bio });
     await newPlayer.save();
 }
 
@@ -127,7 +141,7 @@ app.post('/login', async (req, res) => {
 
         // Extract salt and stored hash from the database
         const [salt, storedHash] = player.acct_password.split(':');
-        
+
         // Hash the incoming password using the same salt
         const hashedPassword = await hash(password, salt);
 
@@ -154,7 +168,7 @@ app.post('/login', async (req, res) => {
 
 // Registration route
 app.post('/register', async (req, res) => {
-    const { username, password, email, real_name, picture, bio} = req.body;
+    const { username, password, email, real_name, picture, bio } = req.body;
 
     if (!username || !password) {
         return res.status(400).json({ message: 'Username and password are required' });
@@ -215,7 +229,7 @@ app.post('/update-stats', isLoggedIn, async (req, res) => {
         await player.save(); // Save updated player document to the database
         console.log(`${username} saved their stats, scored ${score} points in ${time} seconds`);
 
-        leaderboard.board.push({username: username, score: score, time: time});
+        leaderboard.board.push({ username: username, score: score, time: time });
         await leaderboard.save();
 
         res.status(200).json({ message: 'Stats saved successfully to user and leaderboard' });
@@ -448,7 +462,7 @@ app.get('/get-leaderboard', async (req, res) => {
 
                 return {
                     username: player.acct_name,
-                    score: Math.floor(highestStat.score/10),
+                    score: Math.floor(highestStat.score / 10),
                     time: highestStat.time
                 };
             });

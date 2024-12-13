@@ -1,3 +1,11 @@
+/**
+ * @file server.js
+ * @description This file contains the logic for the game, 
+ *              including interactions with the server
+ * 
+ * @authors [Gavin Ball, Joshua Stambaugh]
+ */
+
 // Canvas setup
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -210,7 +218,7 @@ function gameOver() {
     ctx.fillStyle = 'black';
     ctx.font = '48px sans-serif';
     ctx.fillText('Game Over', canvas.width / 2 - 100, canvas.height / 2);
-    console.log(`Player survived for ${gameState.elapsedTime/1000} seconds`);
+    console.log(`Player survived for ${gameState.elapsedTime / 1000} seconds`);
     saveScore();
 }
 
@@ -360,7 +368,7 @@ function resumeGame() {
         isPaused = false;
         const pausedDuration = Date.now() - gameState.pauseStart;
         gameState.totalPauseTime += pausedDuration;
-        gameState.pauseStart = null; 
+        gameState.pauseStart = null;
         gameLoop(); // Restart the game loop
     }
 }
@@ -429,7 +437,7 @@ function getTime() {
     }
 }
 
-function speedUp(){
+function speedUp() {
     gameState.scrollSpeed *= 1.05;
     gameState.multiplier *= 1.05;
     console.log(`Speed up to ${gameState.scrollSpeed.toFixed(2)}, multiplier is ${gameState.multiplier.toFixed(2)}`)
@@ -443,7 +451,7 @@ function saveScore() {
         credentials: 'include', // Include cookies with the request
         body: JSON.stringify({
             score: gameState.score,
-            time: gameState.elapsedTime/1000
+            time: gameState.elapsedTime / 1000
         })
     })
         .then((response) => {

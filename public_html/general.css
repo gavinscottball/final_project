@@ -7,16 +7,20 @@ html {
 }
 
 body {
-    overflow: auto; /* Allow scrolling */
-    background: linear-gradient(to bottom, #0a54a3, #824caf); /* Keep your background */
-    height: 100vh; /* Ensure the gradient spans the viewport height */
-    margin: 0; /* Remove default margin */
+    overflow: auto;
+    /* Allow scrolling */
+    background: linear-gradient(to bottom, #0a54a3, #824caf);
+    /* Keep your background */
+    height: 100vh;
+    /* Ensure the gradient spans the viewport height */
+    margin: 0;
+    /* Remove default margin */
     color: white;
-    text-shadow: 
-        -1px -1px 0 #000,  
-         1px -1px 0 #000,
+    text-shadow:
+        -1px -1px 0 #000,
+        1px -1px 0 #000,
         -1px 1px 0 #000,
-         1px 1px 0 #000;
+        1px 1px 0 #000;
 }
 
 #loggedUser {
@@ -24,21 +28,21 @@ body {
     text-decoration: none;
     font-size: 16px;
     margin-right: 10px;
-    text-shadow: 
-    -1px -1px 0 #000,  
-     1px -1px 0 #000,
-     -1px 1px 0 #000,
-      1px 1px 0 #000;
+    text-shadow:
+        -1px -1px 0 #000,
+        1px -1px 0 #000,
+        -1px 1px 0 #000,
+        1px 1px 0 #000;
 }
 
 button {
     color: white;
     font-family: "Kanit", serif;
-    text-shadow: 
-    -1px -1px 0 #000,  
-     1px -1px 0 #000,
-     -1px 1px 0 #000,
-      1px 1px 0 #000;
+    text-shadow:
+        -1px -1px 0 #000,
+        1px -1px 0 #000,
+        -1px 1px 0 #000,
+        1px 1px 0 #000;
     background-image: url('./imgs/back2.png');
 }
 
@@ -80,11 +84,11 @@ button:hover {
     text-align: left;
     font-size: 30pt;
     color: white;
-    text-shadow: 
-       -1px -1px 0 #000,  
+    text-shadow:
+        -1px -1px 0 #000,
         1px -1px 0 #000,
         -1px 1px 0 #000,
-         1px 1px 0 #000;
+        1px 1px 0 #000;
     height: 100%;
 }
 
@@ -98,15 +102,16 @@ button:hover {
     width: 100%;
     border-top: 1px solid #ccc; 
     background-color: #292929; 
+
 }
 
 .header-nav ul {
     list-style: none;
     margin: 0;
-    padding: 10px 20px; 
+    padding: 10px 20px;
     display: flex;
     gap: 25px;
-    justify-content: center; 
+    justify-content: center;
 }
 
 .header-nav li {
@@ -159,8 +164,8 @@ button:hover {
     font-size: 1rem;
     margin: 20px auto;
     max-width: 85%;
-    text-align: center; 
-    display: block; 
+    text-align: center;
+    display: block;
 }
 
 /* WELCOME PAGE EXCLUSIVE STYLING */
@@ -181,9 +186,9 @@ button:hover {
 
 .instructions-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
-    gap: 30px; 
-    margin-top: 20px; 
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 30px;
+    margin-top: 20px;
     padding: 10px;
 }
 
@@ -195,7 +200,7 @@ button:hover {
     background-color: #f9f9f9;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     width: 90%;
-    margin: 5px; 
+    margin: 5px;
 }
 
 .instruction-item:hover {
@@ -204,17 +209,17 @@ button:hover {
 }
 
 .instruction-image {
-    width: 100px; 
+    width: 100px;
     height: 100px;
-    object-fit: contain; 
-    border-radius: 8px; 
-    background-color: #f1f1f1; 
+    object-fit: contain;
+    border-radius: 8px;
+    background-color: #f1f1f1;
     margin-bottom: 10px;
 }
 
 .instruction-text {
     font-size: 1rem;
-    color: #333; 
+    color: #333;
 }
 
 
@@ -234,46 +239,60 @@ canvas:focus {
     border: 5px black;
     border-style: solid;
     position: relative;
-    width: 800px; /* Match the canvas width */
-    height: 400px; /* Match the canvas height */
+    width: 800px;
+    /* Match the canvas width */
+    height: 400px;
+    /* Match the canvas height */
     margin: 20px auto;
     display: block;
-    overflow: hidden; /* Ensures pseudo-element doesn't exceed container */
+    overflow: hidden;
+    /* Ensures pseudo-element doesn't exceed container */
 }
 
 canvas {
     border-radius: 20px;
-    position: relative; /* Keep the canvas on top */
+    position: relative;
+    /* Keep the canvas on top */
     border: 2px solid black;
     display: block;
-    z-index: 1; /* Stays above the background */
+    z-index: 1;
+    /* Stays above the background */
 }
 
 .canvas-container::before {
     border-style: solid;
     border: 5px black;
-    content: ""; /* Pseudo-element for the background image */
+    content: "";
+    /* Pseudo-element for the background image */
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     background-color: black;
-    z-index: 0; /* Behind the canvas */
+    z-index: 0;
+    /* Behind the canvas */
 }
 
 .overlay-text {
     position: absolute;
-    top: 50%; /* Center vertically */
-    left: 50%; /* Center horizontally */
-    transform: translate(-50%, -50%); /* Adjust to true center */
-    font-size: 24px; /* Adjust text size as needed */
+    top: 50%;
+    /* Center vertically */
+    left: 50%;
+    /* Center horizontally */
+    transform: translate(-50%, -50%);
+    /* Adjust to true center */
+    font-size: 24px;
+    /* Adjust text size as needed */
     color: white;
-    text-shadow: 0 0 5px black; /* Optional: Add text shadow for readability */
+    text-shadow: 0 0 5px black;
+    /* Optional: Add text shadow for readability */
     font-family: "Kanit", serif;
     text-align: center;
-    pointer-events: none; /* Prevent text from blocking canvas interactions */
-    z-index: 2; /* Ensure text is above everything else */
+    pointer-events: none;
+    /* Prevent text from blocking canvas interactions */
+    z-index: 2;
+    /* Ensure text is above everything else */
 }
 
 #restartButton {
@@ -312,7 +331,7 @@ canvas {
     cursor: pointer;
 }
 
-/* PROFILE PAGE EXCLUSIVE STYLNG*/ 
+/* PROFILE PAGE EXCLUSIVE STYLNG*/
 
 #logoutButton {
     background-color: #FF4500;
@@ -330,24 +349,29 @@ canvas {
 }
 
 .profile-container {
-    padding: 20px; /* Add padding for spacing */
-    max-width: 800px; /* Set a maximum width */
-    margin: 0 auto; /* Center the container */
-    text-align: center; /* Center align content */
+    padding: 20px;
+    /* Add padding for spacing */
+    max-width: 800px;
+    /* Set a maximum width */
+    margin: 0 auto;
+    /* Center the container */
+    text-align: center;
+    /* Center align content */
 }
 
 /* SOCIAL PAGE EXCLUSIVE STYLING */
 
 .social-container {
-    display: flex; 
-    flex-direction: row; 
-    gap: 20px; 
-    height: 100vh; 
-    margin-top: 20px; 
-    justify-content: center; /* Center the social-area horizontally */
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    height: 100vh;
+    margin-top: 20px;
+    justify-content: center;
+    /* Center the social-area horizontally */
 }
 
-.leaderboard-area{
+.leaderboard-area {
     flex: 1;
     padding: 20px;
     border: 1px solid #ccc;
@@ -359,10 +383,13 @@ canvas {
     align-items: center;
     justify-content: flex-start;
     box-sizing: border-box;
-    width: 100%; /* Ensure it matches leaderboard-area */
-    max-width: 800px; /* Prevent excessive width */
+    width: 100%;
+    /* Ensure it matches leaderboard-area */
+    max-width: 800px;
+    /* Prevent excessive width */
 
 }
+
 .social-area {
     flex: 1;
     padding: 20px;
@@ -370,11 +397,16 @@ canvas {
     border-radius: 8px;
     overflow-y: auto;
     display: flex;
-    flex-direction: column; /* Stack child elements vertically */
-    align-items: center; /* Center all child elements horizontally */
-    justify-content: flex-start; /* Align content to the top */
-    width: 100%; /* Use full width available */
-    box-sizing: border-box; /* Include padding/border in width */
+    flex-direction: column;
+    /* Stack child elements vertically */
+    align-items: center;
+    /* Center all child elements horizontally */
+    justify-content: flex-start;
+    /* Align content to the top */
+    width: 100%;
+    /* Use full width available */
+    box-sizing: border-box;
+    /* Include padding/border in width */
 }
 
 .section-title {
@@ -385,41 +417,63 @@ canvas {
 
 
 .comment-list {
-    list-style: none; /* Remove bullets */
-    padding: 0; /* Remove default padding */
-    margin: 0; /* Remove default margin */
+    list-style: none;
+    /* Remove bullets */
+    padding: 0;
+    /* Remove default padding */
+    margin: 0;
+    /* Remove default margin */
     display: flex;
-    flex-direction: column; /* Stack comments vertically */
-    align-items: center; /* Center all child comments horizontally */
+    flex-direction: column;
+    /* Stack comments vertically */
+    align-items: center;
+    /* Center all child comments horizontally */
 }
 
 .comment-item {
-    list-style: none; /* Remove default list styling */
-    margin: 0 auto; /* Center horizontally */
-    width: 35vw; /* Current width - already preferred */
-    max-width: 800px; /* Restrict the width for readability */
-    border-radius: 5px; /* Rounded corners */
+    list-style: none;
+    /* Remove default list styling */
+    margin: 0 auto;
+    /* Center horizontally */
+    width: 35vw;
+    /* Current width - already preferred */
+    max-width: 800px;
+    /* Restrict the width for readability */
+    border-radius: 5px;
+    /* Rounded corners */
     margin-top: 10px;
     margin-bottom: 10px;
-    background-color: red; /* Background color for comments */
-    padding: 15px; /* Maintain padding */
+    background-color: red;
+    /* Background color for comments */
+    padding: 15px;
+    /* Maintain padding */
     display: flex;
-    flex-direction: column; /* Stack elements vertically */
-    align-items: flex-start; /* Align content to the left */
-    box-sizing: border-box; /* Ensure padding fits within dimensions */
+    flex-direction: column;
+    /* Stack elements vertically */
+    align-items: flex-start;
+    /* Align content to the left */
+    box-sizing: border-box;
+    /* Ensure padding fits within dimensions */
 }
 
 .comment-realname {
-    font-size: 14pt; /* Larger font size for the name */
-    font-weight: bold; /* Emphasis on the real name */
-    color: black; /* Black color for better emphasis */
-    margin-bottom: 2px; /* Space between real name and username */
+    font-size: 14pt;
+    /* Larger font size for the name */
+    font-weight: bold;
+    /* Emphasis on the real name */
+    color: black;
+    /* Black color for better emphasis */
+    margin-bottom: 2px;
+    /* Space between real name and username */
 }
 
 .comment-username {
-    font-size: 10pt; /* Slightly smaller than the name */
-    color: #007BFF; /* Blue color for username */
-    margin-bottom: 10px; /* Space between username and text */
+    font-size: 10pt;
+    /* Slightly smaller than the name */
+    color: #007BFF;
+    /* Blue color for username */
+    margin-bottom: 10px;
+    /* Space between username and text */
 }
 
 
@@ -430,20 +484,29 @@ canvas {
 }
 
 .comment-text {
-    text-align: left; /* Align text to the left */
-    color: #333; /* Adjust text color for readability */
-    font-size: 14px; /* Adjust font size */
-    white-space: pre-wrap; /* Preserve line breaks */
-    word-wrap: break-word; /* Prevent long words from breaking layout */
-    margin-top: 10px; /* Add some spacing from the user's details */
-    flex-grow: 1; /* Allow text to take up available space */
+    text-align: left;
+    /* Align text to the left */
+    color: #333;
+    /* Adjust text color for readability */
+    font-size: 14px;
+    /* Adjust font size */
+    white-space: pre-wrap;
+    /* Preserve line breaks */
+    word-wrap: break-word;
+    /* Prevent long words from breaking layout */
+    margin-top: 10px;
+    /* Add some spacing from the user's details */
+    flex-grow: 1;
+    /* Allow text to take up available space */
 }
 
 .replies-container {
     list-style: none;
-    margin-left: 20px; /* Indent replies */
+    margin-left: 20px;
+    /* Indent replies */
     padding-left: 10px;
-    border-left: 1px solid #ccc; /* Optional: visual separator */
+    border-left: 1px solid #ccc;
+    /* Optional: visual separator */
 }
 
 .comment-reply {
@@ -537,7 +600,8 @@ canvas {
     background-color: #f1f1f1;
 }
 
-#leaderboardTable td, #leaderboardTable th {
+#leaderboardTable td,
+#leaderboardTable th {
     padding: 10px;
     border: 1px solid #ccc;
     text-align: center;

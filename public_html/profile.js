@@ -1,4 +1,9 @@
-/** profile.js - Handles profile page functionality */
+/**
+ * @file server.js
+ * @description This file contains the main logic for the profile page
+ * 
+ * @authors [Gavin Ball, Joshua Stambaugh]
+ */
 
 document.addEventListener("DOMContentLoaded", () => {
     // Verify session and update the header

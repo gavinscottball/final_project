@@ -1,8 +1,14 @@
-// javascript for comments
+/**
+ * @file social.js
+ * @description This file contains the logic comments on the leaderboard
+ * 
+ * @authors [Gavin Ball, Joshua Stambaugh]
+ */
+
 
 document.addEventListener("DOMContentLoaded", () => {
     // Check session status
-    
+
     fetch('/session', { credentials: 'include' })
         .then(response => {
             if (response.ok) {
@@ -19,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
         .catch(err => {
             console.error("Error fetching session status:", err);
         });
-    
+
     // Add event listener for posting comments
     document.getElementById("addCommentBtn").addEventListener("click", () => {
         const commentInput = document.getElementById("commentInput");
@@ -40,9 +46,9 @@ document.addEventListener("DOMContentLoaded", () => {
 // Fetch comments from the server
 function fetchComments() {
     fetch('/getComments', { credentials: 'include' })
-    .then(response => response.json())
-    .then(comments => renderComments(comments))
-    .catch(err => console.error("Error fetching comments:", err));
+        .then(response => response.json())
+        .then(comments => renderComments(comments))
+        .catch(err => console.error("Error fetching comments:", err));
 }
 
 // Post a new comment
@@ -146,15 +152,15 @@ function postReply(parentCommentId, replyText) {
         credentials: 'include',
         body: JSON.stringify({ commentId: parentCommentId, text: replyText })
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            fetchComments(); // Refresh comments to include the new reply
-        } else {
-            alert(data.error || 'Error posting reply.');
-        }
-    })
-    .catch(err => console.error('Error posting reply:', err));
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                fetchComments(); // Refresh comments to include the new reply
+            } else {
+                alert(data.error || 'Error posting reply.');
+            }
+        })
+        .catch(err => console.error('Error posting reply:', err));
 }
 
 function submitReply(event, commentId) {
