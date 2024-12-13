@@ -1,3 +1,10 @@
+/*
+Authors: Josh Stambuagh & Gavin Ball
+This CSS file exclusively styles login.html. It styles the log in and create account
+areas, and cahnges colors, fonts, sizes, etc.
+*/
+
+
 html {
     font-family: "Kanit", serif;
     font-weight: 300;
@@ -14,14 +21,14 @@ html {
 body {
     padding: 0;
     margin: 0;
-    overflow-x: hidden; /* Allow vertical scrolling */
+    overflow-x: hidden;
     background-color: #000000;
     position: relative;
-    display: flex; /* Use Flexbox to center content */
-    justify-content: center; /* Center horizontally */
-    align-items: center; /* Center vertically */
-    min-height: 100vh; /* Ensure body takes the full height of the viewport */
-    flex-direction: column; /* Stack items if there's more than one */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    flex-direction: column;
 }
 
 
@@ -45,14 +52,14 @@ body {
 
 .container {
     position: relative;
-    width: 100%; /* Let it stretch horizontally */
-    max-width: 1200px; /* Optional: Limit the maximum width */
+    width: 100%;
+    max-width: 1200px;
     padding: 20px;
     z-index: 1;
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* Align items to the top of the container */
-    flex-wrap: wrap; /* Allow wrapping if needed */
+    align-items: flex-start;
+    flex-wrap: wrap;
 }
 
 .login-form {
@@ -87,7 +94,7 @@ form textarea {
     background-color: #000;
     color: white;
     border-radius: 5px;
-    
+
 }
 
 form {
@@ -154,8 +161,8 @@ button:hover {
 
 #createAccountForm textarea {
     width: 100%;
-    height: 150px; /* Adjust as needed */
-    resize: none; /* Optional: Prevent resizing if you want it fixed */
+    height: 150px;
+    resize: none;
     padding: 10px;
     background-color: #000;
     color: white;
@@ -199,21 +206,21 @@ button:hover {
 
 .profile-picture-preview {
     display: flex;
-    justify-content: center; /* Center horizontally */
-    margin-bottom: 20px; /* Add space below the preview */
+    justify-content: center;
+    margin-bottom: 20px;
 }
 
 .profile-picture-preview img {
-    width: 120px; /* Set the size of the circular preview */
+    width: 120px;
     height: 120px;
-    border-radius: 50%; /* Make the image circular */
-    border: 3px solid white; /* Optional: Add a border */
-    object-fit: cover; /* Ensure the image fits properly */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Optional: Add a shadow */
+    border-radius: 50%;
+    border: 3px solid white;
+    object-fit: cover;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .profile-picture-preview img:hover {
-    transform: scale(1.05); /* Slight zoom on hover */
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5); /* Enhance shadow on hover */
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
 }

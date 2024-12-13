@@ -1,3 +1,12 @@
+/*
+Authors: Josh Stambuagh & Gavin Ball
+This CSS file styles all of the HTML files in the website except login.html.
+This sets up the geenral styles between teh navigation pages, along with unique
+styles on individual pages using appropriate classes and ids. The document is mostly
+broken up into sections of styling.
+*/
+
+
 /* GENERAL SHARED STYLES BETWEEN NAV PAGES */
 
 html, body {
@@ -189,14 +198,14 @@ button:hover {
 
 .instructions-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Flexible grid columns */
-    gap: 30px; /* Space between items */
-    justify-content: center; /* Horizontally center the grid */
-    align-content: center; /* Vertically center the grid */
-    margin: 0 auto; /* Center the grid within the page */
-    padding: 0; /* Remove extra padding */
-    box-sizing: border-box; /* Include padding/border in width */
-    max-width: 1200px; /* Optional: Restrict grid width for better layout */
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 30px; 
+    justify-content: center; 
+    align-content: center; 
+    margin: 0 auto; 
+    padding: 0; 
+    box-sizing: border-box; 
+    max-width: 1200px; 
 }
 
 .instruction-item {
@@ -205,8 +214,8 @@ button:hover {
     padding: 15px;
     border-radius: 8px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    width: calc(100% - 30px); /* Adjust width to fit inside grid gaps */
-    margin: 0 auto; /* Center individual items */
+    width: calc(100% - 30px);
+    margin: 0 auto; 
     background-image: url('./imgs/back1.png');
     background-position: center;
     background-repeat: no-repeat;
@@ -249,30 +258,24 @@ canvas:focus {
     border-style: solid;
     position: relative;
     width: 700px;
-    /* Match the canvas width */
     height: 350px;
-    /* Match the canvas height */
     margin: 20px auto;
     display: block;
     overflow: hidden;
-    /* Ensures pseudo-element doesn't exceed container */
 }
 
 canvas {
     border-radius: 20px;
     position: relative;
-    /* Keep the canvas on top */
     border: 2px solid black;
     display: block;
     z-index: 1;
-    /* Stays above the background */
 }
 
 .canvas-container::before {
     border-style: solid;
     border: 5px black;
     content: "";
-    /* Pseudo-element for the background image */
     position: absolute;
     top: 0;
     left: 0;
@@ -280,28 +283,20 @@ canvas {
     height: 100%;
     background-color: black;
     z-index: 0;
-    /* Behind the canvas */
 }
 
 .overlay-text {
     position: absolute;
     top: 50%;
-    /* Center vertically */
     left: 50%;
-    /* Center horizontally */
     transform: translate(-50%, -50%);
-    /* Adjust to true center */
     font-size: 24px;
-    /* Adjust text size as needed */
     color: white;
     text-shadow: 0 0 5px black;
-    /* Optional: Add text shadow for readability */
     font-family: "Kanit", serif;
     text-align: center;
     pointer-events: none;
-    /* Prevent text from blocking canvas interactions */
     z-index: 2;
-    /* Ensure text is above everything else */
 }
 
 #restartButton {
@@ -359,13 +354,9 @@ canvas {
 
 .profile-container {
     padding: 20px;
-    /* Add padding for spacing */
     max-width: 800px;
-    /* Set a maximum width */
     margin: 0 auto;
-    /* Center the container */
     text-align: center;
-    /* Center align content */
 }
 
 #editProfileButton,
@@ -417,7 +408,6 @@ canvas {
     height: 100vh;
     margin-top: 20px;
     justify-content: center;
-    /* Center the social-area horizontally */
 }
 
 .leaderboard-area {
@@ -433,9 +423,7 @@ canvas {
     justify-content: flex-start;
     box-sizing: border-box;
     width: 100%;
-    /* Ensure it matches leaderboard-area */
     max-width: 800px;
-    /* Prevent excessive width */
 
 }
 
@@ -448,15 +436,10 @@ canvas {
     display: flex;
     flex-direction: column;
     background-color: #292929b0;
-    /* Stack child elements vertically */
     align-items: center;
-    /* Center all child elements horizontally */
     justify-content: flex-start;
-    /* Align content to the top */
     width: 100%;
-    /* Use full width available */
     box-sizing: border-box;
-    /* Include padding/border in width */
 }
 
 .section-title {
@@ -465,65 +448,44 @@ canvas {
     text-align: center;
 }
 
+/* comments */
 
 .comment-list {
     list-style: none;
-    /* Remove bullets */
     padding: 0;
-    /* Remove default padding */
     margin: 0;
-    /* Remove default margin */
     display: flex;
     flex-direction: column;
-    /* Stack comments vertically */
     align-items: center;
-    /* Center all child comments horizontally */
 }
 
 .comment-item {
     list-style: none;
-    /* Remove default list styling */
     margin: 0 auto;
-    /* Center horizontally */
     width: 40vw;
-    /* Current width - already preferred */
     max-width: 800px;
-    /* Restrict the width for readability */
     border-radius: 10px;
-    /* Rounded corners */
     margin-top: 10px;
     margin-bottom: 10px;
     background-color: #00000075;
-    /* Background color for comments */
     padding: 15px;
-    /* Maintain padding */
     display: flex;
     flex-direction: column;
-    /* Stack elements vertically */
     align-items: flex-start;
-    /* Align content to the left */
     box-sizing: border-box;
-    /* Ensure padding fits within dimensions */
 }
 
 .comment-realname {
     font-size: 14pt;
-    /* Larger font size for the name */
     font-weight: bold;
-    /* Emphasis on the real name */
-    /* Black color for better emphasis */
-    /* Space between real name and username */
 }
 
 .comment-username {
     font-size: 10pt;
     font-weight: 200;
-    /* Slightly smaller than the name */
     color: rgb(233, 45, 134);
     text-shadow: none;
-    /* Blue color for username */
     margin-bottom: 10px;
-    /* Space between username and text */
 }
 
 
@@ -535,81 +497,28 @@ canvas {
 
 .comment-text {
     text-align: left;
-    /* Align text to the left */
-    /* Adjust text color for readability */
     font-size: 14px;
-    /* Adjust font size */
     white-space: pre-wrap;
-    /* Preserve line breaks */
     word-wrap: break-word;
-    /* Prevent long words from breaking layout */
-    /* Add some spacing from the user's details */
     flex-grow: 1;
-    /* Allow text to take up available space */
 }
-
-
-
-.replies-container {
-    list-style: none;
-    margin-left: 20px;
-    /* Indent replies */
-    padding-left: 10px;
-    border-left: 1px solid #ccc;
-    /* Optional: visual separator */
-}
-
-.comment-reply {
-    margin-top: 10px;
-    padding: 10px;
-    border-radius: 8px;
-    text-align: left;
-}
-
-.reply-form {
-    margin-top: 10px;
-    display: flex;
-    gap: 10px;
-}
-
-.reply-input {
-    flex: 1;
-    padding: 5px;
-    border: 1px solid white;
-    border-radius: 5px;
-    background-color: black;
-    color: white;
-}
-
-.social-area button {
-    padding: 5px 10px;
-    border: 1px solid white;
-    color: white;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-
-
-
-
 
 
 .comment-controls {
     display: flex;
     flex-direction: column;
-    gap: 15px; /* Space between comment form and sort controls */
+    gap: 15px; 
     width: 100%;
-    margin-bottom: 20px; /* Space below the comment controls */
+    margin-bottom: 20px; 
 }
 
 .comment-form {
     display: flex;
-    flex-direction: row; /* Arrange input and button horizontally */
-    justify-content: center; /* Center the entire row */
-    align-items: center; /* Align items vertically */
-    gap: 10px; /* Space between input and button */
-    width: 100%; /* Ensure it spans the full width of the container */
+    flex-direction: row; 
+    justify-content: center; 
+    align-items: center; 
+    gap: 10px;
+    width: 100%; 
 }
 
 .comment-form input {
@@ -636,15 +545,57 @@ canvas {
     background-color: #0056b3;
 }
 
+/* replies */
+
+.replies-container {
+    list-style: none;
+    margin-left: 20px;
+    padding-left: 10px;
+    border-left: 1px solid #ccc;
+}
+
+.comment-reply {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 8px;
+    text-align: left;
+}
+
+.reply-form {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+}
+
+.reply-input {
+    flex: 1;
+    padding: 5px;
+    border: 1px solid white;
+    border-radius: 5px;
+    background-color: black;
+    color: white;
+}
+
+/* comment interactables */
+
+.social-area button {
+    padding: 5px 10px;
+    border: 1px solid white;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+
 .sort-controls {
     display: flex;
     justify-content: center;
-    gap: 20px; /* Space between sort buttons */
+    gap: 20px; 
     width: 100%;
 }
 
 .sort-controls button {
-    width: 44%; /* Consistent width for buttons */
+    width: 44%;
     padding: 10px;
     border: 1px solid white;
     border-radius: 5px;
@@ -656,12 +607,6 @@ canvas {
 .sort-controls button:hover {
     background-color: rgb(233, 45, 134);
 }
-
-
-
-
-
-
 
 .like-button {
     padding: 5px 10px;
@@ -725,9 +670,5 @@ canvas {
     border: 1px solid white;
     text-align: center;
 }
-
-
-
-
 
 /* DEBUG */
