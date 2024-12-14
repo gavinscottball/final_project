@@ -338,7 +338,6 @@ canvas {
 /* PROFILE PAGE EXCLUSIVE STYLNG*/
 
 #logoutButton {
-    background-color: #FF4500;
     color: white;
     font-size: 16px;
     padding: 10px 20px;
@@ -346,10 +345,6 @@ canvas {
     border-radius: 5px;
     cursor: pointer;
     display: inline-block;
-}
-
-#logoutButton:hover {
-    background-color: #CC3700;
 }
 
 .profile-container {
@@ -361,7 +356,6 @@ canvas {
 
 #editProfileButton,
 #saveProfileButton {
-    background-color: #007BFF;
     color: white;
     font-size: 16px;
     padding: 10px 20px;
@@ -369,11 +363,6 @@ canvas {
     border-radius: 5px;
     cursor: pointer;
     margin: 5px;
-}
-
-#editProfileButton:hover,
-#saveProfileButton:hover {
-    background-color: #0056b3;
 }
 
 #bioInput {
